@@ -79,9 +79,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs text-slate-400 uppercase tracking-wider">
-            导航菜单
-          </SidebarGroupLabel>
+
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) =>
