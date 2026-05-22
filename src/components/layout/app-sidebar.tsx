@@ -86,7 +86,7 @@ export function AppSidebar() {
                 item.children ? (
                   <Collapsible
                     key={item.title}
-                    defaultOpen={pathname.startsWith('/templates') || pathname.startsWith('/promo-patches') || pathname.startsWith('/activities')}
+                    defaultOpen
                     className="group/collapsible"
                   >
                     <SidebarMenuItem>
