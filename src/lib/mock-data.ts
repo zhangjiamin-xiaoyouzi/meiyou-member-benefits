@@ -206,7 +206,7 @@ export const mockActivities: Activity[] = [
   },
   {
     id: 'act_002',
-    name: '每周会员日',
+    name: '每月会员日',
     sceneKey: 'member_day_weekly',
     templateId: 'tpl_002',
     templateName: '周期会员日模板',
