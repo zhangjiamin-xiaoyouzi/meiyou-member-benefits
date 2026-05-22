@@ -1,0 +1,134 @@
+// ==================== 模板管理类型 ====================
+
+export type TemplateLevel = 'S' | 'A' | 'B';
+
+export interface TemplateComponent {
+  id: string;
+  name: string;
+  key: string;
+  description: string;
+  enabled: boolean;
+  required: boolean; // 是否必选组件（不可关闭）
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  level: TemplateLevel;
+  description: string;
+  preview: string; // 预览图 URL
+  components: TemplateComponent[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ==================== 营销策略库类型 ====================
+
+export type PromoPatchType = 'price_discount' | 'bonus_duration' | 'gift';
+
+export interface PriceDiscountConfig {
+  targetPlanId: string;
+  targetPlanName: string;
+  discountAmount: number;
+  discountUnit: 'yuan' | 'percent';
+}
+
+export interface BonusDurationConfig {
+  bonusDays: number;
+  targetPlanIds: string[];
+  targetPlanNames: string[];
+}
+
+export interface GiftConfig {
+  giftName: string;
+  giftType: 'physical' | 'coupon' | 'virtual';
+  couponPoolId?: string;
+  stockCount: number;
+}
+
+export interface PromoPatch {
+  id: string;
+  name: string;
+  type: PromoPatchType;
+  config: PriceDiscountConfig | BonusDurationConfig | GiftConfig;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ==================== 活动配置类型 ====================
+
+export type ActivityStatus = 'draft' | 'scheduled' | 'active' | 'expired';
+
+export interface TimeConfig {
+  sellStartTime: string;
+  sellEndTime: string;
+  lotteryStartTime?: string;
+  lotteryEndTime?: string;
+  bufferEndTime?: string;
+  refundCutoffTime?: string;
+}
+
+export interface AudienceRule {
+  id: string;
+  field: string;
+  label: string;
+  operator: string;
+  value: string | string[];
+}
+
+export interface ShelfItem {
+  id: string;
+  planId: string;
+  planName: string;
+  isMainPush: boolean;
+  sortOrder: number;
+  patchIds: string[];
+}
+
+export interface LotteryConfig {
+  enabled: boolean;
+  poolId: string;
+  poolName: string;
+}
+
+export interface MaterialConfig {
+  headerBanner?: string;
+  ruleText?: string;
+  popupBg?: string;
+  marqueeText?: string;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  sceneKey: string;
+  templateId: string;
+  templateName: string;
+  status: ActivityStatus;
+  timeConfig: TimeConfig;
+  audienceRules: AudienceRule[];
+  shelves: ShelfItem[];
+  lotteryConfig: LotteryConfig;
+  materialConfig: MaterialConfig;
+  components: Record<string, boolean>; // 组件开关状态
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ==================== 通用类型 ====================
+
+export interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  type: 'monthly' | 'quarterly' | 'yearly';
+}
+
+export interface LotteryPool {
+  id: string;
+  name: string;
+  sceneCode: string;
+  status: 'active' | 'inactive';
+}

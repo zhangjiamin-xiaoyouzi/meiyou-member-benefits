@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSupabaseClient } from '@/storage/database/supabase-client';
+
+export async function GET() {
+  try {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from('templates')
+      .select('id, name, level, description, preview, components, is_active, created_at, updated_at')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(`查询模板失败: ${error.message}`);
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '未知错误';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const client = getSupabaseClient();
+    const body = await request.json();
+    const { data, error } = await client
+      .from('templates')
+      .insert({
+        name: body.name,
+        level: body.level,
+        description: body.description,
+        preview: body.preview,
+        components: body.components,
+        is_active: true,
+      })
+      .select()
+      .single();
+    if (error) throw new Error(`创建模板失败: ${error.message}`);
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '未知错误';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
+  }
+}
