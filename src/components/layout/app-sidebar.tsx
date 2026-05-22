@@ -111,12 +111,7 @@ export function AppSidebar() {
                               >
                                 <Link href={child.url}>
                                   <child.icon className="h-4 w-4" />
-                                  <div className="flex flex-col">
-                                    <span className="text-sm">{child.title}</span>
-                                    {child.description && (
-                                      <span className="text-xs text-slate-400">{child.description}</span>
-                                    )}
-                                  </div>
+                                  <span>{child.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
