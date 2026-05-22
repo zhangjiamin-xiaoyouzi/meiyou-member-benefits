@@ -74,7 +74,7 @@ export function AppSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 text-white text-sm font-bold">
             Mei
           </div>
-            <span className="text-sm font-semibold text-slate-900">美柚订阅后台</span>
+            <span className="text-sm font-semibold text-slate-900">订阅管理系统</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
