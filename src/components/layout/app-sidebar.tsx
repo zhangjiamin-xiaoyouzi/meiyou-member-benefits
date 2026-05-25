@@ -17,7 +17,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -32,7 +31,11 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-const navItems = [
+type NavGroup = { title: string; icon: React.ComponentType<{ className?: string }>; children: { title: string; url: string; icon: React.ComponentType<{ className?: string }>; description?: string }[] };
+type NavLeaf = { title: string; url: string; icon: React.ComponentType<{ className?: string }> };
+type NavItem = NavGroup | NavLeaf;
+
+const navItems: NavItem[] = [
   {
     title: '活动中心',
     icon: Sparkles,
@@ -74,16 +77,15 @@ export function AppSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 text-white text-sm font-bold">
             Mei
           </div>
-            <span className="text-sm font-semibold text-slate-900">订阅管理系统</span>
+          <span className="text-sm font-semibold text-slate-900">订阅管理系统</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) =>
-                item.children ? (
+                'children' in item ? (
                   <Collapsible
                     key={item.title}
                     defaultOpen

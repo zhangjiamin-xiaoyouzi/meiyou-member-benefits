@@ -32,14 +32,20 @@ import {
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 import { Plus, Settings2, Eye, Lock, Unlock, Search } from 'lucide-react';
-import type { Template, TemplateComponent, TemplateLevel } from '@/lib/types';
-import { mockTemplates } from '@/lib/mock-data';
+import type { Template, TemplateComponent } from '@/lib/types';
+import { DEFAULT_CATEGORIES } from '@/lib/types';
+import { mockTemplates, templateCategories } from '@/lib/mock-data';
 
-const levelConfig: Record<string, { label: string; color: string; desc: string }> = {
-  S: { label: 'S级 · 大促抽奖', color: 'bg-rose-50 text-rose-700 border-rose-200', desc: '618/双11等S级大促，完整互动链路' },
-  A: { label: 'A级 · 周期会员日', color: 'bg-amber-50 text-amber-700 border-amber-200', desc: '每周/月会员日，时序状态切换' },
-  B: { label: 'B级 · 轻量定向', color: 'bg-blue-50 text-blue-700 border-blue-200', desc: '半弹窗/浮层，单品券+快捷开卡' },
+const categoryColorMap: Record<string, string> = {
+  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
+  '会员日': 'bg-amber-50 text-amber-700 border-amber-200',
+  '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
+const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
+
+function getCategoryColor(category: string): string {
+  return categoryColorMap[category] || defaultCategoryColor;
+}
 
 function ComponentToggleMatrix({
   components,
@@ -125,8 +131,8 @@ function TemplateDetailDialog({ template }: { template: Template }) {
       <DialogHeader>
         <DialogTitle className="flex items-center gap-3">
           <span>{template.name}</span>
-          <Badge variant="outline" className={levelConfig[template.level].color}>
-            {levelConfig[template.level].label}
+          <Badge variant="outline" className={getCategoryColor(template.category)}>
+            {template.category}
           </Badge>
         </DialogTitle>
         <DialogDescription>{template.description}</DialogDescription>
@@ -146,10 +152,12 @@ function TemplateDetailDialog({ template }: { template: Template }) {
 }
 
 function CreateTemplateDialog() {
-  const [level, setLevel] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [customCategory, setCustomCategory] = useState<string>('');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
 
   const defaultComponents: Record<string, TemplateComponent[]> = {
-    S: [
+    '年度大促': [
       { id: `comp_${Date.now()}_1`, name: '氛围头图', key: 'header_banner', description: '顶部活动氛围大图', enabled: true, required: true },
       { id: `comp_${Date.now()}_2`, name: '互动红包', key: 'interactive_redpacket', description: '点击拆红包互动组件', enabled: true, required: false },
       { id: `comp_${Date.now()}_3`, name: '大卡货架', key: 'main_shelf', description: '主推套餐大卡展示', enabled: true, required: true },
@@ -158,14 +166,14 @@ function CreateTemplateDialog() {
       { id: `comp_${Date.now()}_6`, name: '中奖跑马灯', key: 'winner_marquee', description: '实时滚动中奖信息', enabled: true, required: false },
       { id: `comp_${Date.now()}_7`, name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
     ],
-    A: [
+    '会员日': [
       { id: `comp_${Date.now()}_1`, name: '氛围头图', key: 'header_banner', description: '顶部活动氛围图', enabled: true, required: true },
       { id: `comp_${Date.now()}_2`, name: '时序状态栏', key: 'timeline_status', description: '预约/抢购/结束三阶段切换', enabled: true, required: true },
       { id: `comp_${Date.now()}_3`, name: '0元福利', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
       { id: `comp_${Date.now()}_4`, name: '套餐货架', key: 'plan_shelf', description: '会员套餐展示', enabled: true, required: true },
       { id: `comp_${Date.now()}_5`, name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
     ],
-    B: [
+    '固定节日': [
       { id: `comp_${Date.now()}_1`, name: '弹窗背景', key: 'popup_bg', description: '浮层背景图', enabled: true, required: true },
       { id: `comp_${Date.now()}_2`, name: '单品券发放', key: 'coupon_issue', description: '单张优惠券发放组件', enabled: true, required: false },
       { id: `comp_${Date.now()}_3`, name: '快捷开卡', key: 'quick_subscribe', description: '一键开通会员按钮', enabled: true, required: true },
@@ -175,10 +183,20 @@ function CreateTemplateDialog() {
 
   const [components, setComponents] = useState<TemplateComponent[]>([]);
 
-  const handleLevelChange = (val: string) => {
-    setLevel(val);
-    setComponents(defaultComponents[val] || []);
+  const handleCategoryChange = (val: string) => {
+    if (val === '__custom__') {
+      setIsCustomCategory(true);
+      setCategory('');
+      setComponents([]);
+    } else {
+      setIsCustomCategory(false);
+      setCustomCategory('');
+      setCategory(val);
+      setComponents(defaultComponents[val] || []);
+    }
   };
+
+  const effectiveCategory = isCustomCategory ? customCategory.trim() : category;
 
   return (
     <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -193,17 +211,26 @@ function CreateTemplateDialog() {
             <Input placeholder="如：大促抽奖模板" />
           </div>
           <div className="space-y-2">
-            <Label>模板等级</Label>
-            <Select value={level} onValueChange={handleLevelChange}>
+            <Label>模板分类</Label>
+            <Select value={isCustomCategory ? '__custom__' : category} onValueChange={handleCategoryChange}>
               <SelectTrigger>
-                <SelectValue placeholder="选择模板等级" />
+                <SelectValue placeholder="选择或新建分类" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="S">S级 · 大促抽奖模板</SelectItem>
-                <SelectItem value="A">A级 · 周期会员日模板</SelectItem>
-                <SelectItem value="B">B级 · 轻量定向模板</SelectItem>
+                {[...DEFAULT_CATEGORIES, ...templateCategories.filter(c => !DEFAULT_CATEGORIES.includes(c as any))].map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+                <SelectItem value="__custom__">+ 新建分类...</SelectItem>
               </SelectContent>
             </Select>
+            {isCustomCategory && (
+              <Input
+                placeholder="输入新分类名称"
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                className="mt-2"
+              />
+            )}
           </div>
         </div>
         <div className="space-y-2">
@@ -221,7 +248,7 @@ function CreateTemplateDialog() {
         <Button variant="outline" className="border-slate-300">
           取消
         </Button>
-        <Button className="bg-rose-500 hover:bg-rose-600 text-white" disabled={!level}>
+        <Button className="bg-rose-500 hover:bg-rose-600 text-white" disabled={!effectiveCategory}>
           创建模板
         </Button>
       </div>
@@ -235,13 +262,16 @@ function formatDate(dateStr: string): string {
 }
 
 export default function TemplatesPage() {
-  const [filterLevel, setFilterLevel] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
 
+  // 动态收集所有已有分类
+  const allCategories = Array.from(new Set(mockTemplates.map((t) => t.category)));
+
   const filteredTemplates = mockTemplates.filter((t) => {
-    const matchLevel = filterLevel === 'all' || t.level === filterLevel;
+    const matchCategory = filterCategory === 'all' || t.category === filterCategory;
     const matchSearch = !searchText || t.name.includes(searchText) || t.description.includes(searchText);
-    return matchLevel && matchSearch;
+    return matchCategory && matchSearch;
   });
 
   return (
@@ -276,15 +306,15 @@ export default function TemplatesPage() {
             className="pl-9 border-slate-200"
           />
         </div>
-        <Select value={filterLevel} onValueChange={setFilterLevel}>
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
           <SelectTrigger className="w-[180px] border-slate-200">
-            <SelectValue placeholder="筛选模板等级" />
+            <SelectValue placeholder="筛选分类" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">全部等级</SelectItem>
-            <SelectItem value="S">S级 · 大促抽奖</SelectItem>
-            <SelectItem value="A">A级 · 周期会员日</SelectItem>
-            <SelectItem value="B">B级 · 轻量定向</SelectItem>
+            <SelectItem value="all">全部分类</SelectItem>
+            {allCategories.map((cat) => (
+              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <span className="text-sm text-slate-400">
@@ -298,7 +328,7 @@ export default function TemplatesPage() {
           <TableHeader>
             <TableRow className="bg-slate-50 hover:bg-slate-50">
               <TableHead className="w-[200px]">模板名称</TableHead>
-              <TableHead className="w-[140px]">等级</TableHead>
+              <TableHead className="w-[120px]">分类</TableHead>
               <TableHead>说明</TableHead>
               <TableHead className="w-[100px] text-center">组件数</TableHead>
               <TableHead className="w-[160px]">创建时间 / 创建人</TableHead>
@@ -320,8 +350,8 @@ export default function TemplatesPage() {
                     {template.name}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={levelConfig[template.level].color}>
-                      {levelConfig[template.level].label}
+                    <Badge variant="outline" className={getCategoryColor(template.category)}>
+                      {template.category}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-slate-500 max-w-[280px] truncate">

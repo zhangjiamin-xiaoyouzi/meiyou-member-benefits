@@ -13,7 +13,7 @@ export const templates = pgTable(
   {
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 128 }).notNull(),
-    level: varchar("level", { length: 1 }).notNull(), // S / A / B
+    category: varchar("category", { length: 64 }).notNull(), // 模板分类（会员日/固定节日/年度大促/自定义）
     description: text("description"),
     preview: varchar("preview", { length: 512 }),
     components: jsonb("components").notNull().default(sql`'[]'::jsonb`), // TemplateComponent[]
@@ -24,7 +24,7 @@ export const templates = pgTable(
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => [
-    index("templates_level_idx").on(table.level),
+    index("templates_category_idx").on(table.category),
     index("templates_is_active_idx").on(table.is_active),
   ]
 );

@@ -11,7 +11,7 @@ export async function POST() {
       mockTemplates.map((t) => ({
         id: t.id,
         name: t.name,
-        level: t.level,
+        category: t.category,
         description: t.description,
         preview: t.preview,
         components: t.components,

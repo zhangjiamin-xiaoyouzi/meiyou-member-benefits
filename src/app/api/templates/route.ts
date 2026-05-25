@@ -6,7 +6,7 @@ export async function GET() {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from('templates')
-      .select('id, name, level, description, preview, components, is_active, created_at, updated_at')
+      .select('id, name, category, description, preview, components, is_active, created_at, updated_at, created_by, updated_by')
       .order('created_at', { ascending: false });
     if (error) throw new Error(`查询模板失败: ${error.message}`);
     return NextResponse.json({ success: true, data });
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       .from('templates')
       .insert({
         name: body.name,
-        level: body.level,
+        category: body.category,
         description: body.description,
         preview: body.preview,
         components: body.components,

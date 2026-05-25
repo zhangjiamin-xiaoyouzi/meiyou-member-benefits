@@ -61,11 +61,12 @@ interface Step3Data {
   materialConfig: MaterialConfig;
 }
 
-const levelConfig: Record<string, { label: string; color: string }> = {
-  S: { label: 'S级 · 大促抽奖', color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  A: { label: 'A级 · 周期会员日', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  B: { label: 'B级 · 轻量定向', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+const categoryColorMap: Record<string, string> = {
+  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
+  '会员日': 'bg-amber-50 text-amber-700 border-amber-200',
+  '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
+const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
 
 const stepConfig = [
   { num: 1, label: '选择模板与基础信息', icon: Puzzle },
@@ -115,8 +116,8 @@ function StepBasicInfo({
               >
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline" className={levelConfig[template.level].color}>
-                      {levelConfig[template.level].label}
+                    <Badge variant="outline" className={categoryColorMap[template.category] || defaultCategoryColor}>
+                      {template.category}
                     </Badge>
                     {isSelected && (
                       <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500">
@@ -196,7 +197,7 @@ function StepBasicInfo({
               />
             </div>
           </div>
-          {selectedTemplate && (selectedTemplate.level === 'S' || selectedTemplate.level === 'A') && (
+          {selectedTemplate && (selectedTemplate.category === '年度大促' || selectedTemplate.category === '会员日') && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>抽奖开始时间</Label>

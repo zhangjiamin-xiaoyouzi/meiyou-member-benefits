@@ -24,11 +24,12 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
   expired: { label: '已结束', color: 'bg-slate-50 text-slate-400 border-slate-200', icon: CheckCircle2 },
 };
 
-const levelConfig: Record<string, { label: string; color: string }> = {
-  S: { label: 'S级', color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  A: { label: 'A级', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  B: { label: 'B级', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+const categoryColorMap: Record<string, string> = {
+  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
+  '会员日': 'bg-amber-50 text-amber-700 border-amber-200',
+  '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
+const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
 
 export default function DashboardPage() {
   const activeActivities = mockActivities.filter((a) => a.status === 'active');
@@ -188,8 +189,8 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {mockTemplates.map((tpl) => (
-                    <Badge key={tpl.id} variant="outline" className={`text-xs ${levelConfig[tpl.level].color}`}>
-                      {levelConfig[tpl.level].label} · {tpl.name}
+                    <Badge key={tpl.id} variant="outline" className={`text-xs ${categoryColorMap[tpl.category] || defaultCategoryColor}`}>
+                      {tpl.category} · {tpl.name}
                     </Badge>
                   ))}
                 </div>

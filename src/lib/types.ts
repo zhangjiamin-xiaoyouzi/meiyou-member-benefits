@@ -1,6 +1,7 @@
 // ==================== 模板管理类型 ====================
 
-export type TemplateLevel = 'S' | 'A' | 'B';
+// 模板分类（支持自定义扩展）
+export const DEFAULT_CATEGORIES = ['会员日', '固定节日', '年度大促'] as const;
 
 export interface TemplateComponent {
   id: string;
@@ -14,7 +15,7 @@ export interface TemplateComponent {
 export interface Template {
   id: string;
   name: string;
-  level: TemplateLevel;
+  category: string;
   description: string;
   preview: string; // 预览图 URL
   components: TemplateComponent[];
