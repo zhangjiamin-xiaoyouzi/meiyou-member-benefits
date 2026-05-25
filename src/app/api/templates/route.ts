@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const client = getSupabaseClient();
-    const { data, error } = await client
+    const { searchParams } = new URL(request.url);
+    const templateId = searchParams.get('id');
+
+    let query = client
       .from('templates')
-      .select('id, name, category, description, preview, components, is_active, created_at, updated_at, created_by, updated_by')
-      .order('created_at', { ascending: false });
+      .select('id, name, category, description, preview, components, is_active, created_at, updated_at, created_by, updated_by');
+
+    if (templateId) {
+      query = query.eq('id', templateId);
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
     if (error) throw new Error(`查询模板失败: ${error.message}`);
     return NextResponse.json({ success: true, data });
   } catch (err) {
