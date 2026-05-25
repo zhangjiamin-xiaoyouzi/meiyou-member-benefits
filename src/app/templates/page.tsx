@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -32,8 +31,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Puzzle, Settings2, Eye, Lock, Unlock } from 'lucide-react';
-import type { Template, TemplateComponent } from '@/lib/types';
+import { Plus, Settings2, Eye, Lock, Unlock, Search } from 'lucide-react';
+import type { Template, TemplateComponent, TemplateLevel } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 
 const levelConfig: Record<string, { label: string; color: string; desc: string }> = {
@@ -230,7 +229,21 @@ function CreateTemplateDialog() {
   );
 }
 
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
 export default function TemplatesPage() {
+  const [filterLevel, setFilterLevel] = useState<string>('all');
+  const [searchText, setSearchText] = useState('');
+
+  const filteredTemplates = mockTemplates.filter((t) => {
+    const matchLevel = filterLevel === 'all' || t.level === filterLevel;
+    const matchSearch = !searchText || t.name.includes(searchText) || t.description.includes(searchText);
+    return matchLevel && matchSearch;
+  });
+
   return (
     <div className="space-y-6">
       {/* 页面标题 */}
@@ -252,81 +265,96 @@ export default function TemplatesPage() {
         </Dialog>
       </div>
 
-      {/* 模板等级说明 */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {Object.entries(levelConfig).map(([key, config]) => (
-          <Card key={key} className="border-slate-200">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline" className={config.color}>
-                  {config.label}
-                </Badge>
-              </div>
-              <p className="text-xs text-slate-500">{config.desc}</p>
-            </CardContent>
-          </Card>
-        ))}
+      {/* 筛选区域 */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="搜索模板名称..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="pl-9 border-slate-200"
+          />
+        </div>
+        <Select value={filterLevel} onValueChange={setFilterLevel}>
+          <SelectTrigger className="w-[180px] border-slate-200">
+            <SelectValue placeholder="筛选模板等级" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部等级</SelectItem>
+            <SelectItem value="S">S级 · 大促抽奖</SelectItem>
+            <SelectItem value="A">A级 · 周期会员日</SelectItem>
+            <SelectItem value="B">B级 · 轻量定向</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="text-sm text-slate-400">
+          共 {filteredTemplates.length} 个模板
+        </span>
       </div>
 
-      {/* 模板列表 */}
-      <div className="space-y-4">
-        {mockTemplates.map((template) => (
-          <Card key={template.id} className="border-slate-200 hover:shadow-sm transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
-                    <Puzzle className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base font-semibold text-slate-900">
-                      {template.name}
-                    </CardTitle>
-                    <CardDescription className="text-sm text-slate-500 mt-0.5">
-                      {template.description}
-                    </CardDescription>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant="outline" className={levelConfig[template.level].color}>
-                    {levelConfig[template.level].label}
-                  </Badge>
-                  <div className="text-xs text-slate-400">
-                    {template.components.length} 个组件
-                  </div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="border-slate-300">
-                        <Eye className="mr-1 h-3.5 w-3.5" />
-                        详情
-                      </Button>
-                    </DialogTrigger>
-                    <TemplateDetailDialog template={template} />
-                  </Dialog>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex flex-wrap gap-2">
-                {template.components.map((comp) => (
-                  <Badge
-                    key={comp.id}
-                    variant="outline"
-                    className={`text-xs ${
-                      comp.enabled
-                        ? 'bg-white text-slate-700 border-slate-200'
-                        : 'bg-slate-50 text-slate-400 border-slate-100 line-through'
-                    }`}
-                  >
-                    {comp.required && <Lock className="mr-1 h-2.5 w-2.5" />}
-                    {comp.name}
-                    {!comp.enabled && ' (关闭)'}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* 模板列表 - 表格形式 */}
+      <div className="rounded-lg border border-slate-200 overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-slate-50 hover:bg-slate-50">
+              <TableHead className="w-[200px]">模板名称</TableHead>
+              <TableHead className="w-[140px]">等级</TableHead>
+              <TableHead>说明</TableHead>
+              <TableHead className="w-[100px] text-center">组件数</TableHead>
+              <TableHead className="w-[160px]">创建时间 / 创建人</TableHead>
+              <TableHead className="w-[160px]">操作时间 / 操作人</TableHead>
+              <TableHead className="w-[80px] text-center">操作</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredTemplates.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center text-slate-400">
+                  暂无匹配的模板
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredTemplates.map((template) => (
+                <TableRow key={template.id} className="hover:bg-slate-50/50">
+                  <TableCell className="font-medium text-slate-900">
+                    {template.name}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={levelConfig[template.level].color}>
+                      {levelConfig[template.level].label}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-500 max-w-[280px] truncate">
+                    {template.description}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className="font-mono text-sm text-slate-700">{template.components.length}</span>
+                    <span className="text-xs text-slate-400 ml-1">个</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-slate-700">{formatDate(template.createdAt)}</div>
+                    <div className="text-xs text-slate-400">{template.createdBy}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-slate-700">{formatDate(template.updatedAt)}</div>
+                    <div className="text-xs text-slate-400">{template.updatedBy}</div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700 hover:bg-rose-50">
+                          <Eye className="mr-1 h-3.5 w-3.5" />
+                          详情
+                        </Button>
+                      </DialogTrigger>
+                      <TemplateDetailDialog template={template} />
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

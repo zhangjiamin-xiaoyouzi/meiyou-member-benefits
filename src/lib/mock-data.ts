@@ -35,7 +35,9 @@ export const mockTemplates: Template[] = [
       { id: 'comp_007', name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
     ],
     createdAt: '2024-01-15T10:00:00Z',
+    createdBy: '张三',
     updatedAt: '2024-03-20T14:30:00Z',
+    updatedBy: '李四',
   },
   {
     id: 'tpl_002',
@@ -51,7 +53,9 @@ export const mockTemplates: Template[] = [
       { id: 'comp_105', name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
     ],
     createdAt: '2024-02-10T08:00:00Z',
+    createdBy: '王五',
     updatedAt: '2024-04-05T11:00:00Z',
+    updatedBy: '张三',
   },
   {
     id: 'tpl_003',
@@ -66,7 +70,9 @@ export const mockTemplates: Template[] = [
       { id: 'comp_204', name: '关闭按钮', key: 'close_btn', description: '浮层关闭入口', enabled: true, required: true },
     ],
     createdAt: '2024-03-01T09:00:00Z',
+    createdBy: '李四',
     updatedAt: '2024-03-01T09:00:00Z',
+    updatedBy: '李四',
   },
 ];
 

@@ -19,7 +19,9 @@ export interface Template {
   preview: string; // 预览图 URL
   components: TemplateComponent[];
   createdAt: string;
+  createdBy: string;
   updatedAt: string;
+  updatedBy: string;
 }
 
 // ==================== 营销策略库类型 ====================

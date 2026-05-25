@@ -18,7 +18,9 @@ export const templates = pgTable(
     preview: varchar("preview", { length: 512 }),
     components: jsonb("components").notNull().default(sql`'[]'::jsonb`), // TemplateComponent[]
     is_active: boolean("is_active").default(true).notNull(),
+    created_by: varchar("created_by", { length: 64 }),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_by: varchar("updated_by", { length: 64 }),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => [
