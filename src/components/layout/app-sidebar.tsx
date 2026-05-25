@@ -34,14 +34,14 @@ import {
 
 const navItems = [
   {
-    title: '活动概览',
-    url: '/',
-    icon: LayoutGrid,
-  },
-  {
     title: '活动中心',
     icon: Sparkles,
     children: [
+      {
+        title: '活动概览',
+        url: '/',
+        icon: LayoutGrid,
+      },
       {
         title: '模板管理',
         url: '/templates',
