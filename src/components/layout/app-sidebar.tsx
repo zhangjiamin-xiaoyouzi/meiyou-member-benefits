@@ -41,6 +41,12 @@ const navItems: NavItem[] = [
     icon: Sparkles,
     children: [
       {
+        title: '活动概览',
+        url: '/',
+        icon: LayoutGrid,
+        description: '活动数据看板',
+      },
+      {
         title: '模板管理',
         url: '/templates',
         icon: Puzzle,
