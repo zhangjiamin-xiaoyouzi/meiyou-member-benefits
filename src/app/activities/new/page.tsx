@@ -172,7 +172,7 @@ function StepBasicInfo({
 
       <Separator />
 
-      {/* 生命周期时序轴 */}
+      {/* 活动时间配置 */}
       <div>
         <h3 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-slate-500" />
