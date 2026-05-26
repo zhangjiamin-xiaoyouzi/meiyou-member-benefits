@@ -47,12 +47,6 @@ const navItems: NavItem[] = [
         description: '研发定义的活动模板与组件',
       },
       {
-        title: '营销策略库',
-        url: '/promo-patches',
-        icon: Gift,
-        description: '优惠、加赠等策略补丁',
-      },
-      {
         title: '活动列表',
         url: '/activities',
         icon: CalendarDays,
