@@ -375,6 +375,7 @@ function StepBasicInfo({
                       <Switch
                         checked={comp.enabled}
                         disabled={comp.required}
+                        className="data-[state=checked]:bg-rose-500"
                         onCheckedChange={() => handleToggleComponent(comp.key)}
                       />
                     </td>
@@ -800,6 +801,7 @@ function StepComponents({
             <div className="flex items-center gap-3">
               <Switch
                 checked={data.lotteryConfig.enabled}
+                className="data-[state=checked]:bg-rose-500"
                 onCheckedChange={(checked) =>
                   onChange({
                     ...data,

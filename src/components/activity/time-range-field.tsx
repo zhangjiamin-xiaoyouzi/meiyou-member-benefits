@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface TimeRangeFieldProps {
   label?: string;
@@ -40,13 +40,24 @@ export function TimeRangeField({
 
   const handleStartClick = useCallback(() => {
     setEditing('start');
-    setTimeout(() => startRef.current?.showPicker?.(), 0);
   }, []);
 
   const handleEndClick = useCallback(() => {
     setEditing('end');
-    setTimeout(() => endRef.current?.showPicker?.(), 0);
   }, []);
+
+  const handleStartBlur = useCallback(() => {
+    // Delay to avoid flicker when clicking end
+    setTimeout(() => {
+      if (editing === 'start') setEditing(null);
+    }, 150);
+  }, [editing]);
+
+  const handleEndBlur = useCallback(() => {
+    setTimeout(() => {
+      if (editing === 'end') setEditing(null);
+    }, 150);
+  }, [editing]);
 
   return (
     <div className="space-y-1.5">
@@ -56,56 +67,46 @@ export function TimeRangeField({
         </Label>
       )}
       <div className="flex items-center gap-0 rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden">
-        {/* Start time */}
-        <div
-          className={`relative flex-1 min-w-0 flex items-center h-full px-2.5 cursor-text ${editing === 'start' ? 'bg-rose-50' : ''}`}
-          onClick={handleStartClick}
-        >
-          {editing === 'start' ? (
-            <input
-              ref={startRef}
-              type="datetime-local"
-              value={startValue}
-              onChange={(e) => {
-                onStartChange(e.target.value);
-              }}
-              onBlur={() => setEditing(null)}
-              autoFocus
-              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
-              style={{ colorScheme: 'light' }}
-            />
-          ) : (
+        {/* Start time - native input always rendered, styled as transparent overlay */}
+        <div className="relative flex-1 min-w-0 flex items-center h-full">
+          <input
+            ref={startRef}
+            type="datetime-local"
+            value={startValue}
+            onChange={(e) => onStartChange(e.target.value)}
+            onFocus={handleStartClick}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            tabIndex={-1}
+          />
+          <div
+            className={`w-full h-full flex items-center px-2.5 pointer-events-none ${editing === 'start' ? 'bg-rose-50' : ''}`}
+          >
             <span className={`text-sm font-mono truncate ${startValue ? 'text-slate-800' : 'text-slate-400'}`}>
               {startValue ? formatDateTime(startValue) : (placeholder?.start || '开始时间')}
             </span>
-          )}
+          </div>
         </div>
 
         <ArrowRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
 
-        {/* End time */}
-        <div
-          className={`relative flex-1 min-w-0 flex items-center h-full px-2 cursor-text ${editing === 'end' ? 'bg-rose-50' : ''}`}
-          onClick={handleEndClick}
-        >
-          {editing === 'end' ? (
-            <input
-              ref={endRef}
-              type="datetime-local"
-              value={endValue}
-              onChange={(e) => {
-                onEndChange(e.target.value);
-              }}
-              onBlur={() => setEditing(null)}
-              autoFocus
-              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
-              style={{ colorScheme: 'light' }}
-            />
-          ) : (
+        {/* End time - native input always rendered, styled as transparent overlay */}
+        <div className="relative flex-1 min-w-0 flex items-center h-full">
+          <input
+            ref={endRef}
+            type="datetime-local"
+            value={endValue}
+            onChange={(e) => onEndChange(e.target.value)}
+            onFocus={handleEndClick}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            tabIndex={-1}
+          />
+          <div
+            className={`w-full h-full flex items-center px-2 pointer-events-none ${editing === 'end' ? 'bg-rose-50' : ''}`}
+          >
             <span className={`text-sm font-mono truncate ${endValue ? 'text-slate-800' : 'text-slate-400'}`}>
               {endValue ? formatDateTime(endValue) : (placeholder?.end || '结束时间')}
             </span>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -127,12 +128,15 @@ export function SingleTimeField({
   onChange,
   placeholder,
 }: SingleTimeFieldProps) {
-  const [editing, setEditing] = useState(false);
+  const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClick = useCallback(() => {
-    setEditing(true);
-    setTimeout(() => inputRef.current?.showPicker?.(), 0);
+  const handleFocus = useCallback(() => {
+    setFocused(true);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setTimeout(() => setFocused(false), 150);
   }, []);
 
   return (
@@ -143,29 +147,22 @@ export function SingleTimeField({
         </Label>
       )}
       <div
-        className={`flex items-center rounded-md border bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden cursor-text ${editing ? 'border-rose-300 bg-rose-50' : 'border-slate-200'}`}
-        onClick={handleClick}
+        className={`relative flex items-center rounded-md border transition-colors h-9 overflow-hidden cursor-pointer ${focused ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
       >
-        <div className="flex-1 flex items-center h-full px-3">
-          {editing ? (
-            <input
-              ref={inputRef}
-              type="datetime-local"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              onBlur={() => setEditing(false)}
-              autoFocus
-              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
-              style={{ colorScheme: 'light' }}
-            />
-          ) : (
-            <span className={`text-sm font-mono truncate ${value ? 'text-slate-800' : 'text-slate-400'}`}>
-              {value ? formatDateTime(value) : (placeholder || '选择时间')}
-            </span>
-          )}
-        </div>
-        <div className="pr-2.5 text-slate-400">
-          <Calendar className="h-4 w-4" />
+        <input
+          ref={inputRef}
+          type="datetime-local"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          tabIndex={-1}
+        />
+        <div className="w-full h-full flex items-center px-3 pointer-events-none">
+          <span className={`text-sm font-mono truncate ${value ? 'text-slate-800' : 'text-slate-400'}`}>
+            {value ? formatDateTime(value) : (placeholder || '选择时间')}
+          </span>
         </div>
       </div>
     </div>
