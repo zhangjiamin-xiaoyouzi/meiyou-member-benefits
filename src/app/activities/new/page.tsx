@@ -83,6 +83,7 @@ function StepBasicInfo({
   onChange: (data: Step1Data) => void;
 }) {
   const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
+  const isMemberDay = selectedTemplate?.category === '会员日';
 
   const handleTemplateSelect = (templateId: string) => {
     const template = mockTemplates.find((t) => t.id === templateId);
@@ -176,40 +177,42 @@ function StepBasicInfo({
       <div>
         <h3 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-slate-500" />
-          生命周期时序轴
+          活动时间配置
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <TimeRangeField
-            label="售卖时间"
+            label={isMemberDay ? '预约时间' : '售卖时间'}
             required
             startValue={data.sellStartTime}
             endValue={data.sellEndTime}
             onStartChange={(v) => onChange({ ...data, sellStartTime: v })}
             onEndChange={(v) => onChange({ ...data, sellEndTime: v })}
-            placeholder={{ start: '售卖开始', end: '售卖结束' }}
+            placeholder={{ start: isMemberDay ? '预约开始' : '售卖开始', end: isMemberDay ? '预约结束' : '售卖结束' }}
           />
           {selectedTemplate && (selectedTemplate.category === '年度大促' || selectedTemplate.category === '会员日') && (
             <TimeRangeField
-              label="抽奖时间"
+              label={isMemberDay ? '领取时间' : '抽奖时间'}
               startValue={data.lotteryStartTime}
               endValue={data.lotteryEndTime}
               onStartChange={(v) => onChange({ ...data, lotteryStartTime: v })}
               onEndChange={(v) => onChange({ ...data, lotteryEndTime: v })}
-              placeholder={{ start: '抽奖开始', end: '抽奖结束' }}
+              placeholder={{ start: isMemberDay ? '领取开始' : '抽奖开始', end: isMemberDay ? '领取结束' : '抽奖结束' }}
             />
           )}
           <SingleTimeField
-            label="缓冲截止时间"
+            label={isMemberDay ? '福利有效期' : '缓冲截止时间'}
             value={data.bufferEndTime}
             onChange={(v) => onChange({ ...data, bufferEndTime: v })}
-            placeholder="选择缓冲截止时间"
+            placeholder={isMemberDay ? '选择福利有效期' : '选择缓冲截止时间'}
           />
-          <SingleTimeField
-            label="退款熔断截单时间"
-            value={data.refundCutoffTime}
-            onChange={(v) => onChange({ ...data, refundCutoffTime: v })}
-            placeholder="选择退款截单时间"
-          />
+          {!isMemberDay && (
+            <SingleTimeField
+              label="退款熔断截单时间"
+              value={data.refundCutoffTime}
+              onChange={(v) => onChange({ ...data, refundCutoffTime: v })}
+              placeholder="选择退款截单时间"
+            />
+          )}
         </div>
       </div>
 
