@@ -687,10 +687,7 @@ function FlashSaleConfigCard({
       popupImage: '',
       jumpLink: '',
       pushText: '',
-      bookingStartTime: '',
-      bookingEndTime: '',
-      rushStartTime: '',
-      rushEndTime: '',
+      timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
       audienceRules: [],
     };
     onChange({ ...config, products: [...config.products, newProduct] });
@@ -831,26 +828,75 @@ function FlashSaleConfigCard({
                     </div>
                   </div>
 
-                  {/* 时间配置 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs text-slate-500">商品预约时间</Label>
-                      <TimeRangeField
-                        startValue={product.bookingStartTime}
-                        endValue={product.bookingEndTime}
-                        onStartChange={(val) => updateProduct(product.id, { bookingStartTime: val })}
-                        onEndChange={(val) => updateProduct(product.id, { bookingEndTime: val })}
-                      />
+                  {/* 场次配置 */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs text-slate-500">场次配置</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-xs"
+                        onClick={() => {
+                          const newSession = { id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' };
+                          updateProduct(product.id, { timeSessions: [...product.timeSessions, newSession] });
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" /> 添加场次
+                      </Button>
                     </div>
-                    <div>
-                      <Label className="text-xs text-slate-500">商品抢购时间</Label>
-                      <TimeRangeField
-                        startValue={product.rushStartTime}
-                        endValue={product.rushEndTime}
-                        onStartChange={(val) => updateProduct(product.id, { rushStartTime: val })}
-                        onEndChange={(val) => updateProduct(product.id, { rushEndTime: val })}
-                      />
-                    </div>
+                    {(product.timeSessions || []).map((session, sessionIdx) => (
+                      <div key={session.id} className="bg-slate-50/80 rounded-lg p-3 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-slate-600">第 {sessionIdx + 1} 场</span>
+                          {(product.timeSessions || []).length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-5 text-xs text-rose-500 hover:text-rose-600"
+                              onClick={() => {
+                                updateProduct(product.id, { timeSessions: product.timeSessions.filter((s) => s.id !== session.id) });
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" /> 删除场次
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs text-slate-500">预约时间</Label>
+                            <TimeRangeField
+                              startValue={session.bookingStartTime}
+                              endValue={session.bookingEndTime}
+                              onStartChange={(val) => {
+                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingStartTime: val } : s);
+                                updateProduct(product.id, { timeSessions: updated });
+                              }}
+                              onEndChange={(val) => {
+                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingEndTime: val } : s);
+                                updateProduct(product.id, { timeSessions: updated });
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs text-slate-500">抢购时间</Label>
+                            <TimeRangeField
+                              startValue={session.rushStartTime}
+                              endValue={session.rushEndTime}
+                              onStartChange={(val) => {
+                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushStartTime: val } : s);
+                                updateProduct(product.id, { timeSessions: updated });
+                              }}
+                              onEndChange={(val) => {
+                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushEndTime: val } : s);
+                                updateProduct(product.id, { timeSessions: updated });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* 受众规则 */}
@@ -1210,7 +1256,27 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     if (initialData) {
       const raw = initialData as unknown as Record<string, unknown>;
       const rawConfigs = raw.component_configs || raw.componentConfigs || {};
-      const componentConfigs = (typeof rawConfigs === 'string' ? JSON.parse(rawConfigs as string) : rawConfigs) as ComponentConfigs;
+      const parsed = (typeof rawConfigs === 'string' ? JSON.parse(rawConfigs as string) : rawConfigs) as ComponentConfigs;
+      // Deep clone to avoid mutating props, and migrate old flash_sale products
+      const componentConfigs: ComponentConfigs = JSON.parse(JSON.stringify(parsed));
+      const fsConfig = componentConfigs.flash_sale;
+      if (fsConfig && Array.isArray(fsConfig.products)) {
+        fsConfig.products = fsConfig.products.map((p: FlashSaleProduct) => {
+          if (!p.timeSessions || p.timeSessions.length === 0) {
+            return {
+              ...p,
+              timeSessions: [{
+                id: `ts_${Date.now()}_${String(p.id).slice(-4)}`,
+                bookingStartTime: (p as unknown as Record<string, string>).bookingStartTime || '',
+                bookingEndTime: (p as unknown as Record<string, string>).bookingEndTime || '',
+                rushStartTime: (p as unknown as Record<string, string>).rushStartTime || '',
+                rushEndTime: (p as unknown as Record<string, string>).rushEndTime || '',
+              }],
+            };
+          }
+          return p;
+        });
+      }
       return { componentConfigs };
     }
     return { componentConfigs: {} };

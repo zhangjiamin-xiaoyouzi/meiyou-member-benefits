@@ -128,6 +128,15 @@ export interface ComponentAudienceRule {
 }
 
 /** 限时抢购-福利商品 */
+/** 抢购场次（预约+抢购时间对） */
+export interface TimeSession {
+  id: string;
+  bookingStartTime: string;
+  bookingEndTime: string;
+  rushStartTime: string;
+  rushEndTime: string;
+}
+
 export interface FlashSaleProduct {
   id: string;
   productId: string;
@@ -137,10 +146,7 @@ export interface FlashSaleProduct {
   popupImage: string;
   jumpLink: string;
   pushText: string;
-  bookingStartTime: string;
-  bookingEndTime: string;
-  rushStartTime: string;
-  rushEndTime: string;
+  timeSessions: TimeSession[];
   audienceRules: ComponentAudienceRule[];
 }
 
