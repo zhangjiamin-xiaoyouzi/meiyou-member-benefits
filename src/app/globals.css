@@ -140,3 +140,12 @@ body {
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
+
+/* 隐藏空 datetime-local 输入框的浏览器默认占位文本，避免与自定义 placeholder 重影 */
+input[type="datetime-local"]:invalid {
+  color: transparent;
+}
+input[type="datetime-local"]:focus,
+input[type="datetime-local"]:valid {
+  color: inherit;
+}

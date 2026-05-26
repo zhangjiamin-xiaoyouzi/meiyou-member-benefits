@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface TimeRangeFieldProps {
   label?: string;
@@ -58,7 +58,7 @@ export function TimeRangeField({
             style={{ colorScheme: 'light' }}
           />
           {!startValue && (
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
               {placeholder?.start || '开始时间'}
             </span>
           )}
@@ -81,7 +81,7 @@ export function TimeRangeField({
             style={{ colorScheme: 'light' }}
           />
           {!endValue && (
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
               {placeholder?.end || '结束时间'}
             </span>
           )}
@@ -117,7 +117,6 @@ export function SingleTimeField({
         </Label>
       )}
       <div className={`relative flex items-center rounded-md border bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden ${focused ? 'border-rose-300' : 'border-slate-200'}`}>
-        <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0 ml-2.5" />
         <input
           ref={inputRef}
           type="datetime-local"
@@ -125,11 +124,11 @@ export function SingleTimeField({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="w-full h-9 px-2 py-1.5 text-sm font-mono bg-transparent border-0 outline-none focus:ring-0"
+          className="w-full h-9 px-3 py-1.5 text-sm font-mono bg-transparent border-0 outline-none focus:ring-0"
           style={{ colorScheme: 'light' }}
         />
         {!value && (
-          <span className="absolute left-8 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
             {placeholder || '选择时间'}
           </span>
         )}
