@@ -57,6 +57,8 @@ export interface PromoPatch {
   status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 // ==================== 活动配置类型 ====================
@@ -200,6 +202,8 @@ export interface Activity {
   componentConfigs?: ComponentConfigs; // 组件详细配置
   createdAt: string;
   updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 // ==================== 通用类型 ====================

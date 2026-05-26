@@ -222,6 +222,8 @@ export const mockActivities: Activity[] = [
     },
     createdAt: '2024-05-15T10:00:00Z',
     updatedAt: '2024-06-01T00:00:00Z',
+    createdBy: '张三',
+    updatedBy: '李四',
   },
   {
     id: 'act_002',
@@ -265,6 +267,8 @@ export const mockActivities: Activity[] = [
     },
     createdAt: '2024-06-20T14:00:00Z',
     updatedAt: '2024-06-20T14:00:00Z',
+    createdBy: '王五',
+    updatedBy: '王五',
   },
   {
     id: 'act_003',
@@ -307,6 +311,8 @@ export const mockActivities: Activity[] = [
     },
     createdAt: '2024-06-25T16:00:00Z',
     updatedAt: '2024-06-25T16:00:00Z',
+    createdBy: '赵六',
+    updatedBy: '赵六',
   },
   {
     id: 'act_004',
@@ -326,5 +332,7 @@ export const mockActivities: Activity[] = [
     components: {},
     createdAt: '2023-10-20T10:00:00Z',
     updatedAt: '2023-11-12T00:00:00Z',
+    createdBy: '张三',
+    updatedBy: '李四',
   },
 ];

@@ -21,13 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,12 +35,8 @@ import {
 import {
   Plus,
   Search,
-  MoreHorizontal,
   Pencil,
   Trash2,
-  Copy,
-  Eye,
-  ExternalLink,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { mockActivities } from '@/lib/mock-data';
@@ -91,17 +81,6 @@ export default function ActivitiesPage() {
       setIsDeleting(false);
       setDeleteTarget(null);
     }
-  };
-
-  const handleCopy = (activity: Activity) => {
-    const newName = `${activity.name} (副本)`;
-    const newActivity: Activity = {
-      ...activity,
-      id: `act_${Date.now()}`,
-      name: newName,
-      status: 'draft' as ActivityStatus,
-    };
-    setLocalActivities((prev) => [newActivity, ...prev]);
   };
 
   return (
@@ -171,22 +150,21 @@ export default function ActivitiesPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50 hover:bg-slate-50">
-                <TableHead className="w-[240px]">活动名称</TableHead>
+                <TableHead className="w-[200px]">活动名称</TableHead>
                 <TableHead className="w-[100px]">分类</TableHead>
-                <TableHead className="w-[140px]">使用模板</TableHead>
-                <TableHead className="w-[100px] text-center">状态</TableHead>
-                <TableHead>售卖时间</TableHead>
-                <TableHead className="w-[120px] text-center">策略补丁</TableHead>
-                <TableHead className="w-[80px] text-center">操作</TableHead>
+                <TableHead className="w-[120px]">使用模板</TableHead>
+                <TableHead className="w-[80px] text-center">状态</TableHead>
+                <TableHead className="w-[160px]">创建时间/人</TableHead>
+                <TableHead className="w-[160px]">操作时间/人</TableHead>
+                <TableHead className="w-[120px] text-center">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredActivities.map((activity) => {
                 const status = statusConfig[activity.status];
-                const patchCount = activity.audienceGroups.reduce((sum, g) => sum + g.shelves.reduce((s, sh) => s + sh.patchIds.length, 0), 0);
-                const sellStart = new Date(activity.timeConfig.sellStartTime).toLocaleDateString('zh-CN');
-                const sellEnd = new Date(activity.timeConfig.sellEndTime).toLocaleDateString('zh-CN');
                 const isMemberDay = activity.category === '会员日';
+                const createdDate = activity.createdAt ? new Date(activity.createdAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
+                const updatedDate = activity.updatedAt ? new Date(activity.updatedAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
 
                 return (
                   <TableRow key={activity.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
@@ -214,81 +192,46 @@ export default function ActivitiesPage() {
                         {status.label}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
-                      {sellStart} ~ {sellEnd}
+                    <TableCell>
+                      <div className="text-xs text-slate-600">{createdDate}</div>
+                      <div className="text-xs text-slate-400">{activity.createdBy || '-'}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-xs text-slate-600">{updatedDate}</div>
+                      <div className="text-xs text-slate-400">{activity.updatedBy || '-'}</div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {patchCount > 0 ? (
-                        <Badge variant="outline" className="text-xs bg-rose-50 text-rose-700 border-rose-200">
-                          {patchCount} 个
-                        </Badge>
-                      ) : (
-                        <span className="text-xs text-slate-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
+                      <div className="flex items-center justify-center gap-1">
+                        {isMemberDay ? (
+                          <Link href={`/activities/${activity.id}/edit`}>
+                            <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-600 hover:text-rose-600">
+                              <Pencil className="h-3.5 w-3.5 mr-1" />
+                              编辑
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-300 cursor-not-allowed" disabled>
+                            <Pencil className="h-3.5 w-3.5 mr-1" />
+                            编辑
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/activities/${activity.id}`}>
-                              <Eye className="mr-2 h-3.5 w-3.5" />
-                              查看详情
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            disabled={!isMemberDay}
-                            className={!isMemberDay ? 'opacity-50 cursor-not-allowed' : ''}
-                            onClick={(e) => {
-                              if (!isMemberDay) {
-                                e.preventDefault();
-                                return;
-                              }
-                            }}
-                            asChild={isMemberDay}
-                          >
-                            {isMemberDay ? (
-                              <Link href={`/activities/${activity.id}/edit`}>
-                                <Pencil className="mr-2 h-3.5 w-3.5" />
-                                编辑
-                              </Link>
-                            ) : (
-                              <>
-                                <Pencil className="mr-2 h-3.5 w-3.5" />
-                                编辑
-                                <span className="ml-auto text-[10px] text-slate-400">本期不做</span>
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleCopy(activity)}>
-                            <Copy className="mr-2 h-3.5 w-3.5" />
-                            复制活动
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <ExternalLink className="mr-2 h-3.5 w-3.5" />
-                            预览链接
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-red-600 focus:text-red-600"
-                            onClick={() => setDeleteTarget(activity)}
-                          >
-                            <Trash2 className="mr-2 h-3.5 w-3.5" />
-                            删除
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-slate-600 hover:text-red-600"
+                          onClick={() => setDeleteTarget(activity)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-1" />
+                          删除
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
               })}
               {filteredActivities.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                     暂无匹配的活动
                   </TableCell>
                 </TableRow>
