@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Pencil, Search } from 'lucide-react';
+import { Pencil, Search } from 'lucide-react';
 import type { Template } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 
@@ -64,13 +64,6 @@ export default function TemplatesPage() {
             研发与UI定义的皮肤/核心组件库，运营仅有引用权
           </p>
         </div>
-        <Button
-          className="bg-rose-500 hover:bg-rose-600 text-white"
-          onClick={() => router.push('/templates/new')}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          新建模板
-        </Button>
       </div>
 
       {/* 筛选区域 */}
