@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,7 @@ import {
   Image,
   FileText,
   Wand2,
+  GripVertical,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type { TemplateComponent, AudienceRule, ShelfItem, AudienceGroup, LotteryConfig, MaterialConfig } from '@/lib/types';
@@ -84,6 +85,27 @@ function StepBasicInfo({
 }) {
   const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
+
+  const [compDragIndex, setCompDragIndex] = useState<number | null>(null);
+  const [compDragOverIndex, setCompDragOverIndex] = useState<number | null>(null);
+
+  const handleCompDragStart = useCallback((index: number) => {
+    setCompDragIndex(index);
+  }, []);
+  const handleCompDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setCompDragOverIndex(index);
+  }, []);
+  const handleCompDragEnd = useCallback(() => {
+    if (compDragIndex !== null && compDragOverIndex !== null && compDragIndex !== compDragOverIndex) {
+      const reordered = [...data.components];
+      const [moved] = reordered.splice(compDragIndex, 1);
+      reordered.splice(compDragOverIndex, 0, moved);
+      onChange({ ...data, components: reordered });
+    }
+    setCompDragIndex(null);
+    setCompDragOverIndex(null);
+  }, [compDragIndex, compDragOverIndex, data, onChange]);
 
   const sortedTemplates = [...mockTemplates].sort((a, b) => {
     const order: Record<string, number> = { '会员日': 0, '年度大促': 1, '固定节日': 2 };
@@ -238,14 +260,31 @@ function StepBasicInfo({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="w-[40px] p-2.5"></th>
                     <th className="text-left p-2.5 font-medium text-slate-600">组件</th>
                     <th className="text-left p-2.5 font-medium text-slate-600">说明</th>
                     <th className="text-center p-2.5 font-medium text-slate-600 w-20">显隐</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.components.map((comp) => (
-                    <tr key={comp.id} className={`border-b border-slate-100 last:border-0 ${!comp.enabled ? 'bg-slate-50/50' : ''}`}>
+                  {data.components.map((comp, index) => (
+                    <tr
+                      key={comp.id}
+                      draggable
+                      onDragStart={() => handleCompDragStart(index)}
+                      onDragOver={(e) => handleCompDragOver(e, index)}
+                      onDragEnd={handleCompDragEnd}
+                      className={[
+                        'border-b border-slate-100 last:border-0',
+                        !comp.enabled ? 'bg-slate-50/50' : '',
+                        compDragIndex === index ? 'opacity-40' : '',
+                        compDragOverIndex === index && compDragIndex !== index ? 'border-t-2 border-t-rose-400' : '',
+                        'cursor-grab active:cursor-grabbing transition-opacity',
+                      ].join(' ')}
+                    >
+                      <td className="w-[40px] px-2 py-2.5">
+                        <GripVertical className="h-4 w-4 text-slate-300 hover:text-slate-500" />
+                      </td>
                       <td className="p-2.5 font-medium text-slate-900">{comp.name}</td>
                       <td className="p-2.5 text-slate-500">{comp.description}</td>
                       <td className="p-2.5 text-center">
