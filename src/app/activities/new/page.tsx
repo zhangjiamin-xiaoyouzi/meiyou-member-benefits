@@ -116,7 +116,7 @@ function StepBasicInfo({
     onChange({
       ...data,
       templateId,
-      components: template ? [...template.components] : [],
+      components: template ? template.components.map((c) => ({ ...c })) : [],
     });
   };
 
