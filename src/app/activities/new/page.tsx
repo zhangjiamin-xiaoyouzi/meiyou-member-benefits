@@ -85,6 +85,10 @@ function StepBasicInfo({
   const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
 
+  const sortedTemplates = [...mockTemplates].sort((a, b) => {
+    const order: Record<string, number> = { '会员日': 0, '年度大促': 1, '固定节日': 2 };
+    return (order[a.category] ?? 99) - (order[b.category] ?? 99);
+  });
   const handleTemplateSelect = (templateId: string) => {
     const template = mockTemplates.find((t) => t.id === templateId);
     onChange({
@@ -103,7 +107,7 @@ function StepBasicInfo({
           选择活动模板 <span className="text-red-500">*</span>
         </h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {mockTemplates.map((template) => {
+          {sortedTemplates.map((template) => {
             const isSelected = data.templateId === template.id;
             return (
               <Card
@@ -192,6 +196,7 @@ function StepBasicInfo({
           {selectedTemplate && (selectedTemplate.category === '年度大促' || selectedTemplate.category === '会员日') && (
             <TimeRangeField
               label={isMemberDay ? '领取时间' : '抽奖时间'}
+              required
               startValue={data.lotteryStartTime}
               endValue={data.lotteryEndTime}
               onStartChange={(v) => onChange({ ...data, lotteryStartTime: v })}
@@ -200,10 +205,11 @@ function StepBasicInfo({
             />
           )}
           <SingleTimeField
-            label={isMemberDay ? '福利有效期' : '缓冲截止时间'}
+            label={isMemberDay ? '结束时间' : '缓冲截止时间'}
+            required
             value={data.bufferEndTime}
             onChange={(v) => onChange({ ...data, bufferEndTime: v })}
-            placeholder={isMemberDay ? '选择福利有效期' : '选择缓冲截止时间'}
+            placeholder={isMemberDay ? '选择结束时间' : '选择缓冲截止时间'}
           />
           {!isMemberDay && (
             <SingleTimeField
