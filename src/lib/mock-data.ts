@@ -56,6 +56,8 @@ export const mockTemplates: Template[] = [
       { id: 'comp_105', name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
       { id: 'comp_106', name: '0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
       { id: 'comp_107', name: '专属礼', key: 'exclusive_gift', description: '会员专属限量礼品', enabled: false, required: false },
+      { id: 'comp_108', name: '按钮', key: 'cta_button', description: '行动引导按钮', enabled: false, required: false },
+      { id: 'comp_109', name: '图片卡片', key: 'image_card', description: '图文展示卡片', enabled: false, required: false },
     ],
     createdAt: '2024-02-10T08:00:00Z',
     createdBy: '王五',
