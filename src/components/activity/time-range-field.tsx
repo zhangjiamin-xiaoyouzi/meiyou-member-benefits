@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Label } from '@/components/ui/label';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 
 interface TimeRangeFieldProps {
   label?: string;
@@ -14,6 +14,17 @@ interface TimeRangeFieldProps {
   placeholder?: { start?: string; end?: string };
 }
 
+function formatDateTime(iso: string): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `${mm}-${dd} ${hh}:${mi}`;
+}
+
 export function TimeRangeField({
   label,
   required,
@@ -23,17 +34,19 @@ export function TimeRangeField({
   onEndChange,
   placeholder,
 }: TimeRangeFieldProps) {
-  const [activeField, setActiveField] = useState<'start' | 'end' | null>(null);
+  const [editing, setEditing] = useState<'start' | 'end' | null>(null);
   const startRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLInputElement>(null);
 
-  // Auto advance: when start is set, focus end
-  useEffect(() => {
-    if (activeField === 'start' && startValue) {
-      setActiveField('end');
-      endRef.current?.focus();
-    }
-  }, [startValue, activeField]);
+  const handleStartClick = useCallback(() => {
+    setEditing('start');
+    setTimeout(() => startRef.current?.showPicker?.(), 0);
+  }, []);
+
+  const handleEndClick = useCallback(() => {
+    setEditing('end');
+    setTimeout(() => endRef.current?.showPicker?.(), 0);
+  }, []);
 
   return (
     <div className="space-y-1.5">
@@ -44,22 +57,26 @@ export function TimeRangeField({
       )}
       <div className="flex items-center gap-0 rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden">
         {/* Start time */}
-        <div className={`relative flex-1 min-w-0 ${activeField === 'start' ? 'ring-1 ring-rose-300' : ''}`}>
-          <input
-            ref={startRef}
-            type="datetime-local"
-            value={startValue}
-            onChange={(e) => {
-              onStartChange(e.target.value);
-            }}
-            onFocus={() => setActiveField('start')}
-            onBlur={() => setActiveField(null)}
-            className="w-full h-9 px-2.5 py-1.5 text-sm font-mono bg-transparent border-0 outline-none focus:ring-0"
-            style={{ colorScheme: 'light' }}
-          />
-          {!startValue && (
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
-              {placeholder?.start || '开始时间'}
+        <div
+          className={`relative flex-1 min-w-0 flex items-center h-full px-2.5 cursor-text ${editing === 'start' ? 'bg-rose-50' : ''}`}
+          onClick={handleStartClick}
+        >
+          {editing === 'start' ? (
+            <input
+              ref={startRef}
+              type="datetime-local"
+              value={startValue}
+              onChange={(e) => {
+                onStartChange(e.target.value);
+              }}
+              onBlur={() => setEditing(null)}
+              autoFocus
+              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
+              style={{ colorScheme: 'light' }}
+            />
+          ) : (
+            <span className={`text-sm font-mono truncate ${startValue ? 'text-slate-800' : 'text-slate-400'}`}>
+              {startValue ? formatDateTime(startValue) : (placeholder?.start || '开始时间')}
             </span>
           )}
         </div>
@@ -67,22 +84,26 @@ export function TimeRangeField({
         <ArrowRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
 
         {/* End time */}
-        <div className={`relative flex-1 min-w-0 ${activeField === 'end' ? 'ring-1 ring-rose-300' : ''}`}>
-          <input
-            ref={endRef}
-            type="datetime-local"
-            value={endValue}
-            onChange={(e) => {
-              onEndChange(e.target.value);
-            }}
-            onFocus={() => setActiveField('end')}
-            onBlur={() => setActiveField(null)}
-            className="w-full h-9 px-2 py-1.5 text-sm font-mono bg-transparent border-0 outline-none focus:ring-0"
-            style={{ colorScheme: 'light' }}
-          />
-          {!endValue && (
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
-              {placeholder?.end || '结束时间'}
+        <div
+          className={`relative flex-1 min-w-0 flex items-center h-full px-2 cursor-text ${editing === 'end' ? 'bg-rose-50' : ''}`}
+          onClick={handleEndClick}
+        >
+          {editing === 'end' ? (
+            <input
+              ref={endRef}
+              type="datetime-local"
+              value={endValue}
+              onChange={(e) => {
+                onEndChange(e.target.value);
+              }}
+              onBlur={() => setEditing(null)}
+              autoFocus
+              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
+              style={{ colorScheme: 'light' }}
+            />
+          ) : (
+            <span className={`text-sm font-mono truncate ${endValue ? 'text-slate-800' : 'text-slate-400'}`}>
+              {endValue ? formatDateTime(endValue) : (placeholder?.end || '结束时间')}
             </span>
           )}
         </div>
@@ -106,8 +127,13 @@ export function SingleTimeField({
   onChange,
   placeholder,
 }: SingleTimeFieldProps) {
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [focused, setFocused] = useState(false);
+
+  const handleClick = useCallback(() => {
+    setEditing(true);
+    setTimeout(() => inputRef.current?.showPicker?.(), 0);
+  }, []);
 
   return (
     <div className="space-y-1.5">
@@ -116,22 +142,31 @@ export function SingleTimeField({
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
-      <div className={`relative flex items-center rounded-md border bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden ${focused ? 'border-rose-300' : 'border-slate-200'}`}>
-        <input
-          ref={inputRef}
-          type="datetime-local"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          className="w-full h-9 px-3 py-1.5 text-sm font-mono bg-transparent border-0 outline-none focus:ring-0"
-          style={{ colorScheme: 'light' }}
-        />
-        {!value && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none whitespace-nowrap">
-            {placeholder || '选择时间'}
-          </span>
-        )}
+      <div
+        className={`flex items-center rounded-md border bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden cursor-text ${editing ? 'border-rose-300 bg-rose-50' : 'border-slate-200'}`}
+        onClick={handleClick}
+      >
+        <div className="flex-1 flex items-center h-full px-3">
+          {editing ? (
+            <input
+              ref={inputRef}
+              type="datetime-local"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              onBlur={() => setEditing(false)}
+              autoFocus
+              className="w-full h-full text-sm font-mono bg-transparent border-0 outline-none focus:ring-0 p-0"
+              style={{ colorScheme: 'light' }}
+            />
+          ) : (
+            <span className={`text-sm font-mono truncate ${value ? 'text-slate-800' : 'text-slate-400'}`}>
+              {value ? formatDateTime(value) : (placeholder || '选择时间')}
+            </span>
+          )}
+        </div>
+        <div className="pr-2.5 text-slate-400">
+          <Calendar className="h-4 w-4" />
+        </div>
       </div>
     </div>
   );
