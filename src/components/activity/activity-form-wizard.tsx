@@ -875,6 +875,7 @@ function BenefitConfigCard({
       benefitImage: '',
       displayMode: 'horizontal',
       sortOrder: config.products.length + 1,
+      audienceRules: [],
     };
     onChange({ ...config, products: [...config.products, newProduct] });
   };
@@ -961,49 +962,58 @@ function BenefitConfigCard({
               </div>
 
               {/* 商品字段 */}
-              <div className="flex-1 grid grid-cols-4 gap-3">
-                <div>
-                  <Label className="text-xs text-slate-500">商品ID <span className="text-rose-500">*</span></Label>
-                  <Input
-                    className="mt-1 h-8 text-sm"
-                    placeholder="输入商品ID"
-                    value={product.productId}
-                    onChange={(e) => updateProduct(product.id, { productId: e.target.value })}
-                  />
+              <div className="flex-1 space-y-3">
+                <div className="grid grid-cols-4 gap-3">
+                  <div>
+                    <Label className="text-xs text-slate-500">商品ID <span className="text-rose-500">*</span></Label>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      placeholder="输入商品ID"
+                      value={product.productId}
+                      onChange={(e) => updateProduct(product.id, { productId: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-slate-500">福利图片</Label>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      placeholder="输入图片URL"
+                      value={product.benefitImage}
+                      onChange={(e) => updateProduct(product.id, { benefitImage: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-slate-500">展示方式</Label>
+                    <Select
+                      value={product.displayMode}
+                      onValueChange={(val) =>
+                        updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' })
+                      }
+                    >
+                      <SelectTrigger className="mt-1 h-8 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="horizontal">横图</SelectItem>
+                        <SelectItem value="double-column">双列</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-slate-500">排序</Label>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      type="number"
+                      value={product.sortOrder}
+                      onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-slate-500">福利图片</Label>
-                  <Input
-                    className="mt-1 h-8 text-sm"
-                    placeholder="输入图片URL"
-                    value={product.benefitImage}
-                    onChange={(e) => updateProduct(product.id, { benefitImage: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-slate-500">展示方式</Label>
-                  <Select
-                    value={product.displayMode}
-                    onValueChange={(val) =>
-                      updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' })
-                    }
-                  >
-                    <SelectTrigger className="mt-1 h-8 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="horizontal">横图</SelectItem>
-                      <SelectItem value="double-column">双列</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-slate-500">排序</Label>
-                  <Input
-                    className="mt-1 h-8 text-sm"
-                    type="number"
-                    value={product.sortOrder}
-                    onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                {/* 受众规则 */}
+                <div className="pl-0">
+                  <AudienceRuleEditor
+                    rules={product.audienceRules}
+                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
                   />
                 </div>
               </div>

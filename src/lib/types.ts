@@ -156,6 +156,7 @@ export interface BenefitProduct {
   benefitImage: string;
   displayMode: 'horizontal' | 'double-column';
   sortOrder: number;
+  audienceRules: ComponentAudienceRule[];
 }
 
 /** 0元福利/专属礼配置 */
