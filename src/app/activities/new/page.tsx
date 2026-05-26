@@ -42,6 +42,7 @@ import { mockTemplates, mockPlans, mockPromoPatches, mockLotteryPools } from '@/
 
 interface Step1Data {
   templateId: string;
+  category: string;
   name: string;
   sceneKey: string;
   sellStartTime: string;
@@ -88,6 +89,10 @@ function StepBasicInfo({
 
   const [compDragIndex, setCompDragIndex] = useState<number | null>(null);
   const [compDragOverIndex, setCompDragOverIndex] = useState<number | null>(null);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const DEFAULT_CATEGORIES = ['会员日', '固定节日', '年度大促'];
+  const [allCategories, setAllCategories] = useState<string[]>(DEFAULT_CATEGORIES);
 
   const handleCompDragStart = useCallback((index: number) => {
     setCompDragIndex(index);
@@ -184,6 +189,58 @@ function StepBasicInfo({
               value={data.name}
               onChange={(e) => onChange({ ...data, name: e.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>活动分类 <span className="text-red-500">*</span></Label>
+            <div className="flex items-center gap-2">
+              <Select value={data.category} onValueChange={(val) => { if (val === '__new__') { setShowNewCategory(true); } else { onChange({ ...data, category: val }); } }}>
+                <SelectTrigger className="border-slate-200 flex-1">
+                  <SelectValue placeholder="选择分类" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                  <SelectItem value="__new__">+ 新建分类</SelectItem>
+                </SelectContent>
+              </Select>
+              {data.category && !DEFAULT_CATEGORIES.includes(data.category as any) && (
+                <Button variant="ghost" size="sm" className="text-xs text-slate-400 h-8 px-2" onClick={() => onChange({ ...data, category: '' })}>
+                  清除
+                </Button>
+              )}
+            </div>
+            {showNewCategory && (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="输入新分类名称"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newCategoryName.trim()) {
+                      setAllCategories(prev => [...prev, newCategoryName.trim()]);
+                      onChange({ ...data, category: newCategoryName.trim() });
+                      setShowNewCategory(false);
+                      setNewCategoryName('');
+                    }
+                  }}
+                />
+                <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white h-8" onClick={() => {
+                  if (newCategoryName.trim()) {
+                    setAllCategories(prev => [...prev, newCategoryName.trim()]);
+                    onChange({ ...data, category: newCategoryName.trim() });
+                    setShowNewCategory(false);
+                    setNewCategoryName('');
+                  }
+                }}>
+                  确定
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8" onClick={() => { setShowNewCategory(false); setNewCategoryName(''); }}>
+                  取消
+                </Button>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label>活动唯一路由 (scene_key) <span className="text-red-500">*</span></Label>
@@ -894,6 +951,7 @@ export default function NewActivityPage() {
 
   const [step1Data, setStep1Data] = useState<Step1Data>({
     templateId: '',
+    category: '',
     name: '',
     sceneKey: '',
     sellStartTime: '',

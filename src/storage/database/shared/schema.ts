@@ -53,6 +53,7 @@ export const activities = pgTable(
   {
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 128 }).notNull(),
+    category: varchar("category", { length: 64 }),
     scene_key: varchar("scene_key", { length: 128 }).notNull().unique(),
     template_id: varchar("template_id", { length: 36 }).notNull().references(() => templates.id),
     template_name: varchar("template_name", { length: 128 }),
@@ -68,6 +69,7 @@ export const activities = pgTable(
   (table) => [
     index("activities_template_id_idx").on(table.template_id),
     index("activities_status_idx").on(table.status),
+    index("activities_category_idx").on(table.category),
     index("activities_scene_key_idx").on(table.scene_key),
     index("activities_created_at_idx").on(table.created_at),
   ]

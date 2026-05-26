@@ -112,6 +112,7 @@ export interface MaterialConfig {
 export interface Activity {
   id: string;
   name: string;
+  category: string;
   sceneKey: string;
   templateId: string;
   templateName: string;

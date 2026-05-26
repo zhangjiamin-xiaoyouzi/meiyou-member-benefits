@@ -37,6 +37,7 @@ export async function POST() {
       mockActivities.map((a) => ({
         id: a.id,
         name: a.name,
+        category: a.category,
         scene_key: a.sceneKey,
         template_id: a.templateId,
         template_name: a.templateName,

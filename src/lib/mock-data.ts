@@ -173,6 +173,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_001',
     name: '618会员狂欢节',
+    category: '年度大促',
     sceneKey: 'promo_618_2024',
     templateId: 'tpl_001',
     templateName: '大促抽奖模板',
@@ -226,6 +227,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_002',
     name: '每月会员日',
+    category: '会员日',
     sceneKey: 'member_day_weekly',
     templateId: 'tpl_002',
     templateName: '周期会员日模板',
@@ -269,6 +271,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_003',
     name: '孕期用户专属弹窗',
+    category: '固定节日',
     sceneKey: 'pregnant_exclusive_popup',
     templateId: 'tpl_003',
     templateName: '轻量定向模板',
@@ -310,6 +313,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_004',
     name: '双11大促',
+    category: '年度大促',
     sceneKey: 'promo_double11_2024',
     templateId: 'tpl_001',
     templateName: '大促抽奖模板',

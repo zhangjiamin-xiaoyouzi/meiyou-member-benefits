@@ -32,6 +32,7 @@ export async function PATCH(
 
     const updateFields: Record<string, unknown> = { updated_at: new Date().toISOString() };
     if (body.name !== undefined) updateFields.name = body.name;
+    if (body.category !== undefined) updateFields.category = body.category;
     if (body.status !== undefined) updateFields.status = body.status;
     if (body.timeConfig !== undefined) updateFields.time_config = body.timeConfig;
     if (body.audienceGroups !== undefined) updateFields.audience_groups = body.audienceGroups;

@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { mockActivities } from '@/lib/mock-data';
+import { DEFAULT_CATEGORIES } from '@/lib/types';
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
   active: { label: '进行中', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -49,15 +50,17 @@ const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
 
 export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredActivities = mockActivities.filter((activity) => {
     const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
+    const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
     const matchesSearch =
       !searchQuery ||
       activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       activity.sceneKey.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+    return matchesStatus && matchesCategory && matchesSearch;
   });
 
   return (
@@ -103,6 +106,17 @@ export default function ActivitiesPage() {
                 <SelectItem value="expired">已结束</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[140px] border-slate-200">
+                <SelectValue placeholder="活动分类" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全部分类</SelectItem>
+                {DEFAULT_CATEGORIES.map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <div className="text-sm text-slate-500">
               共 {filteredActivities.length} 个活动
             </div>
@@ -117,6 +131,7 @@ export default function ActivitiesPage() {
             <TableHeader>
               <TableRow className="bg-slate-50 hover:bg-slate-50">
                 <TableHead className="w-[240px]">活动名称</TableHead>
+                <TableHead className="w-[100px]">分类</TableHead>
                 <TableHead className="w-[160px]">Scene Key</TableHead>
                 <TableHead className="w-[140px]">使用模板</TableHead>
                 <TableHead className="w-[100px] text-center">状态</TableHead>
@@ -139,6 +154,11 @@ export default function ActivitiesPage() {
                         <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
                         <p className="text-xs text-slate-400 mt-0.5">ID: {activity.id}</p>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs bg-slate-50 text-slate-700 border-slate-200">
+                        {activity.category}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
@@ -199,7 +219,7 @@ export default function ActivitiesPage() {
               })}
               {filteredActivities.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     暂无匹配的活动
                   </TableCell>
                 </TableRow>
