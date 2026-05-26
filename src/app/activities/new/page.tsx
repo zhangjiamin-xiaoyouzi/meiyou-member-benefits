@@ -179,61 +179,59 @@ function StepBasicInfo({
           生命周期时序轴
         </h3>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>售卖开始时间 <span className="text-red-500">*</span></Label>
+          <div className="space-y-2">
+            <Label>售卖时间 <span className="text-red-500">*</span></Label>
+            <div className="flex items-center gap-2">
               <Input
                 type="datetime-local"
                 value={data.sellStartTime}
                 onChange={(e) => onChange({ ...data, sellStartTime: e.target.value })}
+                className="flex-1"
               />
-            </div>
-            <div className="space-y-2">
-              <Label>售卖结束时间 <span className="text-red-500">*</span></Label>
+              <span className="text-slate-400 text-sm shrink-0">至</span>
               <Input
                 type="datetime-local"
                 value={data.sellEndTime}
                 onChange={(e) => onChange({ ...data, sellEndTime: e.target.value })}
+                className="flex-1"
               />
             </div>
           </div>
           {selectedTemplate && (selectedTemplate.category === '年度大促' || selectedTemplate.category === '会员日') && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>抽奖开始时间</Label>
+            <div className="space-y-2">
+              <Label>抽奖时间</Label>
+              <div className="flex items-center gap-2">
                 <Input
                   type="datetime-local"
                   value={data.lotteryStartTime}
                   onChange={(e) => onChange({ ...data, lotteryStartTime: e.target.value })}
+                  className="flex-1"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>抽奖结束时间</Label>
+                <span className="text-slate-400 text-sm shrink-0">至</span>
                 <Input
                   type="datetime-local"
                   value={data.lotteryEndTime}
                   onChange={(e) => onChange({ ...data, lotteryEndTime: e.target.value })}
+                  className="flex-1"
                 />
               </div>
             </div>
           )}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>缓冲截止时间</Label>
-              <Input
-                type="datetime-local"
-                value={data.bufferEndTime}
-                onChange={(e) => onChange({ ...data, bufferEndTime: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>退款熔断截单时间</Label>
-              <Input
-                type="datetime-local"
-                value={data.refundCutoffTime}
-                onChange={(e) => onChange({ ...data, refundCutoffTime: e.target.value })}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>缓冲截止时间</Label>
+            <Input
+              type="datetime-local"
+              value={data.bufferEndTime}
+              onChange={(e) => onChange({ ...data, bufferEndTime: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>退款熔断截单时间</Label>
+            <Input
+              type="datetime-local"
+              value={data.refundCutoffTime}
+              onChange={(e) => onChange({ ...data, refundCutoffTime: e.target.value })}
+            />
           </div>
         </div>
       </div>

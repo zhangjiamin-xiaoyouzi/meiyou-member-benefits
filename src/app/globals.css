@@ -135,3 +135,8 @@
 body {
   @apply font-sans;
 }
+
+/* 强制 datetime-local 输入框使用 24 小时制 */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
