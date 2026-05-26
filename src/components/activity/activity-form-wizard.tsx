@@ -53,7 +53,6 @@ interface Step1Data {
   templateId: string;
   category: string;
   name: string;
-  sceneKey: string;
   sellStartTime: string;
   sellEndTime: string;
   lotteryStartTime: string;
@@ -427,20 +426,6 @@ function StepBasicInfo({
             value={data.name}
             onChange={(e) => onChange({ ...data, name: e.target.value })}
           />
-        </div>
-        <div>
-          <Label className="text-sm font-medium text-slate-700">
-            活动唯一路由 <span className="text-rose-500">*</span>
-          </Label>
-          <Input
-            className="mt-1.5"
-            placeholder="如：promo_618_2025"
-            value={data.sceneKey}
-            onChange={(e) => onChange({ ...data, sceneKey: e.target.value })}
-          />
-          <p className="text-xs text-slate-400 mt-1">
-            全渠道投放唯一标识，创建后不可修改
-          </p>
         </div>
       </div>
 
@@ -1078,7 +1063,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         templateId: (raw.template_id || raw.templateId || '') as string,
         category: (raw.category || '') as string,
         name: initialData.name,
-        sceneKey: (raw.scene_key || raw.sceneKey || '') as string,
+
         sellStartTime: timeConfig.sellStartTime || '',
         sellEndTime: timeConfig.sellEndTime || '',
         lotteryStartTime: timeConfig.lotteryStartTime || '',
@@ -1092,7 +1077,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       templateId: '',
       category: '',
       name: '',
-      sceneKey: '',
+
       sellStartTime: '',
       sellEndTime: '',
       lotteryStartTime: '',
@@ -1118,8 +1103,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       return (
         step1Data.templateId !== '' &&
         step1Data.name !== '' &&
-        step1Data.category !== '' &&
-        step1Data.sceneKey !== ''
+        step1Data.category !== ''
       );
     }
     return true;
@@ -1129,7 +1113,6 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     const payload = {
       name: step1Data.name,
       category: step1Data.category,
-      scene_key: step1Data.sceneKey,
       template_id: step1Data.templateId,
       template_name: mockTemplates.find((t) => t.id === step1Data.templateId)?.name || '',
       status: 'active' as const,

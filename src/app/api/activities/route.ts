@@ -6,7 +6,7 @@ export async function GET() {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from('activities')
-      .select('id, name, category, scene_key, template_id, template_name, status, time_config, audience_groups, lottery_config, material_config, components, component_configs, created_at, updated_at')
+      .select('id, name, category, template_id, template_name, status, time_config, audience_groups, lottery_config, material_config, components, component_configs, created_at, updated_at')
       .order('created_at', { ascending: false });
     if (error) throw new Error(`查询活动失败: ${error.message}`);
     return NextResponse.json({ success: true, data });
@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       .insert({
         name: body.name,
         category: body.category,
-        scene_key: body.sceneKey,
         template_id: body.templateId,
         template_name: body.templateName,
         status: body.status || 'draft',

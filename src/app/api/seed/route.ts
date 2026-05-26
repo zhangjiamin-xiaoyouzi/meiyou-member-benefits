@@ -38,7 +38,6 @@ export async function POST() {
         id: a.id,
         name: a.name,
         category: a.category,
-        scene_key: a.sceneKey,
         template_id: a.templateId,
         template_name: a.templateName,
         status: a.status,

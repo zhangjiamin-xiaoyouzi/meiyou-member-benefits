@@ -182,7 +182,6 @@ export interface Activity {
   id: string;
   name: string;
   category: string;
-  sceneKey: string;
   templateId: string;
   templateName: string;
   status: ActivityStatus;

@@ -72,8 +72,7 @@ export default function ActivitiesPage() {
     const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
     const matchesSearch =
       !searchQuery ||
-      activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      activity.sceneKey.toLowerCase().includes(searchQuery.toLowerCase());
+      activity.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesCategory && matchesSearch;
   });
 
@@ -100,7 +99,6 @@ export default function ActivitiesPage() {
       ...activity,
       id: `act_${Date.now()}`,
       name: newName,
-      sceneKey: `${activity.sceneKey}_copy`,
       status: 'draft' as ActivityStatus,
     };
     setLocalActivities((prev) => [newActivity, ...prev]);
@@ -131,7 +129,7 @@ export default function ActivitiesPage() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
-                placeholder="搜索活动名称或 scene_key..."
+                placeholder="搜索活动名称..."
                 className="pl-9 border-slate-200"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -175,7 +173,6 @@ export default function ActivitiesPage() {
               <TableRow className="bg-slate-50 hover:bg-slate-50">
                 <TableHead className="w-[240px]">活动名称</TableHead>
                 <TableHead className="w-[100px]">分类</TableHead>
-                <TableHead className="w-[160px]">Scene Key</TableHead>
                 <TableHead className="w-[140px]">使用模板</TableHead>
                 <TableHead className="w-[100px] text-center">状态</TableHead>
                 <TableHead>售卖时间</TableHead>
@@ -210,11 +207,6 @@ export default function ActivitiesPage() {
                       <Badge variant="outline" className="text-xs bg-slate-50 text-slate-700 border-slate-200">
                         {activity.category}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
-                        {activity.sceneKey}
-                      </code>
                     </TableCell>
                     <TableCell className="text-sm text-slate-600">{activity.templateName}</TableCell>
                     <TableCell className="text-center">
