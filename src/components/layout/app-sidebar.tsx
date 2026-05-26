@@ -31,7 +31,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-type NavGroup = { title: string; icon: React.ComponentType<{ className?: string }>; children: { title: string; url: string; icon: React.ComponentType<{ className?: string }>; description?: string }[] };
+type NavGroup = { title: string; icon: React.ComponentType<{ className?: string }>; children: { title: string; url: string; icon: React.ComponentType<{ className?: string }>; description?: string; disabled?: boolean }[] };
 type NavLeaf = { title: string; url: string; icon: React.ComponentType<{ className?: string }> };
 type NavItem = NavGroup | NavLeaf;
 
@@ -41,16 +41,18 @@ const navItems: NavItem[] = [
     icon: Sparkles,
     children: [
       {
-        title: '活动概览',
+        title: '活动概览（本期不做）',
         url: '/',
         icon: LayoutGrid,
         description: '活动数据看板',
+        disabled: true,
       },
       {
-        title: '模板管理',
+        title: '模板管理（本期不做）',
         url: '/templates',
         icon: Puzzle,
         description: '研发定义的活动模板与组件',
+        disabled: true,
       },
       {
         title: '活动列表',
@@ -103,8 +105,8 @@ export function AppSidebar() {
                             <SidebarMenuSubItem key={child.title}>
                               <SidebarMenuSubButton
                                 asChild
-                                isActive={pathname === child.url || pathname.startsWith(child.url + '/')}
-                                className="hover:bg-slate-100 data-[active=true]:bg-rose-50 data-[active=true]:text-rose-600"
+                                isActive={!child.disabled && (pathname === child.url || pathname.startsWith(child.url + '/'))}
+                                className={`hover:bg-slate-100 data-[active=true]:bg-rose-50 data-[active=true]:text-rose-600 ${child.disabled ? 'opacity-50 cursor-default' : ''}`}
                               >
                                 <Link href={child.url}>
                                   <child.icon className="h-4 w-4" />
