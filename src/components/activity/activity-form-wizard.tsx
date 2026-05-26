@@ -959,10 +959,27 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
   const [step1Data, setStep1Data] = useState<Step1Data>(() => {
     if (initialData) {
       const raw = initialData as unknown as Record<string, unknown>;
-      const timeConfig = (raw.time_config || raw.timeConfig || {}) as Record<string, string>;
-      const components = raw.components
-        ? ((raw.components as TemplateComponent[]).map((c: TemplateComponent) => ({ ...c })))
+      const rawTimeConfig = raw.time_config || raw.timeConfig || {};
+      const timeConfig = (typeof rawTimeConfig === 'string' ? JSON.parse(rawTimeConfig) : rawTimeConfig) as Record<string, string>;
+      const rawComponents = raw.components
+        ? (typeof raw.components === 'string' ? JSON.parse(raw.components as string) : raw.components)
         : [];
+      let components: TemplateComponent[] = [];
+      if (Array.isArray(rawComponents)) {
+        components = rawComponents.map((c: TemplateComponent) => ({ ...c }));
+      } else if (typeof rawComponents === 'object') {
+        // Activity stores components as {key: enabled} map
+        // Need to find the template to get full component definitions
+        const compMap = rawComponents as Record<string, boolean>;
+        const tplId = (raw.template_id || raw.templateId || '') as string;
+        const tpl = mockTemplates.find((t: { id: string }) => t.id === tplId);
+        if (tpl && Array.isArray(tpl.components)) {
+          components = tpl.components.map((c: TemplateComponent) => ({
+            ...c,
+            enabled: compMap[c.key] !== undefined ? compMap[c.key] : c.enabled,
+          }));
+        }
+      }
       return {
         templateId: (raw.template_id || raw.templateId || '') as string,
         category: (raw.category || '') as string,
@@ -995,7 +1012,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
   const [step2Data, setStep2Data] = useState<Step2Data>(() => {
     if (initialData) {
       const raw = initialData as unknown as Record<string, unknown>;
-      const groups = (raw.audience_groups || raw.audienceGroups || []) as AudienceGroup[];
+      const rawGroups = raw.audience_groups || raw.audienceGroups || [];
+      const groups = (typeof rawGroups === 'string' ? JSON.parse(rawGroups as string) : rawGroups) as AudienceGroup[];
       return { audienceGroups: groups.map((g: AudienceGroup) => ({ ...g })) };
     }
     return { audienceGroups: [] };
@@ -1004,8 +1022,10 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
   const [step3Data, setStep3Data] = useState<Step3Data>(() => {
     if (initialData) {
       const raw = initialData as unknown as Record<string, unknown>;
-      const lotteryConfig = (raw.lottery_config || raw.lotteryConfig || { enabled: false, poolId: '', poolName: '' }) as LotteryConfig;
-      const materialConfig = (raw.material_config || raw.materialConfig || {}) as MaterialConfig;
+      const rawLottery = raw.lottery_config || raw.lotteryConfig || { enabled: false, poolId: '', poolName: '' };
+      const lotteryConfig = (typeof rawLottery === 'string' ? JSON.parse(rawLottery as string) : rawLottery) as LotteryConfig;
+      const rawMaterial = raw.material_config || raw.materialConfig || {};
+      const materialConfig = (typeof rawMaterial === 'string' ? JSON.parse(rawMaterial as string) : rawMaterial) as MaterialConfig;
       return { lotteryConfig, materialConfig };
     }
     return {
