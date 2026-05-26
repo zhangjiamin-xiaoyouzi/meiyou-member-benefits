@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import {
   Table,
   TableBody,
@@ -22,9 +16,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Lock, Unlock, Settings2, Plus, GripVertical } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Settings2, GripVertical } from 'lucide-react';
 import type { Template, TemplateComponent } from '@/lib/types';
-import { mockTemplates } from '@/lib/mock-data';
+
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
@@ -54,13 +48,9 @@ export default function TemplateEditPage() {
   const [components, setComponents] = useState<TemplateComponent[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newCategoryMode, setNewCategoryMode] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
+
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  // 动态收集所有已有分类
-  const allCategories = Array.from(new Set(mockTemplates.map((t) => t.category)));
 
   useEffect(() => {
     fetch(`/api/templates?id=${templateId}`)
@@ -111,14 +101,12 @@ export default function TemplateEditPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    const finalCategory = newCategoryMode ? newCategoryName.trim() : category;
     try {
       const res = await fetch(`/api/templates?id=${templateId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          category: finalCategory,
           description,
           components,
         }),
@@ -155,7 +143,7 @@ export default function TemplateEditPage() {
     );
   }
 
-  const finalCategory = newCategoryMode ? newCategoryName.trim() : category;
+
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -190,63 +178,13 @@ export default function TemplateEditPage() {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            模板分类 <span className="text-rose-500">*</span>
+            模板分类
           </label>
-          <div className="flex items-center gap-3">
-            {!newCategoryMode ? (
-              <div className="flex items-center gap-3 flex-1">
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="w-[200px] border-slate-200">
-                    <SelectValue placeholder="选择分类" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {allCategories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-dashed border-slate-300 text-slate-500 hover:text-rose-600 hover:border-rose-300"
-                  onClick={() => {
-                    setNewCategoryMode(true);
-                    setNewCategoryName('');
-                  }}
-                >
-                  <Plus className="mr-1 h-3.5 w-3.5" />
-                  新建分类
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 flex-1">
-                <Input
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="输入新分类名称"
-                  className="w-[200px] border-slate-200"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-slate-200 text-slate-500"
-                  onClick={() => {
-                    setNewCategoryMode(false);
-                    setNewCategoryName('');
-                  }}
-                >
-                  取消
-                </Button>
-              </div>
-            )}
+          <div>
+            <Badge variant="outline" className={getCategoryColor(category)}>
+              {category}
+            </Badge>
           </div>
-          {finalCategory && (
-            <div className="mt-2">
-              <Badge variant="outline" className={getCategoryColor(finalCategory)}>
-                {finalCategory}
-              </Badge>
-            </div>
-          )}
         </div>
 
         <div>
@@ -369,7 +307,7 @@ export default function TemplateEditPage() {
         <Button
           className="bg-rose-500 hover:bg-rose-600 text-white"
           onClick={handleSave}
-          disabled={saving || !name.trim() || !finalCategory}
+          disabled={saving || !name.trim()}
         >
           {saving ? '保存中...' : '保存'}
         </Button>
