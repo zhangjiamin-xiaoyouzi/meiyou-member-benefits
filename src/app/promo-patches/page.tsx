@@ -77,7 +77,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>目标套餐</Label>
+            <Label>目标套餐 <span className="text-red-500">*</span></Label>
             <Select>
               <SelectTrigger>
                 <SelectValue placeholder="选择套餐" />
@@ -92,7 +92,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>优惠方式</Label>
+            <Label>优惠方式 <span className="text-red-500">*</span></Label>
             <Select>
               <SelectTrigger>
                 <SelectValue placeholder="选择优惠方式" />
@@ -105,7 +105,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>优惠数值</Label>
+          <Label>优惠数值 <span className="text-red-500">*</span></Label>
           <Input type="number" placeholder="如：5（元）或 20（%）" />
         </div>
       </div>
@@ -116,7 +116,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>赠送天数</Label>
+          <Label>赠送天数 <span className="text-red-500">*</span></Label>
           <Input type="number" placeholder="如：60" />
         </div>
         <div className="space-y-2">
@@ -144,7 +144,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>赠礼类型</Label>
+          <Label>赠礼类型 <span className="text-red-500">*</span></Label>
           <Select>
             <SelectTrigger>
               <SelectValue placeholder="选择赠礼类型" />
@@ -157,7 +157,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>赠礼名称</Label>
+          <Label>赠礼名称 <span className="text-red-500">*</span></Label>
           <Input placeholder="如：全棉时代护肤礼包" />
         </div>
         <div className="space-y-2">
@@ -176,7 +176,7 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>库存数量</Label>
+          <Label>库存数量 <span className="text-red-500">*</span></Label>
           <Input type="number" placeholder="如：500" />
         </div>
       </div>
@@ -200,11 +200,11 @@ function CreatePatchDialog() {
       <div className="space-y-4 py-2">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>策略名称</Label>
+            <Label>策略名称 <span className="text-red-500">*</span></Label>
             <Input placeholder="如：618连续包月立减5元" />
           </div>
           <div className="space-y-2">
-            <Label>策略类型</Label>
+            <Label>策略类型 <span className="text-red-500">*</span></Label>
             <Select
               value={patchType}
               onValueChange={(val) => setPatchType(val as PromoPatchType)}

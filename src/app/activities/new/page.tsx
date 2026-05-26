@@ -99,7 +99,7 @@ function StepBasicInfo({
       <div>
         <h3 className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
           <Puzzle className="h-4 w-4 text-slate-500" />
-          选择活动模板
+          选择活动模板 <span className="text-red-500">*</span>
         </h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {mockTemplates.map((template) => {
@@ -151,7 +151,7 @@ function StepBasicInfo({
         <h3 className="text-sm font-medium text-slate-700 mb-3">基础信息</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>活动名称</Label>
+            <Label>活动名称 <span className="text-red-500">*</span></Label>
             <Input
               placeholder="如：618会员狂欢节"
               value={data.name}
@@ -159,7 +159,7 @@ function StepBasicInfo({
             />
           </div>
           <div className="space-y-2">
-            <Label>活动唯一路由 (scene_key)</Label>
+            <Label>活动唯一路由 (scene_key) <span className="text-red-500">*</span></Label>
             <Input
               placeholder="如：promo_618_2024"
               value={data.sceneKey}
@@ -181,7 +181,7 @@ function StepBasicInfo({
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>售卖开始时间</Label>
+              <Label>售卖开始时间 <span className="text-red-500">*</span></Label>
               <Input
                 type="datetime-local"
                 value={data.sellStartTime}
@@ -189,7 +189,7 @@ function StepBasicInfo({
               />
             </div>
             <div className="space-y-2">
-              <Label>售卖结束时间</Label>
+              <Label>售卖结束时间 <span className="text-red-500">*</span></Label>
               <Input
                 type="datetime-local"
                 value={data.sellEndTime}

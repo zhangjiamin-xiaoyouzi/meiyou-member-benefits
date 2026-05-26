@@ -182,7 +182,7 @@ export default function NewTemplatePage() {
       <div className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>模板名称</Label>
+            <Label>模板名称 <span className="text-red-500">*</span></Label>
             <Input
               placeholder="如：大促抽奖模板"
               value={name}
@@ -190,7 +190,7 @@ export default function NewTemplatePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>模板分类</Label>
+            <Label>模板分类 <span className="text-red-500">*</span></Label>
             <Select value={isCustomCategory ? '__custom__' : category} onValueChange={handleCategoryChange}>
               <SelectTrigger>
                 <SelectValue placeholder="选择或新建分类" />
