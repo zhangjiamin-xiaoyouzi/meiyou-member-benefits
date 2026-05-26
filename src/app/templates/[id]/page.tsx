@@ -4,7 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -14,8 +22,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Lock, Unlock, Settings2 } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Settings2, Plus } from 'lucide-react';
 import type { Template, TemplateComponent } from '@/lib/types';
+import { mockTemplates } from '@/lib/mock-data';
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
@@ -28,95 +37,28 @@ function getCategoryColor(category: string): string {
   return categoryColorMap[category] || defaultCategoryColor;
 }
 
-function ComponentToggleMatrix({
-  components,
-  onChange,
-}: {
-  components: TemplateComponent[];
-  onChange: (components: TemplateComponent[]) => void;
-}) {
-  const handleToggle = (compId: string) => {
-    const updated = components.map((c) =>
-      c.id === compId && !c.required ? { ...c, enabled: !c.enabled } : c
-    );
-    onChange(updated);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 mb-3">
-        <Settings2 className="h-4 w-4 text-slate-500" />
-        <h4 className="text-sm font-medium text-slate-700">组件开关矩阵（Slot Controller）</h4>
-        <span className="text-xs text-slate-400">控制模板内局部楼层的显隐</span>
-      </div>
-      <div className="rounded-lg border border-slate-200 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-slate-50 hover:bg-slate-50">
-              <TableHead className="w-[200px]">组件名称</TableHead>
-              <TableHead className="w-[100px]">标识 Key</TableHead>
-              <TableHead>功能说明</TableHead>
-              <TableHead className="w-[80px] text-center">状态</TableHead>
-              <TableHead className="w-[80px] text-center">必选</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {components.map((comp) => (
-              <TableRow key={comp.id} className={!comp.enabled ? 'bg-slate-50/50' : ''}>
-                <TableCell className="font-medium text-slate-900 text-sm">
-                  {comp.name}
-                </TableCell>
-                <TableCell>
-                  <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
-                    {comp.key}
-                  </code>
-                </TableCell>
-                <TableCell className="text-sm text-slate-500">{comp.description}</TableCell>
-                <TableCell className="text-center">
-                  <Switch
-                    checked={comp.enabled}
-                    disabled={comp.required}
-                    onCheckedChange={() => handleToggle(comp.id)}
-                    className="data-[state=checked]:bg-rose-500"
-                  />
-                </TableCell>
-                <TableCell className="text-center">
-                  {comp.required ? (
-                    <Lock className="h-4 w-4 text-slate-400 mx-auto" />
-                  ) : (
-                    <Unlock className="h-4 w-4 text-slate-300 mx-auto" />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center gap-4 pt-2 text-xs text-slate-400">
-        <span className="flex items-center gap-1">
-          <Lock className="h-3 w-3" /> 必选组件，不可关闭
-        </span>
-        <span className="flex items-center gap-1">
-          <Unlock className="h-3 w-3" /> 可选组件，支持显隐控制
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-export default function TemplateDetailPage() {
+export default function TemplateEditPage() {
   const router = useRouter();
   const params = useParams();
   const templateId = params.id as string;
 
   const [template, setTemplate] = useState<Template | null>(null);
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
   const [components, setComponents] = useState<TemplateComponent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [newCategoryMode, setNewCategoryMode] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  // 动态收集所有已有分类
+  const allCategories = Array.from(new Set(mockTemplates.map((t) => t.category)));
 
   useEffect(() => {
     fetch(`/api/templates?id=${templateId}`)
@@ -125,12 +67,50 @@ export default function TemplateDetailPage() {
         if (result.success && result.data) {
           const t = Array.isArray(result.data) ? result.data[0] : result.data;
           setTemplate(t);
+          setName(t.name);
+          setCategory(t.category);
+          setDescription(t.description);
           setComponents(t.components);
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, [templateId]);
+
+  const handleToggle = (compId: string) => {
+    setComponents((prev) =>
+      prev.map((c) =>
+        c.id === compId && !c.required ? { ...c, enabled: !c.enabled } : c
+      )
+    );
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const finalCategory = newCategoryMode ? newCategoryName.trim() : category;
+    try {
+      const res = await fetch(`/api/templates?id=${templateId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          category: finalCategory,
+          description,
+          components,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        router.push('/templates');
+      } else {
+        alert('保存失败：' + (result.error || '未知错误'));
+      }
+    } catch {
+      alert('保存失败，请重试');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -151,6 +131,8 @@ export default function TemplateDetailPage() {
     );
   }
 
+  const finalCategory = newCategoryMode ? newCategoryName.trim() : category;
+
   return (
     <div className="space-y-6 max-w-3xl">
       {/* 返回 + 标题 */}
@@ -165,15 +147,160 @@ export default function TemplateDetailPage() {
           返回列表
         </Button>
       </div>
-      <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900">{template.name}</h1>
-        <Badge variant="outline" className={getCategoryColor(template.category)}>
-          {template.category}
-        </Badge>
-      </div>
-      <p className="text-sm text-slate-500">{template.description}</p>
+
+      <h1 className="text-2xl font-semibold text-slate-900">编辑模板</h1>
 
       {/* 基本信息 */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            模板名称 <span className="text-rose-500">*</span>
+          </label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="请输入模板名称"
+            className="border-slate-200"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            模板分类 <span className="text-rose-500">*</span>
+          </label>
+          <div className="flex items-center gap-3">
+            {!newCategoryMode ? (
+              <div className="flex items-center gap-3 flex-1">
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="w-[200px] border-slate-200">
+                    <SelectValue placeholder="选择分类" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allCategories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-dashed border-slate-300 text-slate-500 hover:text-rose-600 hover:border-rose-300"
+                  onClick={() => {
+                    setNewCategoryMode(true);
+                    setNewCategoryName('');
+                  }}
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" />
+                  新建分类
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 flex-1">
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="输入新分类名称"
+                  className="w-[200px] border-slate-200"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-200 text-slate-500"
+                  onClick={() => {
+                    setNewCategoryMode(false);
+                    setNewCategoryName('');
+                  }}
+                >
+                  取消
+                </Button>
+              </div>
+            )}
+          </div>
+          {finalCategory && (
+            <div className="mt-2">
+              <Badge variant="outline" className={getCategoryColor(finalCategory)}>
+                {finalCategory}
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            模板说明
+          </label>
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="请输入模板说明"
+            className="border-slate-200"
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* 组件开关矩阵 */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 mb-3">
+          <Settings2 className="h-4 w-4 text-slate-500" />
+          <h4 className="text-sm font-medium text-slate-700">组件开关矩阵（Slot Controller）</h4>
+          <span className="text-xs text-slate-400">控制模板内局部楼层的显隐</span>
+        </div>
+        <div className="rounded-lg border border-slate-200 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50 hover:bg-slate-50">
+                <TableHead className="w-[200px]">组件名称</TableHead>
+                <TableHead className="w-[100px]">标识 Key</TableHead>
+                <TableHead>功能说明</TableHead>
+                <TableHead className="w-[80px] text-center">状态</TableHead>
+                <TableHead className="w-[80px] text-center">必选</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {components.map((comp) => (
+                <TableRow key={comp.id} className={!comp.enabled ? 'bg-slate-50/50' : ''}>
+                  <TableCell className="font-medium text-slate-900 text-sm">
+                    {comp.name}
+                  </TableCell>
+                  <TableCell>
+                    <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
+                      {comp.key}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-500">{comp.description}</TableCell>
+                  <TableCell className="text-center">
+                    <Switch
+                      checked={comp.enabled}
+                      disabled={comp.required}
+                      onCheckedChange={() => handleToggle(comp.id)}
+                      className="data-[state=checked]:bg-rose-500"
+                    />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {comp.required ? (
+                      <Lock className="h-4 w-4 text-slate-400 mx-auto" />
+                    ) : (
+                      <Unlock className="h-4 w-4 text-slate-300 mx-auto" />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center gap-4 pt-2 text-xs text-slate-400">
+          <span className="flex items-center gap-1">
+            <Lock className="h-3 w-3" /> 必选组件，不可关闭
+          </span>
+          <span className="flex items-center gap-1">
+            <Unlock className="h-3 w-3" /> 可选组件，支持显隐控制
+          </span>
+        </div>
+      </div>
+
+      {/* 操作人信息 */}
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <span className="text-slate-400">创建人：</span>
@@ -193,19 +320,18 @@ export default function TemplateDetailPage() {
         </div>
       </div>
 
-      <Separator />
-
-      {/* 组件开关矩阵 */}
-      <ComponentToggleMatrix components={components} onChange={setComponents} />
-
       {/* 底部操作 */}
       <Separator />
       <div className="flex justify-end gap-3">
         <Button variant="outline" className="border-slate-300" onClick={() => router.push('/templates')}>
           取消
         </Button>
-        <Button className="bg-rose-500 hover:bg-rose-600 text-white">
-          保存配置
+        <Button
+          className="bg-rose-500 hover:bg-rose-600 text-white"
+          onClick={handleSave}
+          disabled={saving || !name.trim() || !finalCategory}
+        >
+          {saving ? '保存中...' : '保存'}
         </Button>
       </div>
     </div>

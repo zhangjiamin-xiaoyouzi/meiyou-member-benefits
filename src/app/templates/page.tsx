@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Eye, Search } from 'lucide-react';
+import { Plus, Pencil, Search } from 'lucide-react';
 import type { Template } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 
@@ -154,8 +154,8 @@ export default function TemplatesPage() {
                       className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                       onClick={() => router.push(`/templates/${template.id}`)}
                     >
-                      <Eye className="mr-1 h-3.5 w-3.5" />
-                      详情
+                      <Pencil className="mr-1 h-3.5 w-3.5" />
+                      编辑
                     </Button>
                   </TableCell>
                 </TableRow>
