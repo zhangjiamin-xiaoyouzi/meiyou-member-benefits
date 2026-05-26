@@ -115,44 +115,66 @@ export default function TemplatesPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredTemplates.map((template: Template) => (
-                <TableRow key={template.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-medium text-slate-900">
-                    {template.name}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getCategoryColor(template.category)}>
-                      {template.category}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-slate-500 max-w-[280px] truncate">
-                    {template.description}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className="font-mono text-sm text-slate-700">{template.components.length}</span>
-                    <span className="text-xs text-slate-400 ml-1">个</span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-slate-700">{formatDate(template.createdAt)}</div>
-                    <div className="text-xs text-slate-400">{template.createdBy}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-slate-700">{formatDate(template.updatedAt)}</div>
-                    <div className="text-xs text-slate-400">{template.updatedBy}</div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                      onClick={() => router.push(`/templates/${template.id}`)}
-                    >
-                      <Pencil className="mr-1 h-3.5 w-3.5" />
-                      编辑
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              filteredTemplates.map((template: Template) => {
+                const isMemberDay = template.category === '会员日';
+                return (
+                  <TableRow key={template.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900">{template.name}</span>
+                        {!isMemberDay && (
+                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px] shrink-0">
+                            本期不做
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getCategoryColor(template.category)}>
+                        {template.category}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-500 max-w-[280px] truncate">
+                      {template.description}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-mono text-sm text-slate-700">{template.components.length}</span>
+                      <span className="text-xs text-slate-400 ml-1">个</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-slate-700">{formatDate(template.createdAt)}</div>
+                      <div className="text-xs text-slate-400">{template.createdBy}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-slate-700">{formatDate(template.updatedAt)}</div>
+                      <div className="text-xs text-slate-400">{template.updatedBy}</div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {isMemberDay ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                          onClick={() => router.push(`/templates/${template.id}`)}
+                        >
+                          <Pencil className="mr-1 h-3.5 w-3.5" />
+                          编辑
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-300 cursor-not-allowed"
+                          disabled
+                        >
+                          <Pencil className="mr-1 h-3.5 w-3.5" />
+                          编辑
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
