@@ -22,7 +22,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Lock, Unlock, Settings2, Plus } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Settings2, Plus, GripVertical } from 'lucide-react';
 import type { Template, TemplateComponent } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 
@@ -56,6 +56,8 @@ export default function TemplateEditPage() {
   const [saving, setSaving] = useState(false);
   const [newCategoryMode, setNewCategoryMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // 动态收集所有已有分类
   const allCategories = Array.from(new Set(mockTemplates.map((t) => t.category)));
@@ -83,6 +85,28 @@ export default function TemplateEditPage() {
         c.id === compId && !c.required ? { ...c, enabled: !c.enabled } : c
       )
     );
+  };
+
+  const handleDragStart = (index: number) => {
+    setDragIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    if (dragIndex !== null && dragOverIndex !== null && dragIndex !== dragOverIndex) {
+      setComponents((prev) => {
+        const updated = [...prev];
+        const [moved] = updated.splice(dragIndex, 1);
+        updated.splice(dragOverIndex, 0, moved);
+        return updated;
+      });
+    }
+    setDragIndex(null);
+    setDragOverIndex(null);
   };
 
   const handleSave = async () => {
@@ -251,6 +275,7 @@ export default function TemplateEditPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50 hover:bg-slate-50">
+                <TableHead className="w-[40px]"></TableHead>
                 <TableHead className="w-[200px]">组件名称</TableHead>
                 <TableHead className="w-[100px]">标识 Key</TableHead>
                 <TableHead>功能说明</TableHead>
@@ -259,8 +284,23 @@ export default function TemplateEditPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {components.map((comp) => (
-                <TableRow key={comp.id} className={!comp.enabled ? 'bg-slate-50/50' : ''}>
+              {components.map((comp, index) => (
+                <TableRow
+                  key={comp.id}
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={[
+                    !comp.enabled ? 'bg-slate-50/50' : '',
+                    dragIndex === index ? 'opacity-40' : '',
+                    dragOverIndex === index && dragIndex !== index ? 'border-t-2 border-t-rose-400' : '',
+                    'cursor-grab active:cursor-grabbing transition-opacity',
+                  ].join(' ')}
+                >
+                  <TableCell className="w-[40px] px-2">
+                    <GripVertical className="h-4 w-4 text-slate-300 hover:text-slate-500" />
+                  </TableCell>
                   <TableCell className="font-medium text-slate-900 text-sm">
                     {comp.name}
                   </TableCell>
