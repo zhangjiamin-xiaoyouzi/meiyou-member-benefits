@@ -164,6 +164,11 @@ export interface BenefitConfig {
   products: BenefitProduct[];
 }
 
+/** 0元购配置 */
+export interface FreePurchaseConfig {
+  categoryIds: string[];
+}
+
 /** 规则弹窗配置 */
 export interface RulePopupConfig {
   iconImage: string;
@@ -176,6 +181,7 @@ export interface ComponentConfigs {
   flash_sale?: FlashSaleConfig;
   free_benefit?: BenefitConfig;
   exclusive_gift?: BenefitConfig;
+  free_purchase?: FreePurchaseConfig;
   rule_popup?: RulePopupConfig;
 }
 

@@ -30,6 +30,9 @@ import {
   Upload,
   Trash2,
   Users,
+  Tag,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
@@ -42,6 +45,7 @@ import type {
   FlashSaleProduct,
   BenefitConfig,
   BenefitProduct,
+  FreePurchaseConfig,
   RulePopupConfig,
   ComponentAudienceRule,
 } from '@/lib/types';
@@ -608,6 +612,14 @@ function StepComponentConfig({
         />
       )}
 
+      {/* 0元购 */}
+      {isComponentEnabled('free_purchase') && (
+        <FreePurchaseConfigCard
+          config={configs.free_purchase || { categoryIds: [] }}
+          onChange={(val) => updateConfig('free_purchase', val)}
+        />
+      )}
+
       {/* 专属礼 */}
       {isComponentEnabled('exclusive_gift') && (
         <BenefitConfigCard
@@ -858,6 +870,102 @@ function FlashSaleConfigCard({
 }
 
 // ==================== 0元福利/专属礼配置卡片 ====================
+
+function FreePurchaseConfigCard({
+  config,
+  onChange,
+}: {
+  config: FreePurchaseConfig;
+  onChange: (config: FreePurchaseConfig) => void;
+}) {
+  const addCategoryId = () => {
+    onChange({ ...config, categoryIds: [...config.categoryIds, ''] });
+  };
+
+  const updateCategoryId = (index: number, value: string) => {
+    const newIds = [...config.categoryIds];
+    newIds[index] = value;
+    onChange({ ...config, categoryIds: newIds });
+  };
+
+  const removeCategoryId = (index: number) => {
+    onChange({ ...config, categoryIds: config.categoryIds.filter((_, i) => i !== index) });
+  };
+
+  const moveCategoryId = (index: number, direction: 'up' | 'down') => {
+    const newIds = [...config.categoryIds];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newIds.length) return;
+    [newIds[index], newIds[targetIndex]] = [newIds[targetIndex], newIds[index]];
+    onChange({ ...config, categoryIds: newIds });
+  };
+
+  return (
+    <Card className="border-slate-200">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm flex items-center gap-2">
+          <Tag className="h-4 w-4 text-slate-500" />
+          0元购
+          <span className="text-xs text-slate-400 font-normal">下单全额返现金</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs text-slate-500">返现类目ID</Label>
+          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
+            <Plus className="h-3 w-3 mr-1" />
+            添加类目
+          </Button>
+        </div>
+        {config.categoryIds.length === 0 ? (
+          <div className="text-center py-6 text-slate-400 text-xs">暂无类目ID，请点击添加</div>
+        ) : (
+          <div className="space-y-2">
+            {config.categoryIds.map((catId, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-xs text-slate-400 w-6 text-right shrink-0">{index + 1}.</span>
+                <Input
+                  className="h-8 text-sm flex-1"
+                  placeholder="输入类目ID"
+                  value={catId}
+                  onChange={(e) => updateCategoryId(index, e.target.value)}
+                />
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    disabled={index === 0}
+                    onClick={() => moveCategoryId(index, 'up')}
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    disabled={index === config.categoryIds.length - 1}
+                    onClick={() => moveCategoryId(index, 'down')}
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-rose-500 hover:text-rose-600"
+                    onClick={() => removeCategoryId(index)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function BenefitConfigCard({
   title,
