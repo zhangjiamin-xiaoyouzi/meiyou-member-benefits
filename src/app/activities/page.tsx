@@ -25,8 +25,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Plus,
   Search,
@@ -52,8 +63,11 @@ export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<Activity | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [localActivities, setLocalActivities] = useState<Activity[]>(mockActivities);
 
-  const filteredActivities = mockActivities.filter((activity) => {
+  const filteredActivities = localActivities.filter((activity) => {
     const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
     const matchesSearch =
@@ -62,6 +76,35 @@ export default function ActivitiesPage() {
       activity.sceneKey.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesCategory && matchesSearch;
   });
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/activities/${deleteTarget.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setLocalActivities((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+      }
+    } catch {
+      // 静默处理
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleCopy = (activity: Activity) => {
+    const newName = `${activity.name} (副本)`;
+    const newActivity: Activity = {
+      ...activity,
+      id: `act_${Date.now()}`,
+      name: newName,
+      sceneKey: `${activity.sceneKey}_copy`,
+      status: 'draft' as ActivityStatus,
+    };
+    setLocalActivities((prev) => [newActivity, ...prev]);
+  };
 
   return (
     <div className="space-y-6">
@@ -191,15 +234,19 @@ export default function ActivitiesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-3.5 w-3.5" />
-                            查看详情
+                          <DropdownMenuItem asChild>
+                            <Link href={`/activities/${activity.id}`}>
+                              <Eye className="mr-2 h-3.5 w-3.5" />
+                              查看详情
+                            </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Pencil className="mr-2 h-3.5 w-3.5" />
-                            编辑
+                          <DropdownMenuItem asChild>
+                            <Link href={`/activities/${activity.id}/edit`}>
+                              <Pencil className="mr-2 h-3.5 w-3.5" />
+                              编辑
+                            </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleCopy(activity)}>
                             <Copy className="mr-2 h-3.5 w-3.5" />
                             复制活动
                           </DropdownMenuItem>
@@ -207,7 +254,11 @@ export default function ActivitiesPage() {
                             <ExternalLink className="mr-2 h-3.5 w-3.5" />
                             预览链接
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-600"
+                            onClick={() => setDeleteTarget(activity)}
+                          >
                             <Trash2 className="mr-2 h-3.5 w-3.5" />
                             删除
                           </DropdownMenuItem>
@@ -228,6 +279,28 @@ export default function ActivitiesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* 删除确认弹窗 */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定要删除活动「{deleteTarget?.name}」吗？此操作不可撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? '删除中...' : '确认删除'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

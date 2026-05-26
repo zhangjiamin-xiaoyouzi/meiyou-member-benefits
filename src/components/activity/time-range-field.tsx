@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
 
 interface TimeRangeFieldProps {
-  label: string;
+  label?: string;
   required?: boolean;
   startValue: string;
   endValue: string;
@@ -114,7 +114,7 @@ export function TimeRangeField({
 }
 
 interface SingleTimeFieldProps {
-  label: string;
+  label?: string;
   required?: boolean;
   value: string;
   onChange: (value: string) => void;
