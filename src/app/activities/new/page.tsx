@@ -35,7 +35,7 @@ import {
   FileText,
   Wand2,
 } from 'lucide-react';
-import type { TemplateComponent, AudienceRule, ShelfItem, LotteryConfig, MaterialConfig } from '@/lib/types';
+import type { TemplateComponent, AudienceRule, ShelfItem, AudienceGroup, LotteryConfig, MaterialConfig } from '@/lib/types';
 import { mockTemplates, mockPlans, mockPromoPatches, mockLotteryPools } from '@/lib/mock-data';
 
 interface Step1Data {
@@ -52,8 +52,7 @@ interface Step1Data {
 }
 
 interface Step2Data {
-  audienceRules: AudienceRule[];
-  shelves: ShelfItem[];
+  audienceGroups: AudienceGroup[];
 }
 
 interface Step3Data {
@@ -302,7 +301,36 @@ function StepAudienceShelves({
     { value: 'is_new_user', label: '是否新用户', options: ['是', '否'] },
   ];
 
-  const addRule = () => {
+  const activePatches = mockPromoPatches.filter((p) => p.status === 'active');
+
+  // 客群操作
+  const addGroup = () => {
+    const newGroup: AudienceGroup = {
+      id: `group_${Date.now()}`,
+      name: `客群 ${data.audienceGroups.length + 1}`,
+      rules: [],
+      shelves: [],
+    };
+    onChange({ ...data, audienceGroups: [...data.audienceGroups, newGroup] });
+  };
+
+  const removeGroup = (groupId: string) => {
+    onChange({ ...data, audienceGroups: data.audienceGroups.filter((g) => g.id !== groupId) });
+  };
+
+  const updateGroup = (groupId: string, updates: Partial<AudienceGroup>) => {
+    onChange({
+      ...data,
+      audienceGroups: data.audienceGroups.map((g) =>
+        g.id === groupId ? { ...g, ...updates } : g
+      ),
+    });
+  };
+
+  // 客群内规则操作
+  const addRule = (groupId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
     const newRule: AudienceRule = {
       id: `rule_${Date.now()}`,
       field: '',
@@ -310,58 +338,64 @@ function StepAudienceShelves({
       operator: 'in',
       value: '',
     };
-    onChange({ ...data, audienceRules: [...data.audienceRules, newRule] });
+    updateGroup(groupId, { rules: [...group.rules, newRule] });
   };
 
-  const removeRule = (ruleId: string) => {
-    onChange({ ...data, audienceRules: data.audienceRules.filter((r) => r.id !== ruleId) });
+  const removeRule = (groupId: string, ruleId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    updateGroup(groupId, { rules: group.rules.filter((r) => r.id !== ruleId) });
   };
 
-  const updateRule = (ruleId: string, updates: Partial<AudienceRule>) => {
-    onChange({
-      ...data,
-      audienceRules: data.audienceRules.map((r) =>
-        r.id === ruleId ? { ...r, ...updates } : r
-      ),
+  const updateRule = (groupId: string, ruleId: string, updates: Partial<AudienceRule>) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    updateGroup(groupId, {
+      rules: group.rules.map((r) => (r.id === ruleId ? { ...r, ...updates } : r)),
     });
   };
 
-  const addShelf = (planId: string) => {
+  // 客群内货架操作
+  const addShelf = (groupId: string, planId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
     const plan = mockPlans.find((p) => p.id === planId);
     if (!plan) return;
     const newShelf: ShelfItem = {
       id: `shelf_${Date.now()}`,
       planId: plan.id,
       planName: plan.name,
-      isMainPush: data.shelves.length === 0,
-      sortOrder: data.shelves.length,
+      isMainPush: group.shelves.length === 0,
+      sortOrder: group.shelves.length,
       patchIds: [],
     };
-    onChange({ ...data, shelves: [...data.shelves, newShelf] });
+    updateGroup(groupId, { shelves: [...group.shelves, newShelf] });
   };
 
-  const removeShelf = (shelfId: string) => {
-    onChange({
-      ...data,
-      shelves: data.shelves.filter((s) => s.id !== shelfId),
-    });
+  const removeShelf = (groupId: string, shelfId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    updateGroup(groupId, { shelves: group.shelves.filter((s) => s.id !== shelfId) });
   };
 
-  const moveShelf = (shelfId: string, direction: 'up' | 'down') => {
-    const idx = data.shelves.findIndex((s) => s.id === shelfId);
+  const moveShelf = (groupId: string, shelfId: string, direction: 'up' | 'down') => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    const idx = group.shelves.findIndex((s) => s.id === shelfId);
     if (idx < 0) return;
-    const newShelves = [...data.shelves];
+    const newShelves = [...group.shelves];
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= newShelves.length) return;
     [newShelves[idx], newShelves[swapIdx]] = [newShelves[swapIdx], newShelves[idx]];
     newShelves.forEach((s, i) => (s.sortOrder = i));
-    onChange({ ...data, shelves: newShelves });
+    updateGroup(groupId, { shelves: newShelves });
   };
 
-  const toggleShelfPatch = (shelfId: string, patchId: string) => {
-    onChange({
-      ...data,
-      shelves: data.shelves.map((s) => {
+  const toggleShelfPatch = (groupId: string, shelfId: string, patchId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    updateGroup(groupId, {
+      shelves: group.shelves.map((s) => {
         if (s.id !== shelfId) return s;
         const patchIds = s.patchIds.includes(patchId)
           ? s.patchIds.filter((id) => id !== patchId)
@@ -371,263 +405,292 @@ function StepAudienceShelves({
     });
   };
 
-  const setMainPush = (shelfId: string) => {
-    onChange({
-      ...data,
-      shelves: data.shelves.map((s) => ({
+  const setMainPush = (groupId: string, shelfId: string) => {
+    const group = data.audienceGroups.find((g) => g.id === groupId);
+    if (!group) return;
+    updateGroup(groupId, {
+      shelves: group.shelves.map((s) => ({
         ...s,
         isMainPush: s.id === shelfId,
       })),
     });
   };
 
-  const availablePlans = mockPlans.filter(
-    (p) => !data.shelves.some((s) => s.planId === p.id)
-  );
-
-  const activePatches = mockPromoPatches.filter((p) => p.status === 'active');
-
   return (
     <div className="space-y-6">
-      {/* 客群分层 */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between">
+        <div>
           <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
             <Users className="h-4 w-4 text-slate-500" />
-            客群分层勾选
+            客群分层与套餐配置
           </h3>
-          <Button variant="outline" size="sm" className="border-slate-300" onClick={addRule}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            添加条件
-          </Button>
+          <p className="text-xs text-slate-400 mt-1">
+            为每个客群独立配置套餐货架与策略补丁，不配置则默认所有用户可见
+          </p>
         </div>
-        <p className="text-xs text-slate-400 mb-3">
-          支持复合筛选，如：身份模式 = 怀孕 且 会员状态 = 已过期
-        </p>
-        {data.audienceRules.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center">
-            <Users className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-400">暂无客群条件，点击"添加条件"开始配置</p>
-            <p className="text-xs text-slate-400 mt-1">不配置则默认所有用户可见</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {data.audienceRules.map((rule, index) => (
-              <div key={rule.id} className="flex items-end gap-3 rounded-lg border border-slate-200 p-3">
-                <span className="text-xs text-slate-400 mb-2">条件 {index + 1}</span>
-                <div className="space-y-1 flex-1">
-                  <Label className="text-xs">筛选维度</Label>
-                  <Select
-                    value={rule.field}
-                    onValueChange={(val) => {
-                      const field = audienceFields.find((f) => f.value === val);
-                      updateRule(rule.id, { field: val, label: field?.label || '' });
-                    }}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue placeholder="选择维度" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {audienceFields.map((f) => (
-                        <SelectItem key={f.value} value={f.value}>
-                          {f.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1 w-24">
-                  <Label className="text-xs">运算符</Label>
-                  <Select
-                    value={rule.operator}
-                    onValueChange={(val) => updateRule(rule.id, { operator: val })}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="equals">等于</SelectItem>
-                      <SelectItem value="in">包含</SelectItem>
-                      <SelectItem value="not_in">不包含</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1 flex-1">
-                  <Label className="text-xs">值</Label>
-                  {rule.field ? (
-                    <Select
-                      value={typeof rule.value === 'string' ? rule.value : ''}
-                      onValueChange={(val) => updateRule(rule.id, { value: val })}
-                    >
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="选择值" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {audienceFields
-                          .find((f) => f.value === rule.field)
-                          ?.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Input className="h-9" placeholder="先选择维度" disabled />
-                  )}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-9 w-9 p-0 text-slate-400 hover:text-red-500"
-                  onClick={() => removeRule(rule.id)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
+        <Button variant="outline" size="sm" className="border-slate-300" onClick={addGroup}>
+          <Plus className="mr-1 h-3.5 w-3.5" />
+          添加客群
+        </Button>
       </div>
 
-      <Separator />
-
-      {/* 货架配置 */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
-            <Gift className="h-4 w-4 text-slate-500" />
-            货架动态勾选
-          </h3>
-          {availablePlans.length > 0 && (
-            <Select onValueChange={addShelf}>
-              <SelectTrigger className="w-[180px] h-8 border-slate-300">
-                <SelectValue placeholder="添加套餐到货架" />
-              </SelectTrigger>
-              <SelectContent>
-                {availablePlans.map((plan) => (
-                  <SelectItem key={plan.id} value={plan.id}>
-                    {plan.name} - ¥{plan.price}/{plan.duration}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+      {data.audienceGroups.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center">
+          <Users className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+          <p className="text-sm text-slate-400">暂无客群分层，点击"添加客群"开始配置</p>
+          <p className="text-xs text-slate-400 mt-1">每个客群可独立配置受众规则和套餐货架</p>
         </div>
-        <p className="text-xs text-slate-400 mb-3">
-          直接调用日常产品管理与价格管理数据，拖拽排序决定主推/次推
-        </p>
+      ) : (
+        <div className="space-y-4">
+          {data.audienceGroups.map((group, groupIndex) => {
+            const availablePlans = mockPlans.filter(
+              (p) => !group.shelves.some((s) => s.planId === p.id)
+            );
+            return (
+              <div key={group.id} className="rounded-lg border border-slate-200 overflow-hidden">
+                {/* 客群头部 */}
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center justify-center h-5 w-5 rounded-full bg-rose-100 text-rose-600 text-xs font-semibold">
+                      {groupIndex + 1}
+                    </span>
+                    <Input
+                      className="h-7 w-40 text-sm font-medium border-transparent bg-transparent hover:border-slate-300 focus:border-slate-300 px-1"
+                      value={group.name}
+                      onChange={(e) => updateGroup(group.id, { name: e.target.value })}
+                    />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-slate-400 hover:text-red-500"
+                    onClick={() => removeGroup(group.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
 
-        {data.shelves.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center">
-            <Gift className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-400">暂未配置货架，从右侧下拉添加套餐</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {data.shelves.map((shelf, index) => {
-              const plan = mockPlans.find((p) => p.id === shelf.planId);
-              return (
-                <div
-                  key={shelf.id}
-                  className={`rounded-lg border p-4 ${
-                    shelf.isMainPush
-                      ? 'border-rose-200 bg-rose-50/30'
-                      : 'border-slate-200 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {/* 排序按钮 */}
-                    <div className="flex flex-col gap-1">
+                <div className="p-4 space-y-4">
+                  {/* 受众规则 */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-500">受众规则</span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0"
-                        disabled={index === 0}
-                        onClick={() => moveShelf(shelf.id, 'up')}
+                        className="h-6 text-xs text-slate-500 hover:text-rose-500"
+                        onClick={() => addRule(group.id)}
                       >
-                        <ArrowUp className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                        disabled={index === data.shelves.length - 1}
-                        onClick={() => moveShelf(shelf.id, 'down')}
-                      >
-                        <ArrowDown className="h-3 w-3" />
+                        <Plus className="mr-0.5 h-3 w-3" />
+                        添加条件
                       </Button>
                     </div>
-
-                    {/* 套餐信息 */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-900">{shelf.planName}</span>
-                        {plan && (
-                          <span className="text-xs text-slate-500">
-                            ¥{plan.price}/{plan.duration}
-                          </span>
-                        )}
-                        {shelf.isMainPush ? (
-                          <Badge className="bg-rose-500 text-white text-xs">主推</Badge>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-5 text-xs border-slate-300"
-                            onClick={() => setMainPush(shelf.id)}
-                          >
-                            设为主推
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* 策略补丁 */}
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {activePatches.map((patch) => {
-                          const isSelected = shelf.patchIds.includes(patch.id);
-                          const typeLabels: Record<string, string> = {
-                            price_discount: '立减',
-                            bonus_duration: '加赠',
-                            gift: '赠礼',
-                          };
-                          const typeColors: Record<string, string> = {
-                            price_discount: isSelected ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-white text-slate-600 border-slate-200',
-                            bonus_duration: isSelected ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-slate-600 border-slate-200',
-                            gift: isSelected ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-white text-slate-600 border-slate-200',
-                          };
-                          return (
-                            <button
-                              key={patch.id}
-                              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs transition-colors ${
-                                typeColors[patch.type]
-                              }`}
-                              onClick={() => toggleShelfPatch(shelf.id, patch.id)}
+                    {group.rules.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-2">不配置规则则该客群对所有用户生效</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {group.rules.map((rule, ruleIndex) => (
+                          <div key={rule.id} className="flex items-end gap-2">
+                            <span className="text-xs text-slate-400 pb-2">{ruleIndex + 1}</span>
+                            <div className="space-y-1 flex-1">
+                              <Select
+                                value={rule.field}
+                                onValueChange={(val) => {
+                                  const field = audienceFields.find((f) => f.value === val);
+                                  updateRule(group.id, rule.id, { field: val, label: field?.label || '' });
+                                }}
+                              >
+                                <SelectTrigger className="h-8 text-xs">
+                                  <SelectValue placeholder="选择维度" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {audienceFields.map((f) => (
+                                    <SelectItem key={f.value} value={f.value}>
+                                      {f.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-1 w-20">
+                              <Select
+                                value={rule.operator}
+                                onValueChange={(val) => updateRule(group.id, rule.id, { operator: val })}
+                              >
+                                <SelectTrigger className="h-8 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="equals">等于</SelectItem>
+                                  <SelectItem value="in">包含</SelectItem>
+                                  <SelectItem value="not_in">不包含</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-1 flex-1">
+                              {rule.field ? (
+                                <Select
+                                  value={typeof rule.value === 'string' ? rule.value : ''}
+                                  onValueChange={(val) => updateRule(group.id, rule.id, { value: val })}
+                                >
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="选择值" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {audienceFields
+                                      .find((f) => f.value === rule.field)
+                                      ?.options.map((opt) => (
+                                        <SelectItem key={opt} value={opt}>
+                                          {opt}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Input className="h-8 text-xs" placeholder="先选择维度" disabled />
+                              )}
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
+                              onClick={() => removeRule(group.id, rule.id)}
                             >
-                              {isSelected && <Check className="mr-0.5 h-2.5 w-2.5" />}
-                              {typeLabels[patch.type]} · {patch.name}
-                            </button>
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  {/* 套餐货架 */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-500">套餐货架</span>
+                      {availablePlans.length > 0 && (
+                        <Select onValueChange={(planId) => addShelf(group.id, planId)}>
+                          <SelectTrigger className="w-[160px] h-7 text-xs border-slate-300">
+                            <SelectValue placeholder="添加套餐" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availablePlans.map((plan) => (
+                              <SelectItem key={plan.id} value={plan.id}>
+                                {plan.name} - ¥{plan.price}/{plan.duration}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    {group.shelves.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-2">从右侧下拉添加套餐到货架</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {group.shelves.map((shelf, shelfIndex) => {
+                          const plan = mockPlans.find((p) => p.id === shelf.planId);
+                          return (
+                            <div
+                              key={shelf.id}
+                              className={`rounded-lg border p-3 ${
+                                shelf.isMainPush
+                                  ? 'border-rose-200 bg-rose-50/30'
+                                  : 'border-slate-200 bg-white'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="flex flex-col gap-0.5">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-5 w-5 p-0"
+                                    disabled={shelfIndex === 0}
+                                    onClick={() => moveShelf(group.id, shelf.id, 'up')}
+                                  >
+                                    <ArrowUp className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-5 w-5 p-0"
+                                    disabled={shelfIndex === group.shelves.length - 1}
+                                    onClick={() => moveShelf(group.id, shelf.id, 'down')}
+                                  >
+                                    <ArrowDown className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-sm text-slate-900">{shelf.planName}</span>
+                                    {plan && (
+                                      <span className="text-xs text-slate-500">
+                                        ¥{plan.price}/{plan.duration}
+                                      </span>
+                                    )}
+                                    {shelf.isMainPush ? (
+                                      <Badge className="bg-rose-500 text-white text-xs">主推</Badge>
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-5 text-xs border-slate-300"
+                                        onClick={() => setMainPush(group.id, shelf.id)}
+                                      >
+                                        设为主推
+                                      </Button>
+                                    )}
+                                  </div>
+                                  <div className="mt-1.5 flex flex-wrap gap-1">
+                                    {activePatches.map((patch) => {
+                                      const isSelected = shelf.patchIds.includes(patch.id);
+                                      const typeLabels: Record<string, string> = {
+                                        price_discount: '立减',
+                                        bonus_duration: '加赠',
+                                        gift: '赠礼',
+                                      };
+                                      const typeColors: Record<string, string> = {
+                                        price_discount: isSelected ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-white text-slate-600 border-slate-200',
+                                        bonus_duration: isSelected ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-slate-600 border-slate-200',
+                                        gift: isSelected ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-white text-slate-600 border-slate-200',
+                                      };
+                                      return (
+                                        <button
+                                          key={patch.id}
+                                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs transition-colors ${
+                                            typeColors[patch.type]
+                                          }`}
+                                          onClick={() => toggleShelfPatch(group.id, shelf.id, patch.id)}
+                                        >
+                                          {isSelected && <Check className="mr-0.5 h-2.5 w-2.5" />}
+                                          {typeLabels[patch.type]} · {patch.name}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-slate-400 hover:text-red-500"
+                                  onClick={() => removeShelf(group.id, shelf.id)}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
                           );
                         })}
                       </div>
-                    </div>
-
-                    {/* 删除 */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
-                      onClick={() => removeShelf(shelf.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -817,8 +880,7 @@ export default function NewActivityPage() {
   });
 
   const [step2Data, setStep2Data] = useState<Step2Data>({
-    audienceRules: [],
-    shelves: [],
+    audienceGroups: [],
   });
 
   const [step3Data, setStep3Data] = useState<Step3Data>({
@@ -835,7 +897,7 @@ export default function NewActivityPage() {
       return step1Data.templateId !== '' && step1Data.name !== '' && step1Data.sceneKey !== '';
     }
     if (currentStep === 2) {
-      return step2Data.shelves.length > 0;
+      return step2Data.audienceGroups.some((g) => g.shelves.length > 0);
     }
     return true;
   };

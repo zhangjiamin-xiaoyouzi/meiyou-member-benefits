@@ -128,7 +128,7 @@ export default function ActivitiesPage() {
             <TableBody>
               {filteredActivities.map((activity) => {
                 const status = statusConfig[activity.status];
-                const patchCount = activity.shelves.reduce((sum, s) => sum + s.patchIds.length, 0);
+                const patchCount = activity.audienceGroups.reduce((sum, g) => sum + g.shelves.reduce((s, sh) => s + sh.patchIds.length, 0), 0);
                 const sellStart = new Date(activity.timeConfig.sellStartTime).toLocaleDateString('zh-CN');
                 const sellEnd = new Date(activity.timeConfig.sellEndTime).toLocaleDateString('zh-CN');
 

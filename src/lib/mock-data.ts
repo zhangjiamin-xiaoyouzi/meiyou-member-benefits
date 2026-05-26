@@ -182,14 +182,20 @@ export const mockActivities: Activity[] = [
       bufferEndTime: '2024-06-20T23:59:59Z',
       refundCutoffTime: '2024-06-15T23:59:59Z',
     },
-    audienceRules: [
-      { id: 'rule_001', field: 'member_status', label: '会员状态', operator: 'in', value: ['expired', 'non_member'] },
-      { id: 'rule_002', field: 'identity', label: '身份模式', operator: 'equals', value: 'pregnant' },
-    ],
-    shelves: [
-      { id: 'shelf_001', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: ['patch_001'] },
-      { id: 'shelf_002', planId: 'plan_004', planName: '年卡会员', isMainPush: false, sortOrder: 1, patchIds: ['patch_002'] },
-      { id: 'shelf_003', planId: 'plan_003', planName: '季度会员', isMainPush: false, sortOrder: 2, patchIds: ['patch_004'] },
+    audienceGroups: [
+      {
+        id: 'group_001',
+        name: '孕期用户',
+        rules: [
+          { id: 'rule_001', field: 'member_status', label: '会员状态', operator: 'in', value: ['expired', 'non_member'] },
+          { id: 'rule_002', field: 'identity', label: '身份模式', operator: 'equals', value: 'pregnant' },
+        ],
+        shelves: [
+          { id: 'shelf_001', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: ['patch_001'] },
+          { id: 'shelf_002', planId: 'plan_004', planName: '年卡会员', isMainPush: false, sortOrder: 1, patchIds: ['patch_002'] },
+          { id: 'shelf_003', planId: 'plan_003', planName: '季度会员', isMainPush: false, sortOrder: 2, patchIds: ['patch_004'] },
+        ],
+      },
     ],
     lotteryConfig: {
       enabled: true,
@@ -225,12 +231,18 @@ export const mockActivities: Activity[] = [
       sellStartTime: '2024-07-01T00:00:00Z',
       sellEndTime: '2024-07-01T23:59:59Z',
     },
-    audienceRules: [
-      { id: 'rule_101', field: 'member_status', label: '会员状态', operator: 'in', value: ['expired'] },
-    ],
-    shelves: [
-      { id: 'shelf_101', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: [] },
-      { id: 'shelf_102', planId: 'plan_003', planName: '季度会员', isMainPush: false, sortOrder: 1, patchIds: [] },
+    audienceGroups: [
+      {
+        id: 'group_101',
+        name: '过期会员',
+        rules: [
+          { id: 'rule_101', field: 'member_status', label: '会员状态', operator: 'in', value: ['expired'] },
+        ],
+        shelves: [
+          { id: 'shelf_101', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: [] },
+          { id: 'shelf_102', planId: 'plan_003', planName: '季度会员', isMainPush: false, sortOrder: 1, patchIds: [] },
+        ],
+      },
     ],
     lotteryConfig: {
       enabled: false,
@@ -262,12 +274,18 @@ export const mockActivities: Activity[] = [
       sellStartTime: '2024-07-15T00:00:00Z',
       sellEndTime: '2024-07-31T23:59:59Z',
     },
-    audienceRules: [
-      { id: 'rule_201', field: 'identity', label: '身份模式', operator: 'equals', value: 'pregnant' },
-      { id: 'rule_202', field: 'member_status', label: '会员状态', operator: 'equals', value: 'non_member' },
-    ],
-    shelves: [
-      { id: 'shelf_201', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: ['patch_006'] },
+    audienceGroups: [
+      {
+        id: 'group_201',
+        name: '孕期新用户',
+        rules: [
+          { id: 'rule_201', field: 'identity', label: '身份模式', operator: 'equals', value: 'pregnant' },
+          { id: 'rule_202', field: 'member_status', label: '会员状态', operator: 'equals', value: 'non_member' },
+        ],
+        shelves: [
+          { id: 'shelf_201', planId: 'plan_001', planName: '连续包月', isMainPush: true, sortOrder: 0, patchIds: ['patch_006'] },
+        ],
+      },
     ],
     lotteryConfig: {
       enabled: false,
@@ -297,8 +315,7 @@ export const mockActivities: Activity[] = [
       sellStartTime: '2023-11-01T00:00:00Z',
       sellEndTime: '2023-11-11T23:59:59Z',
     },
-    audienceRules: [],
-    shelves: [],
+    audienceGroups: [],
     lotteryConfig: { enabled: false, poolId: '', poolName: '' },
     materialConfig: {},
     components: {},

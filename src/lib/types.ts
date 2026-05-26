@@ -89,6 +89,13 @@ export interface ShelfItem {
   patchIds: string[];
 }
 
+export interface AudienceGroup {
+  id: string;
+  name: string;
+  rules: AudienceRule[];
+  shelves: ShelfItem[];
+}
+
 export interface LotteryConfig {
   enabled: boolean;
   poolId: string;
@@ -110,8 +117,7 @@ export interface Activity {
   templateName: string;
   status: ActivityStatus;
   timeConfig: TimeConfig;
-  audienceRules: AudienceRule[];
-  shelves: ShelfItem[];
+  audienceGroups: AudienceGroup[];
   lotteryConfig: LotteryConfig;
   materialConfig: MaterialConfig;
   components: Record<string, boolean>; // 组件开关状态

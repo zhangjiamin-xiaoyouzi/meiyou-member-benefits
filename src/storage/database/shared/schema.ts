@@ -58,8 +58,7 @@ export const activities = pgTable(
     template_name: varchar("template_name", { length: 128 }),
     status: varchar("status", { length: 16 }).notNull().default("draft"), // draft / scheduled / active / expired
     time_config: jsonb("time_config").notNull().default(sql`'{}'::jsonb`), // TimeConfig
-    audience_rules: jsonb("audience_rules").notNull().default(sql`'[]'::jsonb`), // AudienceRule[]
-    shelves: jsonb("shelves").notNull().default(sql`'[]'::jsonb`), // ShelfItem[]
+    audience_groups: jsonb("audience_groups").notNull().default(sql`'[]'::jsonb`), // AudienceGroup[]
     lottery_config: jsonb("lottery_config").notNull().default(sql`'{}'::jsonb`), // LotteryConfig
     material_config: jsonb("material_config").notNull().default(sql`'{}'::jsonb`), // MaterialConfig
     components: jsonb("components").notNull().default(sql`'{}'::jsonb`), // Record<string, boolean>

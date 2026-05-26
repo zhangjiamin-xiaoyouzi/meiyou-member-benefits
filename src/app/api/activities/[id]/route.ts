@@ -34,8 +34,7 @@ export async function PATCH(
     if (body.name !== undefined) updateFields.name = body.name;
     if (body.status !== undefined) updateFields.status = body.status;
     if (body.timeConfig !== undefined) updateFields.time_config = body.timeConfig;
-    if (body.audienceRules !== undefined) updateFields.audience_rules = body.audienceRules;
-    if (body.shelves !== undefined) updateFields.shelves = body.shelves;
+    if (body.audienceGroups !== undefined) updateFields.audience_groups = body.audienceGroups;
     if (body.lotteryConfig !== undefined) updateFields.lottery_config = body.lotteryConfig;
     if (body.materialConfig !== undefined) updateFields.material_config = body.materialConfig;
     if (body.components !== undefined) updateFields.components = body.components;
