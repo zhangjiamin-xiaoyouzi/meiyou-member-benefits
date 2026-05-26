@@ -180,13 +180,13 @@ function StepBasicInfo({
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <TimeRangeField
-            label="售卖时间"
+            label="预约时间"
             required
             startValue={data.sellStartTime}
             endValue={data.sellEndTime}
             onStartChange={(v) => onChange({ ...data, sellStartTime: v })}
             onEndChange={(v) => onChange({ ...data, sellEndTime: v })}
-            placeholder={{ start: '售卖开始', end: '售卖结束' }}
+            placeholder={{ start: '预约开始', end: '预约结束' }}
           />
           {selectedTemplate && (selectedTemplate.category === '年度大促' || selectedTemplate.category === '会员日') && (
             <TimeRangeField
