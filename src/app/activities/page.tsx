@@ -189,12 +189,20 @@ export default function ActivitiesPage() {
                 const patchCount = activity.audienceGroups.reduce((sum, g) => sum + g.shelves.reduce((s, sh) => s + sh.patchIds.length, 0), 0);
                 const sellStart = new Date(activity.timeConfig.sellStartTime).toLocaleDateString('zh-CN');
                 const sellEnd = new Date(activity.timeConfig.sellEndTime).toLocaleDateString('zh-CN');
+                const isMemberDay = activity.category === '会员日';
 
                 return (
-                  <TableRow key={activity.id} className="hover:bg-slate-50/50">
+                  <TableRow key={activity.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
+                          {!isMemberDay && (
+                            <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px] shrink-0">
+                              本期不做
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-400 mt-0.5">ID: {activity.id}</p>
                       </div>
                     </TableCell>
@@ -240,11 +248,29 @@ export default function ActivitiesPage() {
                               查看详情
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/activities/${activity.id}/edit`}>
-                              <Pencil className="mr-2 h-3.5 w-3.5" />
-                              编辑
-                            </Link>
+                          <DropdownMenuItem
+                            disabled={!isMemberDay}
+                            className={!isMemberDay ? 'opacity-50 cursor-not-allowed' : ''}
+                            onClick={(e) => {
+                              if (!isMemberDay) {
+                                e.preventDefault();
+                                return;
+                              }
+                            }}
+                            asChild={isMemberDay}
+                          >
+                            {isMemberDay ? (
+                              <Link href={`/activities/${activity.id}/edit`}>
+                                <Pencil className="mr-2 h-3.5 w-3.5" />
+                                编辑
+                              </Link>
+                            ) : (
+                              <>
+                                <Pencil className="mr-2 h-3.5 w-3.5" />
+                                编辑
+                                <span className="ml-auto text-[10px] text-slate-400">本期不做</span>
+                              </>
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleCopy(activity)}>
                             <Copy className="mr-2 h-3.5 w-3.5" />

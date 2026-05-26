@@ -181,28 +181,32 @@ function StepBasicInfo({
             <div className="flex items-center gap-2">
               <Select
                 value={data.category}
-                onValueChange={(val) => onChange({ ...data, category: val })}
+                onValueChange={(val) => {
+                  if (val === '会员日') onChange({ ...data, category: val });
+                }}
               >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="选择分类" />
                 </SelectTrigger>
                 <SelectContent>
                   {allCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                    <SelectItem
+                      key={cat}
+                      value={cat}
+                      disabled={cat !== '会员日'}
+                    >
+                      <span className="flex items-center gap-2">
+                        {cat}
+                        {cat !== '会员日' && (
+                          <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                            本期不做
+                          </span>
+                        )}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-rose-500 border-rose-200 hover:bg-rose-50"
-                onClick={() => setNewCategoryMode(true)}
-              >
-                <Plus className="h-3 w-3 mr-1" />
-                新建分类
-              </Button>
             </div>
           )}
         </div>
@@ -223,32 +227,46 @@ function StepBasicInfo({
               const order: Record<string, number> = { '会员日': 0, '固定节日': 1, '年度大促': 2 };
               return (order[a.category] ?? 3) - (order[b.category] ?? 3);
             })
-            .map((template) => (
-              <Card
-                key={template.id}
-                className={`cursor-pointer transition-all ${
-                  data.templateId === template.id
-                    ? 'ring-2 ring-rose-500 border-rose-300 shadow-md'
-                    : 'hover:border-slate-400 hover:shadow-sm'
-                }`}
-                onClick={() => handleTemplateSelect(template.id)}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm">{template.name}</CardTitle>
-                    <Badge className={getCategoryColor(template.category)}>
-                      {template.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-xs">{template.description}</CardDescription>
-                  <div className="mt-2 text-xs text-slate-400">
-                    {template.components.length} 个组件
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            .map((template) => {
+              const isDisabled = template.category !== '会员日';
+              return (
+                <Card
+                  key={template.id}
+                  className={`transition-all ${
+                    isDisabled
+                      ? 'opacity-50 cursor-not-allowed bg-slate-50'
+                      : data.templateId === template.id
+                        ? 'ring-2 ring-rose-500 border-rose-300 shadow-md cursor-pointer'
+                        : 'hover:border-slate-400 hover:shadow-sm cursor-pointer'
+                  }`}
+                  onClick={() => {
+                    if (!isDisabled) handleTemplateSelect(template.id);
+                  }}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm">{template.name}</CardTitle>
+                      <div className="flex items-center gap-1.5">
+                        {isDisabled && (
+                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px]">
+                            本期不做
+                          </Badge>
+                        )}
+                        <Badge className={getCategoryColor(template.category)}>
+                          {template.category}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-xs">{template.description}</CardDescription>
+                    <div className="mt-2 text-xs text-slate-400">
+                      {template.components.length} 个组件
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
         </div>
       </div>
 
