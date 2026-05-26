@@ -230,7 +230,7 @@ function StepBasicInfo({
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-slate-700 flex items-center gap-2">
                 <Settings2 className="h-4 w-4 text-slate-500" />
-                组件开关矩阵
+                限时福利
               </h3>
               <span className="text-xs text-slate-400">对模板内局部楼层进行显隐控制</span>
             </div>
