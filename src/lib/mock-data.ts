@@ -53,7 +53,6 @@ export const mockTemplates: Template[] = [
       { id: 'comp_101', name: '氛围头图', key: 'header_banner', description: '顶部活动氛围图', enabled: true, required: true },
       { id: 'comp_102', name: '限时福利', key: 'timeline_status', description: '预约/抢购/结束三阶段切换', enabled: true, required: true },
       { id: 'comp_103', name: '0元福利', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
-      { id: 'comp_104', name: '套餐货架', key: 'plan_shelf', description: '会员套餐展示', enabled: true, required: true },
       { id: 'comp_105', name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
       { id: 'comp_106', name: '0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
       { id: 'comp_107', name: '专属礼', key: 'exclusive_gift', description: '会员专属限量礼品', enabled: false, required: false },
