@@ -109,6 +109,75 @@ export interface MaterialConfig {
   marqueeText?: string;
 }
 
+// ==================== 会员日组件配置类型 ====================
+
+/** 氛围头图配置 */
+export interface HeaderBannerConfig {
+  imageUrl: string;
+}
+
+/** 受众规则（组件级别） */
+export interface ComponentAudienceRule {
+  id: string;
+  field: string;
+  label: string;
+  operator: string;
+  value: string | string[];
+}
+
+/** 限时抢购-福利商品 */
+export interface FlashSaleProduct {
+  id: string;
+  productId: string;
+  stock: string;
+  rushImage: string;
+  benefitImage: string;
+  popupImage: string;
+  jumpLink: string;
+  pushText: string;
+  bookingStartTime: string;
+  bookingEndTime: string;
+  rushStartTime: string;
+  rushEndTime: string;
+  audienceRules: ComponentAudienceRule[];
+}
+
+/** 限时抢购配置 */
+export interface FlashSaleConfig {
+  moduleHeaderImage: string;
+  moduleBgImage: string;
+  products: FlashSaleProduct[];
+}
+
+/** 0元福利/专属礼商品 */
+export interface BenefitProduct {
+  id: string;
+  productId: string;
+  benefitImage: string;
+  displayMode: 'horizontal' | 'double-column';
+  sortOrder: number;
+}
+
+/** 0元福利/专属礼配置 */
+export interface BenefitConfig {
+  products: BenefitProduct[];
+}
+
+/** 规则弹窗配置 */
+export interface RulePopupConfig {
+  iconImage: string;
+  ruleText: string;
+}
+
+/** 组件配置集合 */
+export interface ComponentConfigs {
+  header_banner?: HeaderBannerConfig;
+  flash_sale?: FlashSaleConfig;
+  free_benefit?: BenefitConfig;
+  exclusive_gift?: BenefitConfig;
+  rule_popup?: RulePopupConfig;
+}
+
 export interface Activity {
   id: string;
   name: string;
@@ -122,6 +191,7 @@ export interface Activity {
   lotteryConfig: LotteryConfig;
   materialConfig: MaterialConfig;
   components: Record<string, boolean>; // 组件开关状态
+  componentConfigs?: ComponentConfigs; // 组件详细配置
   createdAt: string;
   updatedAt: string;
 }

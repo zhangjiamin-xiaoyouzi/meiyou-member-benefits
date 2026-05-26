@@ -47,6 +47,7 @@ export async function POST() {
         lottery_config: a.lotteryConfig,
         material_config: a.materialConfig,
         components: a.components,
+        component_configs: a.componentConfigs || {},
       }))
     );
     if (actError) throw new Error(`活动插入失败: ${actError.message}`);

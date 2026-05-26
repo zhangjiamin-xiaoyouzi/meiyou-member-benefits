@@ -39,6 +39,7 @@ export async function PATCH(
     if (body.lotteryConfig !== undefined) updateFields.lottery_config = body.lotteryConfig;
     if (body.materialConfig !== undefined) updateFields.material_config = body.materialConfig;
     if (body.components !== undefined) updateFields.components = body.components;
+    if (body.componentConfigs !== undefined) updateFields.component_configs = body.componentConfigs;
 
     const { data, error } = await client
       .from('activities')

@@ -63,6 +63,7 @@ export const activities = pgTable(
     lottery_config: jsonb("lottery_config").notNull().default(sql`'{}'::jsonb`), // LotteryConfig
     material_config: jsonb("material_config").notNull().default(sql`'{}'::jsonb`), // MaterialConfig
     components: jsonb("components").notNull().default(sql`'{}'::jsonb`), // Record<string, boolean>
+    component_configs: jsonb("component_configs").default(sql`'{}'::jsonb`), // ComponentConfigs
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
