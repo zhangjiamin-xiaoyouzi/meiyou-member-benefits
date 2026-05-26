@@ -55,6 +55,8 @@ export const mockTemplates: Template[] = [
       { id: 'comp_103', name: '0元福利', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
       { id: 'comp_104', name: '套餐货架', key: 'plan_shelf', description: '会员套餐展示', enabled: true, required: true },
       { id: 'comp_105', name: '规则弹窗', key: 'rules_popup', description: '活动规则说明弹窗', enabled: true, required: true },
+      { id: 'comp_106', name: '0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
+      { id: 'comp_107', name: '专属礼', key: 'exclusive_gift', description: '会员专属限量礼品', enabled: false, required: false },
     ],
     createdAt: '2024-02-10T08:00:00Z',
     createdBy: '王五',
