@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface TimeRangeFieldProps {
   label: string;
@@ -27,9 +26,7 @@ export function TimeRangeField({
   const [activeField, setActiveField] = useState<'start' | 'end' | null>(null);
   const startRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Format display value for the compact input
   const formatDisplay = (value: string) => {
     if (!value) return '';
     const d = new Date(value);
@@ -41,24 +38,11 @@ export function TimeRangeField({
     return `${month}-${day} ${hours}:${mins}`;
   };
 
-  const handleContainerClick = () => {
-    if (!startValue) {
-      setActiveField('start');
-      setTimeout(() => startRef.current?.showPicker?.(), 50);
-    } else if (!endValue) {
-      setActiveField('end');
-      setTimeout(() => endRef.current?.showPicker?.(), 50);
-    } else {
-      setActiveField('start');
-      setTimeout(() => startRef.current?.showPicker?.(), 50);
-    }
-  };
-
   // Auto advance: when start is set, focus end
   useEffect(() => {
     if (activeField === 'start' && startValue) {
       setActiveField('end');
-      setTimeout(() => endRef.current?.showPicker?.(), 100);
+      endRef.current?.focus();
     }
   }, [startValue, activeField]);
 
@@ -72,78 +56,58 @@ export function TimeRangeField({
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
-      <div
-        ref={containerRef}
-        className="relative flex items-center gap-0 rounded-md border border-slate-200 bg-white cursor-pointer hover:border-slate-300 transition-colors h-9"
-        onClick={handleContainerClick}
-      >
-        <CalendarDays className="h-4 w-4 text-slate-400 ml-2.5 shrink-0" />
-
-        {/* Start time display */}
-        <div
-          className={`flex items-center gap-1.5 px-2 py-1.5 flex-1 min-w-0 ${
-            activeField === 'start' ? 'bg-rose-50/50' : ''
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveField('start');
-            setTimeout(() => startRef.current?.showPicker?.(), 50);
-          }}
-        >
-          {hasStart ? (
-            <span className="text-sm text-slate-900 font-mono">{formatDisplay(startValue)}</span>
-          ) : (
-            <span className="text-sm text-slate-400">
-              {placeholder?.start || '开始时间'}
-            </span>
-          )}
+      <div className="flex items-center gap-0 rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden">
+        {/* Start time - native input overlaid */}
+        <div className={`relative flex-1 min-w-0 ${activeField === 'start' ? 'bg-rose-50/50' : ''}`}>
+          <input
+            ref={startRef}
+            type="datetime-local"
+            value={startValue}
+            onChange={(e) => {
+              onStartChange(e.target.value);
+            }}
+            onFocus={() => setActiveField('start')}
+            onBlur={() => setActiveField(null)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            tabIndex={0}
+          />
+          <div className="flex items-center px-2.5 py-1.5 pointer-events-none">
+            {hasStart ? (
+              <span className="text-sm text-slate-900 font-mono">{formatDisplay(startValue)}</span>
+            ) : (
+              <span className="text-sm text-slate-400">
+                {placeholder?.start || '开始时间'}
+              </span>
+            )}
+          </div>
         </div>
 
         <ArrowRight className="h-3.5 w-3.5 text-slate-300 shrink-0" />
 
-        {/* End time display */}
-        <div
-          className={`flex items-center gap-1.5 px-2 py-1.5 flex-1 min-w-0 ${
-            activeField === 'end' ? 'bg-rose-50/50' : ''
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveField('end');
-            setTimeout(() => endRef.current?.showPicker?.(), 50);
-          }}
-        >
-          {hasEnd ? (
-            <span className="text-sm text-slate-900 font-mono">{formatDisplay(endValue)}</span>
-          ) : (
-            <span className="text-sm text-slate-400">
-              {placeholder?.end || '结束时间'}
-            </span>
-          )}
+        {/* End time - native input overlaid */}
+        <div className={`relative flex-1 min-w-0 ${activeField === 'end' ? 'bg-rose-50/50' : ''}`}>
+          <input
+            ref={endRef}
+            type="datetime-local"
+            value={endValue}
+            onChange={(e) => {
+              onEndChange(e.target.value);
+            }}
+            onFocus={() => setActiveField('end')}
+            onBlur={() => setActiveField(null)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            tabIndex={0}
+          />
+          <div className="flex items-center px-2.5 py-1.5 pointer-events-none">
+            {hasEnd ? (
+              <span className="text-sm text-slate-900 font-mono">{formatDisplay(endValue)}</span>
+            ) : (
+              <span className="text-sm text-slate-400">
+                {placeholder?.end || '结束时间'}
+              </span>
+            )}
+          </div>
         </div>
-
-        {/* Hidden native inputs for picker */}
-        <Input
-          ref={startRef}
-          type="datetime-local"
-          value={startValue}
-          onChange={(e) => {
-            onStartChange(e.target.value);
-          }}
-          className="sr-only"
-          tabIndex={-1}
-          onClick={(e) => e.stopPropagation()}
-        />
-        <Input
-          ref={endRef}
-          type="datetime-local"
-          value={endValue}
-          onChange={(e) => {
-            onEndChange(e.target.value);
-          }}
-          className="sr-only"
-          tabIndex={-1}
-          onClick={(e) => e.stopPropagation()}
-        />
       </div>
     </div>
   );
@@ -184,29 +148,22 @@ export function SingleTimeField({
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
-      <div
-        className="relative flex items-center rounded-md border border-slate-200 bg-white cursor-pointer hover:border-slate-300 transition-colors h-9"
-        onClick={() => {
-          setTimeout(() => inputRef.current?.showPicker?.(), 50);
-        }}
-      >
-        <Clock className="h-4 w-4 text-slate-400 ml-2.5 shrink-0" />
-        <div className="flex items-center px-2 py-1.5 flex-1 min-w-0">
+      <div className="relative flex items-center rounded-md border border-slate-200 bg-white hover:border-slate-300 transition-colors h-9 overflow-hidden">
+        <input
+          ref={inputRef}
+          type="datetime-local"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          tabIndex={0}
+        />
+        <div className="flex items-center px-2.5 py-1.5 pointer-events-none">
           {hasValue ? (
             <span className="text-sm text-slate-900 font-mono">{formatDisplay(value)}</span>
           ) : (
             <span className="text-sm text-slate-400">{placeholder || '选择时间'}</span>
           )}
         </div>
-        <Input
-          ref={inputRef}
-          type="datetime-local"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="sr-only"
-          tabIndex={-1}
-          onClick={(e) => e.stopPropagation()}
-        />
       </div>
     </div>
   );
