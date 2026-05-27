@@ -46,7 +46,7 @@ export const mockTemplates: Template[] = [
   },
   {
     id: 'tpl_002',
-    name: '周期会员日模板',
+    name: '会员日模板',
     category: '会员日',
     description: '适用于每月会员日活动，预留限时抢购、0元福利、专属礼等组件。',
     preview: '/template-a.png',
@@ -232,7 +232,7 @@ export const mockActivities: Activity[] = [
     category: '促活',
 
     templateId: 'tpl_002',
-    templateName: '周期会员日模板',
+    templateName: '会员日模板',
     status: 'scheduled',
     timeConfig: {
       sellStartTime: '2024-07-01T00:00:00Z',
