@@ -26,7 +26,7 @@ import { mockTemplates } from '@/lib/mock-data';
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
-  '会员日': 'bg-amber-50 text-amber-700 border-amber-200',
+  '会员日': 'bg-emerald-50 text-emerald-700 border-emerald-200',
   '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
 const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';

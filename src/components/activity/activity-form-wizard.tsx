@@ -73,13 +73,13 @@ interface Step2Data {
 // ==================== Constants ====================
 
 const categoryColorMap: Record<string, string> = {
-  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
-  '会员日': 'bg-amber-50 text-amber-700 border-amber-200',
-  '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
+  '促活': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  '转化': 'bg-amber-50 text-amber-700 border-amber-200',
+  '拉新': 'bg-blue-50 text-blue-700 border-blue-200',
 };
 const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
 
-const defaultCategories = ['会员日', '固定节日', '年度大促'];
+const defaultCategories = ['促活', '转化', '拉新'];
 
 const stepConfig = [
   { num: 1, label: '选择模板与基础信息', icon: Puzzle },
@@ -280,6 +280,7 @@ function StepBasicInfo({
 }) {
   const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
+  // 活动分类已改为 促活/转化/拉新，模板分类仍保留原值
 
   const [compDragIndex, setCompDragIndex] = useState<number | null>(null);
   const [allCategories] = useState(defaultCategories);
@@ -331,9 +332,7 @@ function StepBasicInfo({
         <div className="mt-1.5">
           <Select
             value={data.category}
-            onValueChange={(val) => {
-              if (val === '会员日') onChange({ ...data, category: val });
-            }}
+            onValueChange={(val) => onChange({ ...data, category: val })}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="选择分类" />
@@ -343,16 +342,8 @@ function StepBasicInfo({
                 <SelectItem
                   key={cat}
                   value={cat}
-                  disabled={cat !== '会员日'}
                 >
-                  <span className="flex items-center gap-2">
-                    {cat}
-                    {cat !== '会员日' && (
-                      <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                        本期不做
-                      </span>
-                    )}
-                  </span>
+                  {cat}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -98,7 +98,7 @@ export default function ActivitiesPage() {
   };
 
   const filteredActivities = localActivities
-    .filter((activity) => activity.category === '会员日')
+    .filter((activity) => ['促活', '转化', '拉新'].includes(activity.category))
     .filter((activity) => {
       const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
       const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;

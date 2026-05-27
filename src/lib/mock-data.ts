@@ -26,7 +26,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_001',
     name: '大促抽奖模板',
-    category: '年度大促',
+    category: '促活',
     description: '适用于618、双11等S级大促活动，预留头图、互动红包、大/小卡货架、扭蛋机抽奖楼层、中奖跑马灯组件。',
     preview: '/template-s.png',
     components: [
@@ -46,7 +46,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_002',
     name: '周期会员日模板',
-    category: '会员日',
+    category: '促活',
     description: '适用于每月会员日活动，预留限时抢购、0元福利、专属礼等组件。',
     preview: '/template-a.png',
     components: [
@@ -66,7 +66,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_003',
     name: '轻量定向模板',
-    category: '固定节日',
+    category: '转化',
     description: '半弹窗/浮层样式，适用于定向推送场景，预留单品券发放与快捷开卡组件。',
     preview: '/template-b.png',
     components: [
@@ -172,7 +172,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_001',
     name: '618会员狂欢节',
-    category: '年度大促',
+    category: '促活',
 
     templateId: 'tpl_001',
     templateName: '大促抽奖模板',
@@ -228,7 +228,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_002',
     name: '每月会员日',
-    category: '会员日',
+    category: '促活',
 
     templateId: 'tpl_002',
     templateName: '周期会员日模板',
@@ -273,7 +273,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_003',
     name: '孕期用户专属弹窗',
-    category: '固定节日',
+    category: '转化',
 
     templateId: 'tpl_003',
     templateName: '轻量定向模板',
@@ -317,7 +317,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act_004',
     name: '双11大促',
-    category: '年度大促',
+    category: '促活',
 
     templateId: 'tpl_001',
     templateName: '大促抽奖模板',

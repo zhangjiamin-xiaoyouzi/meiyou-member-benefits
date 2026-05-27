@@ -1,7 +1,7 @@
 // ==================== 模板管理类型 ====================
 
 // 模板分类（支持自定义扩展）
-export const DEFAULT_CATEGORIES = ['会员日', '固定节日', '年度大促'] as const;
+export const DEFAULT_CATEGORIES = ['促活', '转化', '拉新'] as const;
 
 export interface TemplateComponent {
   id: string;

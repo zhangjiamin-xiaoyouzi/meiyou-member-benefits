@@ -13,7 +13,7 @@ export const templates = pgTable(
   {
     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 128 }).notNull(),
-    category: varchar("category", { length: 64 }).notNull(), // 模板分类（会员日/固定节日/年度大促/自定义）
+    category: varchar("category", { length: 64 }).notNull(), // 模板分类（会员日/固定节日/年度大促）
     description: text("description"),
     preview: varchar("preview", { length: 512 }),
     components: jsonb("components").notNull().default(sql`'[]'::jsonb`), // TemplateComponent[]
