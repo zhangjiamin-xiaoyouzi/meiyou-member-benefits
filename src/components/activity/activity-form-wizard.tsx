@@ -1365,11 +1365,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
               : '选定模板与基础信息 → 组件配置，两步完成活动配置'}
           </p>
         </div>
-        {isEdit && (
-          <Button variant="outline" className="text-red-500 border-red-200 hover:bg-red-50" onClick={handleDelete}>
-            删除活动
-          </Button>
-        )}
+
       </div>
 
       {/* 步骤条 */}
