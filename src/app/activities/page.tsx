@@ -96,14 +96,16 @@ export default function ActivitiesPage() {
     return `${domain}/activities/${activity.id}/preview`;
   };
 
-  const filteredActivities = localActivities.filter((activity) => {
-    const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
-    const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
-    const matchesSearch =
-      !searchQuery ||
-      activity.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesCategory && matchesSearch;
-  });
+  const filteredActivities = localActivities
+    .filter((activity) => activity.category === '会员日')
+    .filter((activity) => {
+      const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
+      const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
+      const matchesSearch =
+        !searchQuery ||
+        activity.name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesCategory && matchesSearch;
+    });
 
   return (
     <div className="space-y-6">
@@ -185,21 +187,15 @@ export default function ActivitiesPage() {
             <TableBody>
               {filteredActivities.map((activity) => {
                 const status = statusConfig[activity.status];
-                const isMemberDay = activity.category === '会员日';
                 const createdDate = activity.createdAt ? new Date(activity.createdAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
                 const updatedDate = activity.updatedAt ? new Date(activity.updatedAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
 
                 return (
-                  <TableRow key={activity.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
+                  <TableRow key={activity.id} className="hover:bg-slate-50/50">
                     <TableCell>
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
-                          {!isMemberDay && (
-                            <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px] shrink-0">
-                              本期不做
-                            </Badge>
-                          )}
                         </div>
                         <p className="text-xs text-slate-400 mt-0.5">ID: {activity.id}</p>
                       </div>
@@ -214,9 +210,8 @@ export default function ActivitiesPage() {
                       {(() => {
                         const tc = activity.timeConfig;
                         if (!tc) return <span className="text-xs text-slate-400">-</span>;
-                        const isMemberDayAct = activity.category === '会员日';
-                        const startTime = isMemberDayAct ? tc.sellStartTime : tc.sellStartTime;
-                        const endTime = isMemberDayAct ? (tc.bufferEndTime || tc.sellEndTime) : tc.sellEndTime;
+                        const startTime = tc.sellStartTime;
+                        const endTime = tc.bufferEndTime || tc.sellEndTime;
                         const fmt = (d: string) => {
                           if (!d) return '-';
                           return new Date(d).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -244,19 +239,12 @@ export default function ActivitiesPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center gap-1">
-                        {isMemberDay ? (
                           <Link href={`/activities/${activity.id}/edit`}>
                             <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-600 hover:text-rose-600">
                               <Pencil className="h-3.5 w-3.5 mr-1" />
                               编辑
                             </Button>
                           </Link>
-                        ) : (
-                          <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-300 cursor-not-allowed" disabled>
-                            <Pencil className="h-3.5 w-3.5 mr-1" />
-                            编辑
-                          </Button>
-                        )}
                         {activity.status === 'active' && (
                           <Button
                             variant="ghost"
