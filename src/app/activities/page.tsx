@@ -37,6 +37,7 @@ import {
   Pencil,
   ArrowDownCircle,
   QrCode,
+  Copy,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { mockActivities } from '@/lib/mock-data';
@@ -243,6 +244,12 @@ export default function ActivitiesPage() {
                             <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-600 hover:text-rose-600">
                               <Pencil className="h-3.5 w-3.5 mr-1" />
                               编辑
+                            </Button>
+                          </Link>
+                          <Link href={`/activities/new?copyFrom=${activity.id}`}>
+                            <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-600 hover:text-emerald-600">
+                              <Copy className="h-3.5 w-3.5 mr-1" />
+                              复制
                             </Button>
                           </Link>
                         {activity.status === 'active' && (
