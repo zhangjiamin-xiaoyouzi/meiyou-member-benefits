@@ -33,6 +33,7 @@ import {
   Tag,
   ChevronUp,
   ChevronDown,
+  MousePointerClick,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
@@ -46,6 +47,7 @@ import type {
   BenefitConfig,
   BenefitProduct,
   FreePurchaseConfig,
+  ActionButtonConfig,
   RulePopupConfig,
   ComponentAudienceRule,
 } from '@/lib/types';
@@ -649,6 +651,87 @@ function StepComponentConfig({
                     <p className="text-[10px] text-slate-400">支持直接输入URL作为跳转链接</p>
                   </div>
                 </>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 按钮 */}
+      {isComponentEnabled('cta_button') && (
+        <Card className="border-slate-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <MousePointerClick className="h-4 w-4 text-slate-500" />
+              按钮
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {(() => {
+              const cfg: ActionButtonConfig = configs.cta_button || {
+                bookingPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
+                claimPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
+                endPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
+              };
+              const updatePeriod = (period: 'bookingPeriod' | 'claimPeriod' | 'endPeriod', field: keyof ActionButtonConfig['bookingPeriod'], value: string) => {
+                updateConfig('cta_button', {
+                  ...cfg,
+                  [period]: { ...cfg[period], [field]: value },
+                });
+              };
+              const periods: { key: 'bookingPeriod' | 'claimPeriod' | 'endPeriod'; label: string; desc: string }[] = [
+                { key: 'bookingPeriod', label: '活动预约期', desc: '用户可预约时的按钮配置' },
+                { key: 'claimPeriod', label: '活动领取期', desc: '用户可领取福利时的按钮配置' },
+                { key: 'endPeriod', label: '活动结束期', desc: '活动结束后的按钮配置' },
+              ];
+              return (
+                <div className="space-y-4">
+                  {periods.map(({ key, label, desc }) => (
+                    <div key={key} className="border border-slate-100 rounded-lg p-3 space-y-3">
+                      <div>
+                        <p className="text-xs font-medium text-slate-700">{label}</p>
+                        <p className="text-[10px] text-slate-400">{desc}</p>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-slate-500">按钮文案</Label>
+                          <Input
+                            placeholder="如：立即预约"
+                            value={cfg[key].buttonText}
+                            onChange={(e) => updatePeriod(key, 'buttonText', e.target.value)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-slate-500">按钮颜色</Label>
+                          <div className="flex gap-2 items-center">
+                            <input
+                              type="color"
+                              value={cfg[key].buttonColor || '#f43f5e'}
+                              onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
+                              className="h-8 w-8 rounded border border-slate-200 cursor-pointer"
+                            />
+                            <Input
+                              value={cfg[key].buttonColor || '#f43f5e'}
+                              onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
+                              className="h-8 text-xs flex-1"
+                              placeholder="#f43f5e"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[11px] text-slate-500">跳转链接</Label>
+                          <Input
+                            placeholder="https://"
+                            value={cfg[key].jumpLink}
+                            onChange={(e) => updatePeriod(key, 'jumpLink', e.target.value)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               );
             })()}
           </CardContent>

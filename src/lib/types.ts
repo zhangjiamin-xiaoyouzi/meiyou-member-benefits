@@ -186,6 +186,20 @@ export interface RulePopupConfig {
   ruleText: string;
 }
 
+/** 按钮组件单阶段配置 */
+export interface PeriodButtonConfig {
+  buttonText: string;
+  buttonColor: string;
+  jumpLink: string;
+}
+
+/** 按钮组件配置 */
+export interface ActionButtonConfig {
+  bookingPeriod: PeriodButtonConfig;  // 活动预约期
+  claimPeriod: PeriodButtonConfig;    // 活动领取期
+  endPeriod: PeriodButtonConfig;      // 活动结束期
+}
+
 /** 组件配置集合 */
 export interface ComponentConfigs {
   header_banner?: HeaderBannerConfig;
@@ -194,6 +208,7 @@ export interface ComponentConfigs {
   exclusive_gift?: BenefitConfig;
   free_purchase?: FreePurchaseConfig;
   rule_popup?: RulePopupConfig;
+  cta_button?: ActionButtonConfig;
 }
 
 export interface Activity {
