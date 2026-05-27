@@ -83,7 +83,7 @@ const defaultCategories = ['促活', '转化', '拉新'];
 
 const stepConfig = [
   { num: 1, label: '选择模板与基础信息', icon: Puzzle },
-  { num: 2, label: '组件配置', icon: Settings2 },
+  { num: 2, label: '填充组件素材', icon: Settings2 },
 ];
 
 function getCategoryColor(category: string) {
@@ -1353,7 +1353,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           <p className="mt-1 text-sm text-slate-500">
             {isEdit
               ? '修改活动配置信息'
-              : '选定模板与基础信息 → 组件配置，两步完成活动配置'}
+              : '选定模板与基础信息 → 填充组件素材，两步完成活动配置'}
           </p>
         </div>
 
