@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ActivityFormWizard from '@/components/activity/activity-form-wizard';
 import type { Activity } from '@/lib/types';
@@ -22,7 +22,7 @@ function toCamelCaseDeep(obj: unknown): unknown {
   return obj;
 }
 
-export default function NewActivityPage() {
+function NewActivityContent() {
   const searchParams = useSearchParams();
   const copyFromId = searchParams.get('copyFrom');
   const [copiedActivity, setCopiedActivity] = useState<Activity | null>(null);
@@ -57,4 +57,12 @@ export default function NewActivityPage() {
   }
 
   return <ActivityFormWizard initialData={copiedActivity} />;
+}
+
+export default function NewActivityPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-20 text-slate-400">加载中...</div>}>
+      <NewActivityContent />
+    </Suspense>
+  );
 }
