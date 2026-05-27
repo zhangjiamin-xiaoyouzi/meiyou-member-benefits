@@ -263,10 +263,7 @@ export default function ActivitiesPage() {
                   <TableRow key={activity.id} className="hover:bg-slate-50/50">
                     <TableCell>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-0.5">ID: {activity.id}</p>
+                        <p className="font-medium text-slate-900 text-sm">{activity.name}</p>
                       </div>
                     </TableCell>
                     <TableCell>
