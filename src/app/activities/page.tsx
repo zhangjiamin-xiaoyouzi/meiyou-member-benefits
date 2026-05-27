@@ -91,6 +91,10 @@ export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  // 实际生效的筛选条件（点击查询后生效）
+  const [appliedStatus, setAppliedStatus] = useState<string>('all');
+  const [appliedCategory, setAppliedCategory] = useState<string>('all');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
 
@@ -130,14 +134,29 @@ export default function ActivitiesPage() {
     return `${domain}/activities/${activity.id}/preview`;
   };
 
+  const handleQuery = () => {
+    setAppliedStatus(statusFilter);
+    setAppliedCategory(categoryFilter);
+    setAppliedSearch(searchQuery);
+  };
+
+  const handleReset = () => {
+    setStatusFilter('all');
+    setCategoryFilter('all');
+    setSearchQuery('');
+    setAppliedStatus('all');
+    setAppliedCategory('all');
+    setAppliedSearch('');
+  };
+
   const filteredActivities = localActivities
     .filter((activity) => ['促活', '转化', '拉新'].includes(activity.category))
     .filter((activity) => {
-      const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
-      const matchesCategory = categoryFilter === 'all' || activity.category === categoryFilter;
+      const matchesStatus = appliedStatus === 'all' || activity.status === appliedStatus;
+      const matchesCategory = appliedCategory === 'all' || activity.category === appliedCategory;
       const matchesSearch =
-        !searchQuery ||
-        activity.name.toLowerCase().includes(searchQuery.toLowerCase());
+        !appliedSearch ||
+        activity.name.toLowerCase().includes(appliedSearch.toLowerCase());
       return matchesStatus && matchesCategory && matchesSearch;
     });
 
@@ -162,40 +181,56 @@ export default function ActivitiesPage() {
       {/* 筛选栏 */}
       <Card className="border-slate-200">
         <CardContent className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="搜索活动名称..."
-                className="pl-9 border-slate-200"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-slate-500">活动名称</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  placeholder="请输入活动名称"
+                  className="pl-9 w-[220px] border-slate-200"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleQuery(); }}
+                />
+              </div>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px] border-slate-200">
-                <SelectValue placeholder="活动状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">全部状态</SelectItem>
-                <SelectItem value="active">进行中</SelectItem>
-                <SelectItem value="scheduled">待上线</SelectItem>
-                <SelectItem value="draft">草稿</SelectItem>
-                <SelectItem value="expired">已结束</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[140px] border-slate-200">
-                <SelectValue placeholder="活动分类" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">全部分类</SelectItem>
-                {DEFAULT_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="text-sm text-slate-500">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-slate-500">活动状态</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[140px] border-slate-200">
+                  <SelectValue placeholder="全部状态" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部状态</SelectItem>
+                  <SelectItem value="active">进行中</SelectItem>
+                  <SelectItem value="scheduled">待上线</SelectItem>
+                  <SelectItem value="draft">草稿</SelectItem>
+                  <SelectItem value="expired">已结束</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-slate-500">活动分类</label>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-[140px] border-slate-200">
+                  <SelectValue placeholder="全部分类" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部分类</SelectItem>
+                  {DEFAULT_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button className="bg-rose-500 hover:bg-rose-600 text-white h-9" onClick={handleQuery}>
+              查询
+            </Button>
+            <Button variant="outline" className="border-slate-200 h-9" onClick={handleReset}>
+              重置
+            </Button>
+            <div className="text-sm text-slate-500 ml-auto mb-1.5">
               共 {filteredActivities.length} 个活动
             </div>
           </div>
