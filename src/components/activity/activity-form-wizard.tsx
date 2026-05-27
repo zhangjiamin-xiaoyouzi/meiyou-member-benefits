@@ -372,7 +372,7 @@ function StepBasicInfo({
         <p className="text-xs text-slate-400 mt-1 mb-3">
           {isEdit ? '切换模板将重置组件配置' : '选择模板后将自动加载模板预设组件'}
         </p>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           {mockTemplates
             .slice()
             .sort((a, b) => {
@@ -384,7 +384,7 @@ function StepBasicInfo({
               return (
                 <Card
                   key={template.id}
-                  className={`transition-all ${
+                  className={`transition-all py-0 ${
                     isDisabled
                       ? 'opacity-50 cursor-not-allowed bg-slate-50'
                       : data.templateId === template.id
@@ -395,24 +395,24 @@ function StepBasicInfo({
                     if (!isDisabled) handleTemplateSelect(template.id);
                   }}
                 >
-                  <CardHeader className="pb-2">
+                  <CardHeader className="py-2 px-3 pb-1">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">{template.name}</CardTitle>
-                      <div className="flex items-center gap-1.5">
+                      <CardTitle className="text-xs">{template.name}</CardTitle>
+                      <div className="flex items-center gap-1">
                         {isDisabled && (
-                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px]">
+                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px] px-1 py-0">
                             本期不做
                           </Badge>
                         )}
-                        <Badge className={getCategoryColor(template.category)}>
+                        <Badge className={`${getCategoryColor(template.category)} text-[10px] px-1.5 py-0`}>
                           {template.category}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-xs">{template.description}</CardDescription>
-                    <div className="mt-2 text-xs text-slate-400">
+                  <CardContent className="py-1 px-3 pb-2">
+                    <CardDescription className="text-[11px] line-clamp-2">{template.description}</CardDescription>
+                    <div className="mt-1 text-[11px] text-slate-400">
                       {template.components.length} 个组件
                     </div>
                   </CardContent>
