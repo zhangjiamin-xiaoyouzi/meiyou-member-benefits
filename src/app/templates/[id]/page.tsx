@@ -16,7 +16,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Lock, Unlock, Settings2, GripVertical, Copy } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { ArrowLeft, Lock, Unlock, Settings2, GripVertical, Copy, Pencil } from 'lucide-react';
 import type { Template, TemplateComponent } from '@/lib/types';
 
 
@@ -51,6 +58,9 @@ export default function TemplateEditPage() {
 
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [editingComp, setEditingComp] = useState<TemplateComponent | null>(null);
+  const [editKey, setEditKey] = useState('');
+  const [editDesc, setEditDesc] = useState('');
 
   useEffect(() => {
     fetch(`/api/templates?id=${templateId}`)
@@ -97,6 +107,20 @@ export default function TemplateEditPage() {
     const updated = [...components];
     updated.splice(index + 1, 0, newComp);
     setComponents(updated);
+  };
+
+  const handleEditComponent = (comp: TemplateComponent) => {
+    setEditingComp(comp);
+    setEditKey(comp.key);
+    setEditDesc(comp.description);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingComp) return;
+    setComponents(components.map((c) =>
+      c.id === editingComp.id ? { ...c, key: editKey, description: editDesc } : c
+    ));
+    setEditingComp(null);
   };
 
   const handleDragStart = (index: number) => {
@@ -291,14 +315,24 @@ export default function TemplateEditPage() {
                     )}
                   </TableCell>
                   <TableCell className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyComponent(comp)}
-                      className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
-                      title="复制组件"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleEditComponent(comp)}
+                        className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                        title="编辑组件"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyComponent(comp)}
+                        className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                        title="复制组件"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -349,6 +383,49 @@ export default function TemplateEditPage() {
           {saving ? '保存中...' : '保存'}
         </Button>
       </div>
+
+      {/* 编辑组件弹窗 */}
+      <Dialog open={!!editingComp} onOpenChange={(open) => { if (!open) setEditingComp(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>编辑组件</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">组件名称</label>
+              <Input value={editingComp?.name || ''} disabled className="bg-slate-50 text-slate-500" />
+              <p className="text-xs text-slate-400 mt-1">组件名称请在列表中直接编辑</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">标识 Key</label>
+              <Input
+                value={editKey}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditKey(e.target.value)}
+                className="font-mono"
+                placeholder="输入组件 Key"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">功能说明</label>
+              <Input
+                value={editDesc}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDesc(e.target.value)}
+                placeholder="输入功能说明"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setEditingComp(null)}>取消</Button>
+            <Button
+              className="bg-rose-500 hover:bg-rose-600 text-white"
+              onClick={handleSaveEdit}
+              disabled={!editKey.trim()}
+            >
+              保存
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
