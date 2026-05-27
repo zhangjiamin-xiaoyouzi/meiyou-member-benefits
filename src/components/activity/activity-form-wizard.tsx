@@ -324,34 +324,45 @@ function StepBasicInfo({
 
   return (
     <div className="space-y-6">
-      {/* 活动分类 */}
-      <div>
-        <Label className="text-sm font-medium text-slate-700">
-          活动分类 <span className="text-rose-500">*</span>
-        </Label>
-        <div className="mt-1.5">
-          <Select
-            value={data.category}
-            onValueChange={(val) => onChange({ ...data, category: val })}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="选择分类" />
-            </SelectTrigger>
-            <SelectContent>
-              {allCategories.map((cat) => (
-                <SelectItem
-                  key={cat}
-                  value={cat}
-                >
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* 基础信息 */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm font-medium text-slate-700">
+            活动名称 <span className="text-rose-500">*</span>
+          </Label>
+          <Input
+            className="mt-1.5"
+            placeholder="请输入活动名称"
+            value={data.name}
+            onChange={(e) => onChange({ ...data, name: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium text-slate-700">
+            活动分类 <span className="text-rose-500">*</span>
+          </Label>
+          <div className="mt-1.5">
+            <Select
+              value={data.category}
+              onValueChange={(val) => onChange({ ...data, category: val })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="选择分类" />
+              </SelectTrigger>
+              <SelectContent>
+                {allCategories.map((cat) => (
+                  <SelectItem
+                    key={cat}
+                    value={cat}
+                  >
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
-
-      {/* 选择模板 */}
       <div>
         <Label className="text-sm font-medium text-slate-700">
           选择活动模板 <span className="text-rose-500">*</span>
@@ -1228,8 +1239,9 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         components,
       };
     }
+    const defaultTemplate = mockTemplates.find((t: { id: string }) => t.id === 'tpl_002');
     return {
-      templateId: '',
+      templateId: 'tpl_002',
       category: '',
       name: '',
 
@@ -1239,7 +1251,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       lotteryEndTime: '',
       bufferEndTime: '',
       refundCutoffTime: '',
-      components: [],
+      components: defaultTemplate ? defaultTemplate.components.map((c: TemplateComponent) => ({ ...c })) : [],
     };
   });
 
