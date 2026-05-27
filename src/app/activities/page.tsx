@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,6 @@ import { Input } from '@/components/ui/input';
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -36,11 +35,29 @@ import {
   Plus,
   Search,
   Pencil,
-  Trash2,
+  ArrowDownCircle,
+  QrCode,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { mockActivities } from '@/lib/mock-data';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
+import QRCodeLib from 'qrcode';
+
+function QRCodeCanvas({ url }: { url: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (canvasRef.current && url) {
+      QRCodeLib.toCanvas(canvasRef.current, url, {
+        width: 192,
+        margin: 2,
+        color: { dark: '#1e293b', light: '#ffffff' },
+      });
+    }
+  }, [url]);
+
+  return <canvas ref={canvasRef} />;
+}
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
   active: { label: '进行中', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -53,9 +70,31 @@ export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<Activity | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [localActivities, setLocalActivities] = useState<Activity[]>(mockActivities);
+  const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
+
+  const handleOffline = async (activity: Activity) => {
+    try {
+      const res = await fetch(`/api/activities/${activity.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'expired' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLocalActivities((prev) =>
+          prev.map((a) => (a.id === activity.id ? { ...a, status: 'expired' as ActivityStatus } : a))
+        );
+      }
+    } catch {
+      // 静默处理
+    }
+  };
+
+  const getPreviewUrl = (activity: Activity) => {
+    const domain = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${domain}/activities/${activity.id}/preview`;
+  };
 
   const filteredActivities = localActivities.filter((activity) => {
     const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
@@ -65,23 +104,6 @@ export default function ActivitiesPage() {
       activity.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesCategory && matchesSearch;
   });
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/activities/${deleteTarget.id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        setLocalActivities((prev) => prev.filter((a) => a.id !== deleteTarget.id));
-      }
-    } catch {
-      // 静默处理
-    } finally {
-      setIsDeleting(false);
-      setDeleteTarget(null);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -235,14 +257,25 @@ export default function ActivitiesPage() {
                             编辑
                           </Button>
                         )}
+                        {activity.status === 'active' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-slate-600 hover:text-amber-600"
+                            onClick={() => handleOffline(activity)}
+                          >
+                            <ArrowDownCircle className="h-3.5 w-3.5 mr-1" />
+                            下线
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-7 px-2 text-slate-600 hover:text-red-600"
-                          onClick={() => setDeleteTarget(activity)}
+                          className="h-7 px-2 text-slate-600 hover:text-blue-600"
+                          onClick={() => setPreviewActivity(activity)}
                         >
-                          <Trash2 className="h-3.5 w-3.5 mr-1" />
-                          删除
+                          <QrCode className="h-3.5 w-3.5 mr-1" />
+                          预览
                         </Button>
                       </div>
                     </TableCell>
@@ -261,24 +294,41 @@ export default function ActivitiesPage() {
         </CardContent>
       </Card>
 
-      {/* 删除确认弹窗 */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+      {/* 预览弹窗 */}
+      <AlertDialog open={!!previewActivity} onOpenChange={(open) => { if (!open) setPreviewActivity(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogTitle>扫码预览活动</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除活动「{deleteTarget?.name}」吗？此操作不可撤销。
+              扫描下方二维码或在手机浏览器中打开链接，查看活动配置
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {previewActivity && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="bg-white border-2 border-slate-200 rounded-xl p-2">
+                <QRCodeCanvas url={getPreviewUrl(previewActivity)} />
+              </div>
+              <p className="text-sm font-medium text-slate-900">{previewActivity.name}</p>
+              <div className="w-full bg-slate-50 rounded-lg p-3">
+                <p className="text-xs text-slate-500 mb-1">预览链接</p>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs text-blue-600 break-all flex-1">{getPreviewUrl(previewActivity)}</code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 h-7 text-xs"
+                    onClick={() => {
+                      navigator.clipboard.writeText(getPreviewUrl(previewActivity));
+                    }}
+                  >
+                    复制
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              {isDeleting ? '删除中...' : '确认删除'}
-            </AlertDialogAction>
+            <AlertDialogCancel>关闭</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
