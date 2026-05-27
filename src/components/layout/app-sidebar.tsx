@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutGrid,
+
   Puzzle,
   Gift,
   CalendarDays,
@@ -40,13 +40,7 @@ const navItems: NavItem[] = [
     title: '活动中心',
     icon: Sparkles,
     children: [
-      {
-        title: '活动概览（本期不做）',
-        url: '/',
-        icon: LayoutGrid,
-        description: '活动数据看板',
-        disabled: true,
-      },
+
       {
         title: '模板管理（本期不做）',
         url: '/templates',
