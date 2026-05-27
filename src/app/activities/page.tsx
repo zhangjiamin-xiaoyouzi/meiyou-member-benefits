@@ -176,7 +176,7 @@ export default function ActivitiesPage() {
             <TableHeader>
               <TableRow className="bg-slate-50 hover:bg-slate-50">
                 <TableHead className="w-[200px]">活动名称</TableHead>
-                <TableHead className="w-[100px]">分类</TableHead>
+                <TableHead className="w-[100px]">活动分类</TableHead>
                 <TableHead className="w-[120px]">使用模板</TableHead>
                 <TableHead className="w-[200px]">活动时间</TableHead>
                 <TableHead className="w-[80px] text-center">状态</TableHead>

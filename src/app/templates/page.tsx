@@ -99,7 +99,7 @@ export default function TemplatesPage() {
           <TableHeader>
             <TableRow className="bg-slate-50 hover:bg-slate-50">
               <TableHead className="w-[200px]">模板名称</TableHead>
-              <TableHead className="w-[120px]">分类</TableHead>
+              <TableHead className="w-[120px]">模版分类</TableHead>
               <TableHead>说明</TableHead>
               <TableHead className="w-[100px] text-center">组件数</TableHead>
               <TableHead className="w-[160px]">创建时间 / 创建人</TableHead>
