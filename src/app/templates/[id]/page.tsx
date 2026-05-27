@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Lock, Unlock, Settings2, GripVertical } from 'lucide-react';
+import { ArrowLeft, Lock, Unlock, Settings2, GripVertical, Copy } from 'lucide-react';
 import type { Template, TemplateComponent } from '@/lib/types';
 
 
@@ -75,6 +75,28 @@ export default function TemplateEditPage() {
         c.id === compId && !c.required ? { ...c, enabled: !c.enabled } : c
       )
     );
+  };
+
+  const handleNameChange = (compId: string, newName: string) => {
+    setComponents((prev) =>
+      prev.map((c) =>
+        c.id === compId ? { ...c, name: newName } : c
+      )
+    );
+  };
+
+  const handleCopyComponent = (comp: TemplateComponent) => {
+    const newComp: TemplateComponent = {
+      ...comp,
+      id: `comp_${Date.now()}`,
+      key: `${comp.key}_copy`,
+      name: `${comp.name}（副本）`,
+      required: false,
+    };
+    const index = components.findIndex((c) => c.id === comp.id);
+    const updated = [...components];
+    updated.splice(index + 1, 0, newComp);
+    setComponents(updated);
   };
 
   const handleDragStart = (index: number) => {
@@ -219,6 +241,7 @@ export default function TemplateEditPage() {
                 <TableHead>功能说明</TableHead>
                 <TableHead className="w-[80px] text-center">状态</TableHead>
                 <TableHead className="w-[80px] text-center">必选</TableHead>
+                <TableHead className="w-[60px] text-center">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -240,7 +263,11 @@ export default function TemplateEditPage() {
                     <GripVertical className="h-4 w-4 text-slate-300 hover:text-slate-500" />
                   </TableCell>
                   <TableCell className="font-medium text-slate-900 text-sm">
-                    {comp.name}
+                    <Input
+                      value={comp.name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNameChange(comp.id, e.target.value)}
+                      className="h-7 text-sm border-transparent hover:border-slate-200 focus:border-slate-300 bg-transparent px-1 py-0"
+                    />
                   </TableCell>
                   <TableCell>
                     <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
@@ -262,6 +289,16 @@ export default function TemplateEditPage() {
                     ) : (
                       <Unlock className="h-4 w-4 text-slate-300 mx-auto" />
                     )}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyComponent(comp)}
+                      className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                      title="复制组件"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}
