@@ -439,7 +439,7 @@ function StepBasicInfo({
         <div className="mt-3 grid grid-cols-2 gap-4">
           <div>
             <Label className="text-xs text-slate-500">
-              {isMemberDay ? '预约时间' : '售卖时间'} <span className="text-rose-500">*</span>
+              {isMemberDay ? '活动预约时间' : '售卖时间'} <span className="text-rose-500">*</span>
             </Label>
             <TimeRangeField
               startValue={data.sellStartTime}
@@ -450,7 +450,7 @@ function StepBasicInfo({
           </div>
           <div>
             <Label className="text-xs text-slate-500">
-              {isMemberDay ? '领取时间' : '抽奖时间'} <span className="text-rose-500">*</span>
+              {isMemberDay ? '活动福利领取时间' : '抽奖时间'} <span className="text-rose-500">*</span>
             </Label>
             <TimeRangeField
               startValue={data.lotteryStartTime}
@@ -461,7 +461,7 @@ function StepBasicInfo({
           </div>
           <div>
             <Label className="text-xs text-slate-500">
-              {isMemberDay ? '结束时间' : '缓冲截止时间'} <span className="text-rose-500">*</span>
+              {isMemberDay ? '活动结束时间' : '缓冲截止时间'} <span className="text-rose-500">*</span>
             </Label>
             <SingleTimeField
               value={data.bufferEndTime}
