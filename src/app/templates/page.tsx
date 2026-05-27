@@ -23,6 +23,7 @@ import {
 import { Pencil, Search } from 'lucide-react';
 import type { Template } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
+import { TEMPLATE_CATEGORIES } from '@/lib/types';
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
@@ -46,7 +47,7 @@ export default function TemplatesPage() {
   const [searchText, setSearchText] = useState('');
 
   // 动态收集所有已有分类
-  const allCategories = Array.from(new Set(mockTemplates.map((t) => t.category)));
+  const allCategories = [...TEMPLATE_CATEGORIES];
 
   const filteredTemplates = mockTemplates.filter((t) => {
     const matchCategory = filterCategory === 'all' || t.category === filterCategory;
@@ -120,14 +121,7 @@ export default function TemplatesPage() {
                 return (
                   <TableRow key={template.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-900">{template.name}</span>
-                        {!isMemberDay && (
-                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[10px] shrink-0">
-                            本期不做
-                          </Badge>
-                        )}
-                      </div>
+                      <span className="font-medium text-slate-900">{template.name}</span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getCategoryColor(template.category)}>

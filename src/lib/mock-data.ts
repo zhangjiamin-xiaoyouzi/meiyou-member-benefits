@@ -1,8 +1,9 @@
 import type { Template, PromoPatch, Activity, Plan, LotteryPool } from './types';
 import { DEFAULT_CATEGORIES } from './types';
+import { TEMPLATE_CATEGORIES } from './types';
 
 // ==================== 模板分类 ====================
-export const templateCategories: string[] = [...DEFAULT_CATEGORIES];
+export const templateCategories: string[] = [...TEMPLATE_CATEGORIES];
 
 // ==================== 模拟产品套餐数据 ====================
 export const mockPlans: Plan[] = [
@@ -26,7 +27,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_001',
     name: '大促抽奖模板',
-    category: '促活',
+    category: '年度大促',
     description: '适用于618、双11等S级大促活动，预留头图、互动红包、大/小卡货架、扭蛋机抽奖楼层、中奖跑马灯组件。',
     preview: '/template-s.png',
     components: [
@@ -46,7 +47,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_002',
     name: '周期会员日模板',
-    category: '促活',
+    category: '会员日',
     description: '适用于每月会员日活动，预留限时抢购、0元福利、专属礼等组件。',
     preview: '/template-a.png',
     components: [
@@ -66,7 +67,7 @@ export const mockTemplates: Template[] = [
   {
     id: 'tpl_003',
     name: '轻量定向模板',
-    category: '转化',
+    category: '固定节日',
     description: '半弹窗/浮层样式，适用于定向推送场景，预留单品券发放与快捷开卡组件。',
     preview: '/template-b.png',
     components: [
