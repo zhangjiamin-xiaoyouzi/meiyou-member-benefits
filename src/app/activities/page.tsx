@@ -153,6 +153,7 @@ export default function ActivitiesPage() {
                 <TableHead className="w-[200px]">活动名称</TableHead>
                 <TableHead className="w-[100px]">分类</TableHead>
                 <TableHead className="w-[120px]">使用模板</TableHead>
+                <TableHead className="w-[200px]">活动时间</TableHead>
                 <TableHead className="w-[80px] text-center">状态</TableHead>
                 <TableHead className="w-[160px]">创建时间/人</TableHead>
                 <TableHead className="w-[160px]">操作时间/人</TableHead>
@@ -187,6 +188,25 @@ export default function ActivitiesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-slate-600">{activity.templateName}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const tc = activity.timeConfig;
+                        if (!tc) return <span className="text-xs text-slate-400">-</span>;
+                        const isMemberDayAct = activity.category === '会员日';
+                        const startTime = isMemberDayAct ? tc.sellStartTime : tc.sellStartTime;
+                        const endTime = isMemberDayAct ? (tc.bufferEndTime || tc.sellEndTime) : tc.sellEndTime;
+                        const fmt = (d: string) => {
+                          if (!d) return '-';
+                          return new Date(d).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        };
+                        return (
+                          <div className="text-xs text-slate-600">
+                            <div>{fmt(startTime)}</div>
+                            <div className="text-slate-400">至 {fmt(endTime)}</div>
+                          </div>
+                        );
+                      })()}
+                    </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline" className={`text-xs ${status.color}`}>
                         {status.label}
