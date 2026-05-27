@@ -66,6 +66,27 @@ const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
   expired: { label: '已结束', color: 'bg-slate-50 text-slate-400 border-slate-200' },
 };
 
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function toCamelCaseDeep(obj: unknown): unknown {
+  if (Array.isArray(obj)) return obj.map(toCamelCaseDeep);
+  if (obj && typeof obj === 'object') {
+    const record = obj as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(record)) {
+      result[toCamelCase(key)] = toCamelCaseDeep(record[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
+function mapApiActivity(raw: Record<string, unknown>): Activity {
+  return toCamelCaseDeep(raw) as Activity;
+}
+
 export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -78,7 +99,7 @@ export default function ActivitiesPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
-          setLocalActivities(data.data);
+          setLocalActivities(data.data.map(mapApiActivity));
         }
       })
       .catch(() => {

@@ -4,6 +4,23 @@ import { useState, useEffect } from 'react';
 import ActivityFormWizard from '@/components/activity/activity-form-wizard';
 import type { Activity } from '@/lib/types';
 
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function toCamelCaseDeep(obj: unknown): unknown {
+  if (Array.isArray(obj)) return obj.map(toCamelCaseDeep);
+  if (obj && typeof obj === 'object') {
+    const record = obj as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(record)) {
+      result[toCamelCase(key)] = toCamelCaseDeep(record[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
 export default function EditActivityPage({ params }: { params: Promise<{ id: string }> }) {
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +33,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            setActivity(data.data);
+            setActivity(toCamelCaseDeep(data.data) as Activity);
           }
         })
         .finally(() => setLoading(false));

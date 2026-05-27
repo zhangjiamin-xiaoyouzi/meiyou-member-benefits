@@ -5,6 +5,23 @@ import { useSearchParams } from 'next/navigation';
 import ActivityFormWizard from '@/components/activity/activity-form-wizard';
 import type { Activity } from '@/lib/types';
 
+function toCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function toCamelCaseDeep(obj: unknown): unknown {
+  if (Array.isArray(obj)) return obj.map(toCamelCaseDeep);
+  if (obj && typeof obj === 'object') {
+    const record = obj as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(record)) {
+      result[toCamelCase(key)] = toCamelCaseDeep(record[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
 export default function NewActivityPage() {
   const searchParams = useSearchParams();
   const copyFromId = searchParams.get('copyFrom');
@@ -20,7 +37,7 @@ export default function NewActivityPage() {
       .then((res) => res.json())
       .then((result) => {
         if (result.success && result.data) {
-          setCopiedActivity(result.data as Activity);
+          setCopiedActivity(toCamelCaseDeep(result.data) as Activity);
         }
       })
       .catch(() => {
