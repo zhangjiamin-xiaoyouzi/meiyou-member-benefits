@@ -40,7 +40,6 @@ import {
   Copy,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
-import { mockActivities } from '@/lib/mock-data';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
 import QRCodeLib from 'qrcode';
 
@@ -71,8 +70,21 @@ export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [localActivities, setLocalActivities] = useState<Activity[]>(mockActivities);
+  const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
+
+  useEffect(() => {
+    fetch('/api/activities')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          setLocalActivities(data.data);
+        }
+      })
+      .catch(() => {
+        // 静默处理
+      });
+  }, []);
 
   const handleOffline = async (activity: Activity) => {
     try {
