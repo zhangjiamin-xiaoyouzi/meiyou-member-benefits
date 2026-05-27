@@ -1227,10 +1227,12 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         components,
       };
     }
+    const defaultTemplate = mockTemplates.find((t) => t.id === 'tpl_002');
     return {
-      templateId: '',
+      templateId: 'tpl_002',
       category: '',
       name: '',
+      components: defaultTemplate ? defaultTemplate.components.map((c) => ({ ...c })) : [],
 
       sellStartTime: '',
       sellEndTime: '',
@@ -1238,7 +1240,6 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       lotteryEndTime: '',
       bufferEndTime: '',
       refundCutoffTime: '',
-      components: [],
     };
   });
 
