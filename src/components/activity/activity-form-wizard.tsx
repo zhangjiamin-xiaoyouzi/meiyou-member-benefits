@@ -641,7 +641,7 @@ function StepComponentConfig({
       {isComponentEnabled('free_benefit') && (
         <BenefitConfigCard
           title="0元福利"
-          config={configs.free_benefit || { products: [] }}
+          config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('free_benefit', val)}
         />
       )}
@@ -649,7 +649,7 @@ function StepComponentConfig({
       {/* 0元购 */}
       {isComponentEnabled('free_purchase') && (
         <FreePurchaseConfigCard
-          config={configs.free_purchase || { categoryIds: [] }}
+          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('free_purchase', val)}
         />
       )}
@@ -658,7 +658,7 @@ function StepComponentConfig({
       {isComponentEnabled('exclusive_gift') && (
         <BenefitConfigCard
           title="专属礼"
-          config={configs.exclusive_gift || { products: [] }}
+          config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('exclusive_gift', val)}
         />
       )}
@@ -1071,6 +1071,18 @@ function FreePurchaseConfigCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <ImageUploadField
+              label="模块头图"
+              value={config.moduleHeaderImage}
+              onChange={(v) => onChange({ ...config, moduleHeaderImage: v })}
+            />
+          <ImageUploadField
+              label="模块背景图"
+              value={config.moduleBgImage}
+              onChange={(v) => onChange({ ...config, moduleBgImage: v })}
+            />
+        </div>
         <div className="flex items-center justify-between">
           <Label className="text-xs text-slate-500">返现类目ID</Label>
           <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
@@ -1185,6 +1197,18 @@ function BenefitConfigCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <ImageUploadField
+              label="模块头图"
+              value={config.moduleHeaderImage}
+              onChange={(v) => onChange({ ...config, moduleHeaderImage: v })}
+            />
+          <ImageUploadField
+              label="模块背景图"
+              value={config.moduleBgImage}
+              onChange={(v) => onChange({ ...config, moduleBgImage: v })}
+            />
+        </div>
         <div className="flex items-center justify-between">
           <span className="text-sm text-slate-500">
             商品列表

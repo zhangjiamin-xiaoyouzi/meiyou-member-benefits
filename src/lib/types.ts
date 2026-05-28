@@ -172,11 +172,15 @@ export interface BenefitProduct {
 
 /** 0元福利/专属礼配置 */
 export interface BenefitConfig {
+  moduleHeaderImage: string;
+  moduleBgImage: string;
   products: BenefitProduct[];
 }
 
 /** 0元购配置 */
 export interface FreePurchaseConfig {
+  moduleHeaderImage: string;
+  moduleBgImage: string;
   categoryIds: string[];
 }
 
