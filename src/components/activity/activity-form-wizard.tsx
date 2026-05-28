@@ -128,23 +128,65 @@ function ImageUploadField({
   return (
     <div className="space-y-1.5">
       <Label className="text-xs text-slate-500">{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input
-          placeholder="输入图片URL"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-1"
-        />
-        <Button variant="outline" size="sm" type="button">
-          <Upload className="h-3.5 w-3.5 mr-1" />
-          上传
-        </Button>
-      </div>
-      {value && (
-        <div className="mt-1.5 w-20 h-14 rounded border border-slate-200 overflow-hidden bg-slate-50">
+      {value ? (
+        <div className="relative group w-24 h-16 rounded border border-slate-200 overflow-hidden bg-slate-50">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt={label} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    const url = URL.createObjectURL(file);
+                    onChange(url);
+                  }
+                };
+                input.click();
+              }}
+            >
+              <Upload className="h-3 w-3 mr-0.5" />
+              更换
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => onChange('')}
+            >
+              删除
+            </Button>
+          </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+              if (file) {
+                const url = URL.createObjectURL(file);
+                onChange(url);
+              }
+            };
+            input.click();
+          }}
+          className="w-24 h-16 rounded border-2 border-dashed border-slate-200 hover:border-rose-300 hover:bg-rose-50/30 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          <Upload className="h-4 w-4 text-slate-400" />
+          <span className="text-[10px] text-slate-400">上传图片</span>
+        </button>
       )}
     </div>
   );
