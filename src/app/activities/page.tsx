@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,23 +41,6 @@ import {
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
-import QRCodeLib from 'qrcode';
-
-function QRCodeCanvas({ url }: { url: string }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    if (canvasRef.current && url) {
-      QRCodeLib.toCanvas(canvasRef.current, url, {
-        width: 192,
-        margin: 2,
-        color: { dark: '#1e293b', light: '#ffffff' },
-      });
-    }
-  }, [url]);
-
-  return <canvas ref={canvasRef} />;
-}
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
   active: { label: '进行中', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -354,23 +337,33 @@ export default function ActivitiesPage() {
         </CardContent>
       </Card>
 
-      {/* 预览弹窗 */}
+      {/* 预览弹窗 - 手机模拟器 */}
       <AlertDialog open={!!previewActivity} onOpenChange={(open) => { if (!open) setPreviewActivity(null); }}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>扫码预览活动</AlertDialogTitle>
+            <AlertDialogTitle>预览活动H5页面</AlertDialogTitle>
             <AlertDialogDescription>
-              扫描下方二维码或在手机浏览器中打开链接，查看活动配置
+              {previewActivity?.name} - 活动预览
             </AlertDialogDescription>
           </AlertDialogHeader>
           {previewActivity && (
-            <div className="flex flex-col items-center gap-4 py-4">
-              <div className="bg-white border-2 border-slate-200 rounded-xl p-2">
-                <QRCodeCanvas url={getPreviewUrl(previewActivity)} />
+            <div className="flex flex-col items-center gap-4">
+              {/* 手机模拟器外框 */}
+              <div className="relative bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl" style={{ width: 320, height: 580 }}>
+                {/* 顶部刘海 */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-slate-900 rounded-b-2xl z-10" />
+                {/* 屏幕 */}
+                <div className="w-full h-full bg-white rounded-[2rem] overflow-hidden">
+                  <iframe
+                    src={getPreviewUrl(previewActivity)}
+                    className="w-full h-full border-0"
+                    title="活动预览"
+                    sandbox="allow-scripts allow-same-origin"
+                  />
+                </div>
               </div>
-              <p className="text-sm font-medium text-slate-900">{previewActivity.name}</p>
               <div className="w-full bg-slate-50 rounded-lg p-3">
-                <p className="text-xs text-slate-500 mb-1">预览链接</p>
+                <p className="text-xs text-slate-500 mb-1">预览链接（手机扫码查看）</p>
                 <div className="flex items-center gap-2">
                   <code className="text-xs text-blue-600 break-all flex-1">{getPreviewUrl(previewActivity)}</code>
                   <Button
