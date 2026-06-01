@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员福利授权 — 高保真视觉稿</title>
+<style>
+  :root {
+    --primary: #FF4D88;
+    --primary-hover: #FF6A9E;
+    --primary-press: #E63B79;
+    --primary-light: #FFF0F5;
+    --bg: #F5F5F5;
+    --card: #FFFFFF;
+    --text-primary: #1D2129;
+    --text-secondary: #86909C;
+    --text-hint: #C9CDD4;
+    --border: #E5E6EB;
+    --success: #00B578;
+    --warning: #FF8F1F;
+    --danger: #F53F3F;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-card: 0 2px 12px rgba(0,0,0,0.06);
+    --shadow-popup: 0 8px 40px rgba(0,0,0,0.15);
+    --font-xs: 12px;
+    --font-sm: 13px;
+    --font-md: 14px;
+    --font-lg: 16px;
+    --font-xl: 18px;
+    --font-xxl: 20px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: #E8E8ED;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  /* ---- Layout ---- */
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    max-width: 1400px;
+  }
+  .screen-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-label {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 375px;
+    min-height: 700px;
+    background: var(--bg);
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 0 0 2px #1a1a1a;
+    position: relative;
+  }
+  .phone-notch {
+    width: 120px;
+    height: 28px;
+    background: #1a1a1a;
+    border-radius: 0 0 16px 16px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+  .phone-screen {
+    background: var(--bg);
+    min-height: 660px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ---- Popup overlay ---- */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .popup {
+    width: 315px;
+    background: #FFF;
+    border-radius: var(--radius-lg);
+    padding: 28px 24px 20px;
+    box-shadow: var(--shadow-popup);
+    text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* ---- Popup Elements ---- */
+  .popup-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+  .popup-title {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .popup-desc {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    text-align: left;
+    padding: 0 4px;
+  }
+  .popup-desc .highlight {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  .popup-info-card {
+    background: #F7F8FA;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  .popup-info-card .info-row {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    line-height: 2;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .popup-info-card .info-dot {
+    color: var(--text-hint);
+    flex-shrink: 0;
+  }
+
+  /* ---- Agreement checkbox ---- */
+  .agreement-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+  }
+  .agreement-row a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #C9CDD4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .checkbox.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .checkbox.checked::after {
+    content: "✓";
+    color: #FFF;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ---- Buttons ---- */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+  }
+  .btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 22px;
+    font-size: var(--font-md);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .btn-secondary {
+    background: #F2F3F5;
+    color: var(--text-secondary);
+  }
+  .btn-secondary:hover { background: #E5E6EB; }
+  .btn-primary {
+    background: var(--primary);
+    color: #FFF;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-primary:active { background: var(--primary-press); }
+  .btn-primary.disabled {
+    background: #F2B0C4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .btn-full {
+    width: 100%;
+  }
+
+  /* ---- Page Structure ---- */
+  .page {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 660px;
+  }
+  .nav-bar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background: #FFF;
+    border-bottom: 0.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-back {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .nav-title {
+    flex: 1;
+    text-align: center;
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 24px;
+  }
+
+  /* ---- Benefit detail card ---- */
+  .benefit-hero {
+    background: linear-gradient(135deg, #FFF0F5 0%, #FFE0EB 100%);
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .benefit-hero-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  .benefit-hero-name {
+    font-size: var(--font-xxl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .benefit-hero-merchant {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  .benefit-hero-expire {
+    font-size: var(--font-xs);
+    color: var(--text-hint);
+  }
+
+  /* ---- Section card ---- */
+  .section-card {
+    background: #FFF;
+    margin: 12px 16px;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .section-title {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-dot {
+    width: 4px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  /* ---- Auth status card ---- */
+  .auth-status-card {
+    background: linear-gradient(135deg, #F0FFF6 0%, #E8FFF2 100%);
+    border: 1px solid #B7E8D0;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+  }
+  .auth-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .auth-status-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .auth-status-badge {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--success);
+  }
+  .auth-status-detail {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.8;
+  }
+  .auth-revoke-link {
+    font-size: var(--font-xs);
+    color: var(--text-hint);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ---- Auth prompt card (detail page) ---- */
+  .auth-prompt-card {
+    background: linear-gradient(135deg, #FFF8FA 0%, #FFF0F5 100%);
+    border: 1px dashed #FFB3C9;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .auth-prompt-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1;
+  }
+  .auth-prompt-text {
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+  .auth-prompt-text .em {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  .auth-prompt-btn {
+    flex-shrink: 0;
+    font-size: var(--font-sm);
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* ---- Coupon card ---- */
+  .coupon-card {
+    background: #FFF;
+    margin: 12px 16px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .coupon-left {
+    background: var(--primary);
+    color: #FFF;
+    padding: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 100px;
+  }
+  .coupon-body {
+    display: flex;
+  }
+  .coupon-right {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  .coupon-code {
+    font-size: var(--font-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: "SF Mono", "Menlo", monospace;
+    letter-spacing: 1px;
+  }
+  .coupon-action {
+    font-size: var(--font-sm);
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* ---- Steps list ---- */
+  .steps-list {
+    list-style: none;
+    padding: 0;
+  }
+  .steps-list li {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    line-height: 2;
+    padding-left: 16px;
+    position: relative;
+  }
+  .steps-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+  }
+
+  /* ---- Toast ---- */
+  .toast {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.78);
+    color: #FFF;
+    font-size: var(--font-sm);
+    padding: 10px 20px;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 200;
+    animation: toastIn 0.3s ease;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* ---- Manage page ---- */
+  .manage-item {
+    background: #FFF;
+    margin: 8px 16px;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+  }
+  .manage-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .manage-item-name {
+    font-size: var(--font-md);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .manage-item-badge {
+    font-size: var(--font-xs);
+    color: var(--success);
+    background: #F0FFF6;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .manage-item-badge.expired {
+    color: var(--text-hint);
+    background: #F2F3F5;
+  }
+  .manage-item-detail {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    margin-top: 8px;
+    line-height: 1.8;
+  }
+  .manage-item-action {
+    font-size: var(--font-xs);
+    color: var(--text-hint);
+    cursor: pointer;
+    margin-top: 8px;
+    text-align: right;
+  }
+  .section-header {
+    font-size: var(--font-xs);
+    color: var(--text-hint);
+    padding: 16px 16px 4px;
+    font-weight: 500;
+  }
+
+  /* ---- Revoke popup ---- */
+  .popup-sm {
+    width: 280px;
+    background: #FFF;
+    border-radius: var(--radius-lg);
+    padding: 24px 20px 16px;
+    box-shadow: var(--shadow-popup);
+    text-align: center;
+  }
+  .popup-sm-title {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .popup-sm-desc {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  /* ---- Success screen ---- */
+  .success-page {
+    background: #FFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 660px;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #00B578, #00D68F);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #FFF;
+    margin-bottom: 20px;
+  }
+  .success-title {
+    font-size: var(--font-xxl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .success-desc {
+    font-size: var(--font-md);
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .success-hint {
+    font-size: var(--font-xs);
+    color: var(--text-hint);
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+  .success-hint a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  /* ---- Redeemed badge ---- */
+  .redeemed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #F0FFF6;
+    color: var(--success);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 12px;
+  }
+
+  /* Toggle for interactive demo */
+  .interactive-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-hint);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="gallery">
+
+  <!-- ========== Screen 1: Auth Popup ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">① 授权弹窗 · 主界面</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" style="background: #FFF url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22375%22 height=%22660%22><rect fill=%22%23FFF0F5%22 width=%22375%22 height=%22160%22/><circle fill=%22%23FFD6E4%22 cx=%22190%22 cy=%2280%22 r=%2260%22 opacity=%220.5%22/><text x=%22187%22 y=%2294%22 font-size=%2248%22>🦷</text></svg>') center/cover no-repeat;">
+        <div class="overlay">
+          <div class="popup" id="popup1">
+            <div class="popup-icon">📞</div>
+            <div class="popup-title">授权服务商联系<br>快速核销福利</div>
+            <div class="popup-desc">
+              为帮您预约<span class="highlight">固德口腔·超声波洗牙</span>，需要将您的手机号 <span class="highlight">138****6789</span> 提供给固德口腔，由其客服在24小时内联系您完成核销。
+            </div>
+            <div class="popup-info-card">
+              <div class="info-row"><span class="info-dot">📋</span> 固德口腔将获取以下信息：</div>
+              <div class="info-row"><span class="info-dot">·</span> 您的手机号（加密传输）</div>
+              <div class="info-row"><span class="info-dot">·</span> 福利类型：超声波洗牙</div>
+              <div class="info-row"><span class="info-dot">·</span> 授权有效期：15天</div>
+            </div>
+            <div class="agreement-row" id="agreement1" onclick="toggleCheck(this)">
+              <div class="checkbox" id="cb1"></div>
+              我已阅读并同意<span><a href="#" onclick="event.stopPropagation()">《个人信息授权书》</a></span>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary">暂不授权</button>
+              <button class="btn btn-primary disabled" id="btnAgree1">同意授权</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 2: Auth Success ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">② 授权成功 · 结果页</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="success-page">
+          <div class="success-icon">✓</div>
+          <div class="success-title">授权成功</div>
+          <div class="success-desc">
+            固德口腔客服将在<span style="color:#FF4D88;font-weight:500;">24小时内</span>联系您，请保持手机畅通。
+          </div>
+          <div class="success-hint">
+            您可在「<a href="#">我的福利</a>」中查看授权状态，<br>也可以随时撤回授权。
+          </div>
+          <button class="btn btn-primary btn-full" style="max-width:260px;">查看福利详情</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 3: Detail - Unauthorized ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">③ 福利详情 · 未授权态</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="page">
+          <div class="nav-bar">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">福利详情</div>
+          </div>
+          <div class="benefit-hero">
+            <div class="benefit-hero-icon">🦷</div>
+            <div class="benefit-hero-name">超声波洗牙</div>
+            <div class="benefit-hero-merchant">服务商：固德口腔</div>
+            <div class="benefit-hero-expire">有效期至 2026-07-26</div>
+          </div>
+          <div class="section-card">
+            <div class="section-title"><span class="section-dot"></span>使用方式</div>
+            <ul class="steps-list">
+              <li>前往固德口腔小程序预约</li>
+              <li>到店出示福利券码</li>
+            </ul>
+          </div>
+          <div class="auth-prompt-card" style="margin: 0 16px;">
+            <div class="auth-prompt-left">
+              <span style="font-size:20px;">💡</span>
+              <div class="auth-prompt-text">
+                觉得预约麻烦？<span class="em">授权固德口腔主动联系您</span>，帮您预约，省心又省力。
+              </div>
+            </div>
+            <div class="auth-prompt-btn">授权联系 ›</div>
+          </div>
+          <div class="coupon-card">
+            <div class="coupon-body">
+              <div class="coupon-left">
+                <div style="font-size:10px;opacity:0.8;">福利券码</div>
+              </div>
+              <div class="coupon-right">
+                <div class="coupon-code">XSJ-2026-0526-001</div>
+                <div class="coupon-action">去小程序核销 ›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 4: Detail - Authorized ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">④ 福利详情 · 已授权态</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="page">
+          <div class="nav-bar">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">福利详情</div>
+          </div>
+          <div class="benefit-hero">
+            <div class="benefit-hero-icon">🦷</div>
+            <div class="benefit-hero-name">超声波洗牙</div>
+            <div class="benefit-hero-merchant">服务商：固德口腔</div>
+            <div class="benefit-hero-expire">有效期至 2026-07-26</div>
+          </div>
+          <div class="section-card">
+            <div class="section-title"><span class="section-dot"></span>授权状态</div>
+            <div class="auth-status-card">
+              <div class="auth-status-row">
+                <div class="auth-status-left">
+                  <span style="font-size:18px;">✅</span>
+                  <span class="auth-status-badge">已授权，服务商将主动联系您</span>
+                </div>
+                <a class="auth-revoke-link">撤回授权 ›</a>
+              </div>
+              <div class="auth-status-detail">
+                授权时间：2026-05-26 14:30<br>
+                授权有效期至：2026-06-10
+              </div>
+            </div>
+          </div>
+          <div class="coupon-card">
+            <div class="coupon-body">
+              <div class="coupon-left">
+                <div style="font-size:10px;opacity:0.8;">福利券码</div>
+              </div>
+              <div class="coupon-right">
+                <div class="coupon-code">XSJ-2026-0526-001</div>
+                <div class="coupon-action">去小程序核销 ›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 5: Detail - Redeemed ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">⑤ 福利详情 · 已核销态</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="page">
+          <div class="nav-bar">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">福利详情</div>
+          </div>
+          <div class="benefit-hero" style="background: linear-gradient(135deg, #F0FFF6 0%, #E5FFF2 100%);">
+            <div class="benefit-hero-icon">🦷</div>
+            <div class="benefit-hero-name">超声波洗牙</div>
+            <div class="benefit-hero-merchant">服务商：固德口腔</div>
+          </div>
+          <div class="section-card">
+            <div class="section-title"><span class="section-dot"></span>核销信息</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <span class="redeemed-badge">✅ 已核销</span>
+            </div>
+            <div style="font-size:13px;color:#86909C;line-height:2;">
+              核销时间：2026-06-03 10:00<br>
+              核销方式：服务商联系后到店核销
+            </div>
+          </div>
+          <div class="coupon-card" style="opacity:0.6;">
+            <div class="coupon-body">
+              <div class="coupon-left" style="background:#C9CDD4;">
+                <div style="font-size:10px;opacity:0.8;">已使用</div>
+              </div>
+              <div class="coupon-right">
+                <div class="coupon-code" style="text-decoration:line-through;">XSJ-2026-0526-001</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 6: Auth Management ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">⑥ 授权管理页</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="page">
+          <div class="nav-bar">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">授权管理</div>
+          </div>
+          <div class="section-header">当前授权中（2）</div>
+
+          <div class="manage-item">
+            <div class="manage-item-header">
+              <span class="manage-item-name">固德口腔</span>
+              <span class="manage-item-badge">授权中</span>
+            </div>
+            <div class="manage-item-detail">
+              授权福利：超声波洗牙<br>
+              授权时间：2026-05-26<br>
+              有效期至：2026-06-10
+            </div>
+            <div class="manage-item-action">撤回授权 ›</div>
+          </div>
+
+          <div class="manage-item">
+            <div class="manage-item-header">
+              <span class="manage-item-name">爱康体检中心</span>
+              <span class="manage-item-badge">授权中</span>
+            </div>
+            <div class="manage-item-detail">
+              授权福利：女性健康体检<br>
+              授权时间：2026-05-20<br>
+              有效期至：2026-06-04
+            </div>
+            <div class="manage-item-action">撤回授权 ›</div>
+          </div>
+
+          <div class="section-header">已过期 / 已撤回</div>
+
+          <div class="manage-item" style="opacity:0.55;">
+            <div class="manage-item-header">
+              <span class="manage-item-name">明亮眼镜</span>
+              <span class="manage-item-badge expired">已过期</span>
+            </div>
+            <div class="manage-item-detail">
+              过期时间：2026-04-15
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Screen 7: Revoke Confirm ========== -->
+  <div class="screen-wrapper">
+    <div class="screen-label">⑦ 撤回授权 · 二次确认</div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" style="background:#FFF;">
+        <div class="page">
+          <div class="nav-bar">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">授权管理</div>
+          </div>
+          <!-- benefit list items would be here -->
+        </div>
+        <div class="overlay">
+          <div class="popup-sm">
+            <div class="popup-sm-title">确定撤回对固德口腔的授权？</div>
+            <div class="popup-sm-desc">
+              撤回后固德口腔将无法继续联系您，您需自行前往小程序预约核销。
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary">取消</button>
+              <button class="btn btn-primary" style="background:#F53F3F;">确认撤回</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Make checkbox interactive on screen 1
+function toggleCheck(el) {
+  const cb = el.querySelector('.checkbox');
+  const btn = document.getElementById('btnAgree1');
+  cb.classList.toggle('checked');
+  if (cb.classList.contains('checked')) {
+    btn.classList.remove('disabled');
+  } else {
+    btn.classList.add('disabled');
+  }
+}
+</script>
+
+</body>
+</html>
