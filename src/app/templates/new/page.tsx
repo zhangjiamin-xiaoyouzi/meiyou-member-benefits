@@ -45,14 +45,14 @@ function ComponentToggleMatrix({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2 mb-3">
-        <Settings2 className="h-4 w-4 text-slate-500" />
-        <h4 className="text-sm font-medium text-slate-700">组件开关矩阵（Slot Controller）</h4>
-        <span className="text-xs text-slate-400">控制模板内局部楼层的显隐</span>
+        <Settings2 className="h-4 w-4 text-gray-500" />
+        <h4 className="text-sm font-medium text-gray-700">组件开关矩阵（Slot Controller）</h4>
+        <span className="text-xs text-gray-400">控制模板内局部楼层的显隐</span>
       </div>
-      <div className="rounded-lg border border-slate-200 overflow-hidden">
+      <div className="rounded-lg border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50 hover:bg-slate-50">
+            <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableHead className="w-[200px]">组件名称</TableHead>
               <TableHead className="w-[100px]">标识 Key</TableHead>
               <TableHead>功能说明</TableHead>
@@ -62,29 +62,29 @@ function ComponentToggleMatrix({
           </TableHeader>
           <TableBody>
             {components.map((comp) => (
-              <TableRow key={comp.id} className={!comp.enabled ? 'bg-slate-50/50' : ''}>
-                <TableCell className="font-medium text-slate-900 text-sm">
+              <TableRow key={comp.id} className={!comp.enabled ? 'bg-gray-50/50' : ''}>
+                <TableCell className="font-medium text-gray-900 text-sm">
                   {comp.name}
                 </TableCell>
                 <TableCell>
-                  <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
+                  <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 font-mono">
                     {comp.key}
                   </code>
                 </TableCell>
-                <TableCell className="text-sm text-slate-500">{comp.description}</TableCell>
+                <TableCell className="text-sm text-gray-500">{comp.description}</TableCell>
                 <TableCell className="text-center">
                   <Switch
                     checked={comp.enabled}
                     disabled={comp.required}
                     onCheckedChange={() => handleToggle(comp.id)}
-                    className="data-[state=checked]:bg-rose-500"
+                    className="data-[state=checked]:bg-meiyou"
                   />
                 </TableCell>
                 <TableCell className="text-center">
                   {comp.required ? (
-                    <Lock className="h-4 w-4 text-slate-400 mx-auto" />
+                    <Lock className="h-4 w-4 text-gray-400 mx-auto" />
                   ) : (
-                    <Unlock className="h-4 w-4 text-slate-300 mx-auto" />
+                    <Unlock className="h-4 w-4 text-gray-300 mx-auto" />
                   )}
                 </TableCell>
               </TableRow>
@@ -92,7 +92,7 @@ function ComponentToggleMatrix({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center gap-4 pt-2 text-xs text-slate-400">
+      <div className="flex items-center gap-4 pt-2 text-xs text-gray-400">
         <span className="flex items-center gap-1">
           <Lock className="h-3 w-3" /> 必选组件，不可关闭
         </span>
@@ -161,7 +161,7 @@ export default function NewTemplatePage() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-slate-500 hover:text-slate-700"
+          className="text-gray-500 hover:text-gray-700"
           onClick={() => router.push('/templates')}
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
@@ -169,8 +169,8 @@ export default function NewTemplatePage() {
         </Button>
       </div>
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">新建活动模板</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-gray-900">新建活动模板</h1>
+        <p className="mt-1 text-sm text-gray-500">
           由PM、研发和UI共同定义，运营仅有引用权
         </p>
       </div>
@@ -233,11 +233,11 @@ export default function NewTemplatePage() {
       {/* 底部操作 */}
       <Separator />
       <div className="flex justify-end gap-3">
-        <Button variant="outline" className="border-slate-300" onClick={() => router.push('/templates')}>
+        <Button variant="outline" className="border-gray-300" onClick={() => router.push('/templates')}>
           取消
         </Button>
         <Button
-          className="bg-rose-500 hover:bg-rose-600 text-white"
+          className="bg-meiyou hover:bg-pink-600 text-white"
           disabled={!effectiveCategory || !name.trim()}
         >
           创建模板

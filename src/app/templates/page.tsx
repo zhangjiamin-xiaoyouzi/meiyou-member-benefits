@@ -26,11 +26,11 @@ import { mockTemplates } from '@/lib/mock-data';
 import { TEMPLATE_CATEGORIES } from '@/lib/types';
 
 const categoryColorMap: Record<string, string> = {
-  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
+  '年度大促': 'bg-pink-50 text-pink-700 border-pink-200',
   '会员日': 'bg-emerald-50 text-emerald-700 border-emerald-200',
   '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
-const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
+const defaultCategoryColor = 'bg-gray-50 text-gray-700 border-gray-200';
 
 function getCategoryColor(category: string): string {
   return categoryColorMap[category] || defaultCategoryColor;
@@ -60,8 +60,8 @@ export default function TemplatesPage() {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">模板管理</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-gray-900">模板管理</h1>
+          <p className="mt-1 text-sm text-gray-500">
             研发与UI定义的皮肤/核心组件库，运营仅有引用权
           </p>
         </div>
@@ -70,16 +70,16 @@ export default function TemplatesPage() {
       {/* 筛选区域 */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="搜索模板名称..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className="pl-9 border-slate-200"
+            className="pl-9 border-gray-200"
           />
         </div>
         <Select value={filterCategory} onValueChange={setFilterCategory}>
-          <SelectTrigger className="w-[180px] border-slate-200">
+          <SelectTrigger className="w-[180px] border-gray-200">
             <SelectValue placeholder="筛选分类" />
           </SelectTrigger>
           <SelectContent>
@@ -89,16 +89,16 @@ export default function TemplatesPage() {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-gray-400">
           共 {filteredTemplates.length} 个模板
         </span>
       </div>
 
       {/* 模板列表 - 表格形式 */}
-      <div className="rounded-lg border border-slate-200 overflow-hidden">
+      <div className="rounded-lg border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50 hover:bg-slate-50">
+            <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableHead className="w-[200px]">模板名称</TableHead>
               <TableHead className="w-[120px]">模版分类</TableHead>
               <TableHead>说明</TableHead>
@@ -111,7 +111,7 @@ export default function TemplatesPage() {
           <TableBody>
             {filteredTemplates.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center text-slate-400">
+                <TableCell colSpan={7} className="h-24 text-center text-gray-400">
                   暂无匹配的模板
                 </TableCell>
               </TableRow>
@@ -119,36 +119,36 @@ export default function TemplatesPage() {
               filteredTemplates.map((template: Template) => {
                 const isMemberDay = template.category === '会员日';
                 return (
-                  <TableRow key={template.id} className={`hover:bg-slate-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
+                  <TableRow key={template.id} className={`hover:bg-gray-50/50${!isMemberDay ? ' opacity-60' : ''}`}>
                     <TableCell>
-                      <span className="font-medium text-slate-900">{template.name}</span>
+                      <span className="font-medium text-gray-900">{template.name}</span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={getCategoryColor(template.category)}>
                         {template.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-500 max-w-[280px] truncate">
+                    <TableCell className="text-sm text-gray-500 max-w-[280px] truncate">
                       {template.description}
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="font-mono text-sm text-slate-700">{template.components.length}</span>
-                      <span className="text-xs text-slate-400 ml-1">个</span>
+                      <span className="font-mono text-sm text-gray-700">{template.components.length}</span>
+                      <span className="text-xs text-gray-400 ml-1">个</span>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-slate-700">{formatDate(template.createdAt)}</div>
-                      <div className="text-xs text-slate-400">{template.createdBy}</div>
+                      <div className="text-sm text-gray-700">{formatDate(template.createdAt)}</div>
+                      <div className="text-xs text-gray-400">{template.createdBy}</div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-slate-700">{formatDate(template.updatedAt)}</div>
-                      <div className="text-xs text-slate-400">{template.updatedBy}</div>
+                      <div className="text-sm text-gray-700">{formatDate(template.updatedAt)}</div>
+                      <div className="text-xs text-gray-400">{template.updatedBy}</div>
                     </TableCell>
                     <TableCell className="text-center">
                       {isMemberDay ? (
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                          className="text-pink-600 hover:text-pink-700 hover:bg-pink-50"
                           onClick={() => router.push(`/templates/${template.id}`)}
                         >
                           <Pencil className="mr-1 h-3.5 w-3.5" />
@@ -158,7 +158,7 @@ export default function TemplatesPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-slate-300 cursor-not-allowed"
+                          className="text-gray-300 cursor-not-allowed"
                           disabled
                         >
                           <Pencil className="mr-1 h-3.5 w-3.5" />

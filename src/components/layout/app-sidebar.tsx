@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
 
+import {
   Puzzle,
   Gift,
   CalendarDays,
@@ -62,13 +62,15 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar className="border-r border-slate-200">
-      <SidebarHeader className="border-b border-slate-200 px-4 py-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 text-white text-sm font-bold">
-            Mei
+    <Sidebar className="border-r border-[var(--color-meiyou-border)]">
+      <SidebarHeader className="border-b border-[var(--color-meiyou-border)] px-4 py-4">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-meiyou text-white text-sm font-bold">
+            柚
           </div>
-          <span className="text-sm font-semibold text-slate-900">订阅管理系统</span>
+          <div>
+            <span className="text-sm font-semibold text-[var(--color-meiyou-text-primary)]">美柚订阅管理</span>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -85,7 +87,7 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
-                          className="hover:bg-slate-100 data-[active=true]:bg-rose-50 data-[active=true]:text-rose-600"
+                          className="hover:bg-meiyou-bg data-[active=true]:bg-meiyou-light data-[active=true]:text-meiyou"
                           isActive={item.children.some((c) => pathname === c.url || pathname.startsWith(c.url + '/'))}
                         >
                           <item.icon className="h-4 w-4" />
@@ -100,7 +102,7 @@ export function AppSidebar() {
                               <SidebarMenuSubButton
                                 asChild
                                 isActive={!child.disabled && (pathname === child.url || pathname.startsWith(child.url + '/'))}
-                                className={`hover:bg-slate-100 data-[active=true]:bg-rose-50 data-[active=true]:text-rose-600 ${child.disabled ? 'opacity-50 cursor-default' : ''}`}
+                                className={`hover:bg-meiyou-bg data-[active=true]:bg-meiyou-light data-[active=true]:text-meiyou ${child.disabled ? 'opacity-50 cursor-default' : ''}`}
                               >
                                 <Link href={child.url}>
                                   <child.icon className="h-4 w-4" />
@@ -118,7 +120,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.url}
-                      className="hover:bg-slate-100 data-[active=true]:bg-rose-50 data-[active=true]:text-rose-600"
+                      className="hover:bg-meiyou-bg data-[active=true]:bg-meiyou-light data-[active=true]:text-meiyou"
                     >
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
@@ -132,10 +134,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-slate-200 p-3">
+      <SidebarFooter className="border-t border-[var(--color-meiyou-border)] p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="hover:bg-slate-100 text-slate-500">
+            <SidebarMenuButton className="hover:bg-meiyou-bg text-[var(--color-meiyou-text-secondary)]">
               <Settings className="h-4 w-4" />
               <span className="text-sm">系统设置</span>
             </SidebarMenuButton>

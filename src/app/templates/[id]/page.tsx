@@ -28,11 +28,11 @@ import type { Template, TemplateComponent } from '@/lib/types';
 
 
 const categoryColorMap: Record<string, string> = {
-  '年度大促': 'bg-rose-50 text-rose-700 border-rose-200',
+  '年度大促': 'bg-pink-50 text-pink-700 border-pink-200',
   '会员日': 'bg-emerald-50 text-emerald-700 border-emerald-200',
   '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
-const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
+const defaultCategoryColor = 'bg-gray-50 text-gray-700 border-gray-200';
 
 function getCategoryColor(category: string): string {
   return categoryColorMap[category] || defaultCategoryColor;
@@ -172,7 +172,7 @@ export default function TemplateEditPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400">
+      <div className="flex items-center justify-center h-64 text-gray-400">
         加载中...
       </div>
     );
@@ -184,7 +184,7 @@ export default function TemplateEditPage() {
         <Button variant="ghost" size="sm" onClick={() => router.push('/templates')}>
           <ArrowLeft className="mr-1 h-4 w-4" /> 返回列表
         </Button>
-        <div className="text-center py-12 text-slate-400">模板不存在或已删除</div>
+        <div className="text-center py-12 text-gray-400">模板不存在或已删除</div>
       </div>
     );
   }
@@ -198,7 +198,7 @@ export default function TemplateEditPage() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-slate-500 hover:text-slate-700"
+          className="text-gray-500 hover:text-gray-700"
           onClick={() => router.push('/templates')}
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
@@ -206,24 +206,24 @@ export default function TemplateEditPage() {
         </Button>
       </div>
 
-      <h1 className="text-2xl font-semibold text-slate-900">编辑模板</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">编辑模板</h1>
 
       {/* 基本信息 */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            模板名称 <span className="text-rose-500">*</span>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            模板名称 <span className="text-meiyou">*</span>
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="请输入模板名称"
-            className="border-slate-200"
+            className="border-gray-200"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
             模板分类
           </label>
           <div>
@@ -234,14 +234,14 @@ export default function TemplateEditPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
             模板说明
           </label>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="请输入模板说明"
-            className="border-slate-200"
+            className="border-gray-200"
           />
         </div>
       </div>
@@ -251,14 +251,14 @@ export default function TemplateEditPage() {
       {/* 组件开关矩阵 */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 mb-3">
-          <Settings2 className="h-4 w-4 text-slate-500" />
-          <h4 className="text-sm font-medium text-slate-700">组件开关矩阵（Slot Controller）</h4>
-          <span className="text-xs text-slate-400">控制模板内局部楼层的显隐</span>
+          <Settings2 className="h-4 w-4 text-gray-500" />
+          <h4 className="text-sm font-medium text-gray-700">组件开关矩阵（Slot Controller）</h4>
+          <span className="text-xs text-gray-400">控制模板内局部楼层的显隐</span>
         </div>
-        <div className="rounded-lg border border-slate-200 overflow-hidden">
+        <div className="rounded-lg border border-gray-200 overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50 hover:bg-slate-50">
+              <TableRow className="bg-gray-50 hover:bg-gray-50">
                 <TableHead className="w-[40px]"></TableHead>
                 <TableHead className="w-[200px]">组件名称</TableHead>
                 <TableHead className="w-[100px]">标识 Key</TableHead>
@@ -277,41 +277,41 @@ export default function TemplateEditPage() {
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragEnd={handleDragEnd}
                   className={[
-                    !comp.enabled ? 'bg-slate-50/50' : '',
+                    !comp.enabled ? 'bg-gray-50/50' : '',
                     dragIndex === index ? 'opacity-40' : '',
-                    dragOverIndex === index && dragIndex !== index ? 'border-t-2 border-t-rose-400' : '',
+                    dragOverIndex === index && dragIndex !== index ? 'border-t-2 border-t-pink-400' : '',
                     'cursor-grab active:cursor-grabbing transition-opacity',
                   ].join(' ')}
                 >
                   <TableCell className="w-[40px] px-2">
-                    <GripVertical className="h-4 w-4 text-slate-300 hover:text-slate-500" />
+                    <GripVertical className="h-4 w-4 text-gray-300 hover:text-gray-500" />
                   </TableCell>
-                  <TableCell className="font-medium text-slate-900 text-sm">
+                  <TableCell className="font-medium text-gray-900 text-sm">
                     <Input
                       value={comp.name}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNameChange(comp.id, e.target.value)}
-                      className="h-7 text-sm border-transparent hover:border-slate-200 focus:border-slate-300 bg-transparent px-1 py-0"
+                      className="h-7 text-sm border-transparent hover:border-gray-200 focus:border-gray-300 bg-transparent px-1 py-0"
                     />
                   </TableCell>
                   <TableCell>
-                    <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 font-mono">
+                    <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 font-mono">
                       {comp.key}
                     </code>
                   </TableCell>
-                  <TableCell className="text-sm text-slate-500">{comp.description}</TableCell>
+                  <TableCell className="text-sm text-gray-500">{comp.description}</TableCell>
                   <TableCell className="text-center">
                     <Switch
                       checked={comp.enabled}
                       disabled={comp.required}
                       onCheckedChange={() => handleToggle(comp.id)}
-                      className="data-[state=checked]:bg-rose-500"
+                      className="data-[state=checked]:bg-meiyou"
                     />
                   </TableCell>
                   <TableCell className="text-center">
                     {comp.required ? (
-                      <Lock className="h-4 w-4 text-slate-400 mx-auto" />
+                      <Lock className="h-4 w-4 text-gray-400 mx-auto" />
                     ) : (
-                      <Unlock className="h-4 w-4 text-slate-300 mx-auto" />
+                      <Unlock className="h-4 w-4 text-gray-300 mx-auto" />
                     )}
                   </TableCell>
                   <TableCell className="text-center">
@@ -319,7 +319,7 @@ export default function TemplateEditPage() {
                       <button
                         type="button"
                         onClick={() => handleEditComponent(comp)}
-                        className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                        className="inline-flex items-center justify-center rounded p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
                         title="编辑组件"
                       >
                         <Pencil className="h-4 w-4" />
@@ -327,7 +327,7 @@ export default function TemplateEditPage() {
                       <button
                         type="button"
                         onClick={() => handleCopyComponent(comp)}
-                        className="inline-flex items-center justify-center rounded p-1 text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                        className="inline-flex items-center justify-center rounded p-1 text-gray-400 hover:text-meiyou hover:bg-pink-50 transition-colors"
                         title="复制组件"
                       >
                         <Copy className="h-4 w-4" />
@@ -339,7 +339,7 @@ export default function TemplateEditPage() {
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center gap-4 pt-2 text-xs text-slate-400">
+        <div className="flex items-center gap-4 pt-2 text-xs text-gray-400">
           <span className="flex items-center gap-1">
             <Lock className="h-3 w-3" /> 必选组件，不可关闭
           </span>
@@ -352,31 +352,31 @@ export default function TemplateEditPage() {
       {/* 操作人信息 */}
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <span className="text-slate-400">创建人：</span>
-          <span className="text-slate-700">{template.createdBy || '-'}</span>
+          <span className="text-gray-400">创建人：</span>
+          <span className="text-gray-700">{template.createdBy || '-'}</span>
         </div>
         <div>
-          <span className="text-slate-400">创建时间：</span>
-          <span className="text-slate-700">{formatDate(template.createdAt)}</span>
+          <span className="text-gray-400">创建时间：</span>
+          <span className="text-gray-700">{formatDate(template.createdAt)}</span>
         </div>
         <div>
-          <span className="text-slate-400">操作人：</span>
-          <span className="text-slate-700">{template.updatedBy || '-'}</span>
+          <span className="text-gray-400">操作人：</span>
+          <span className="text-gray-700">{template.updatedBy || '-'}</span>
         </div>
         <div>
-          <span className="text-slate-400">操作时间：</span>
-          <span className="text-slate-700">{formatDate(template.updatedAt)}</span>
+          <span className="text-gray-400">操作时间：</span>
+          <span className="text-gray-700">{formatDate(template.updatedAt)}</span>
         </div>
       </div>
 
       {/* 底部操作 */}
       <Separator />
       <div className="flex justify-end gap-3">
-        <Button variant="outline" className="border-slate-300" onClick={() => router.push('/templates')}>
+        <Button variant="outline" className="border-gray-300" onClick={() => router.push('/templates')}>
           取消
         </Button>
         <Button
-          className="bg-rose-500 hover:bg-rose-600 text-white"
+          className="bg-meiyou hover:bg-meiyou text-white"
           onClick={handleSave}
           disabled={saving || !name.trim()}
         >
@@ -392,12 +392,12 @@ export default function TemplateEditPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">组件名称</label>
-              <Input value={editingComp?.name || ''} disabled className="bg-slate-50 text-slate-500" />
-              <p className="text-xs text-slate-400 mt-1">组件名称请在列表中直接编辑</p>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">组件名称</label>
+              <Input value={editingComp?.name || ''} disabled className="bg-gray-50 text-gray-500" />
+              <p className="text-xs text-gray-400 mt-1">组件名称请在列表中直接编辑</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">标识 Key</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">标识 Key</label>
               <Input
                 value={editKey}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditKey(e.target.value)}
@@ -406,7 +406,7 @@ export default function TemplateEditPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">功能说明</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">功能说明</label>
               <Input
                 value={editDesc}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditDesc(e.target.value)}
@@ -417,7 +417,7 @@ export default function TemplateEditPage() {
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setEditingComp(null)}>取消</Button>
             <Button
-              className="bg-rose-500 hover:bg-rose-600 text-white"
+              className="bg-meiyou hover:bg-meiyou text-white"
               onClick={handleSaveEdit}
               disabled={!editKey.trim()}
             >

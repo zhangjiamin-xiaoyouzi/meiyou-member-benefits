@@ -48,9 +48,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--color-meiyou-border)] bg-white px-4">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Separator orientation="vertical" className="mr-2 h-4 bg-[var(--color-meiyou-divider)]" />
           <Breadcrumb>
             <BreadcrumbList>
               {breadcrumbs.map((crumb, index) => (
@@ -58,11 +58,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   {index > 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {crumb.isCurrent ? (
-                      <BreadcrumbPage className="text-sm font-medium text-slate-900">
+                      <BreadcrumbPage className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
                         {crumb.label}
                       </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={crumb.href} className="text-sm text-slate-500 hover:text-slate-700">
+                      <BreadcrumbLink href={crumb.href} className="text-sm text-[var(--color-meiyou-text-secondary)] hover:text-meiyou">
                         {crumb.label}
                       </BreadcrumbLink>
                     )}
@@ -72,7 +72,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="flex-1 overflow-auto bg-slate-50 p-6">
+        <main className="flex-1 overflow-auto bg-meiyou-bg p-6">
           {children}
         </main>
       </SidebarInset>

@@ -72,7 +72,7 @@ export default function ActivityPreviewPage() {
           <img src={cfg.moduleHeaderImage} alt="限时抢购头图" className="w-full block" />
         )}
         <div className="px-3 py-2">
-          <div className="text-center text-xs font-semibold text-rose-500 mb-2">限时抢购</div>
+          <div className="text-center text-xs font-semibold text-meiyou mb-2">限时抢购</div>
           {cfg.products?.map((product) => (
             <div key={product.id} className="bg-white rounded-lg mb-2 overflow-hidden shadow-sm">
               <div className="flex">
@@ -80,7 +80,7 @@ export default function ActivityPreviewPage() {
                 <div className="flex-1 p-2 text-xs">
                   <div className="font-medium text-gray-800">商品ID: {product.productId}</div>
                   <div className="text-gray-400 mt-1">库存: {product.stock}</div>
-                  {product.pushText && <div className="text-rose-500 mt-1">{product.pushText}</div>}
+                  {product.pushText && <div className="text-meiyou mt-1">{product.pushText}</div>}
                   {product.timeSessions?.map((session, idx) => (
                     <div key={session.id || idx} className="text-gray-400 mt-0.5 text-[10px]">
                       第{idx + 1}场: {session.rushStartTime?.slice(0, 16).replace('T', ' ')} ~ {session.rushEndTime?.slice(11, 16)}

@@ -35,13 +35,44 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* 美柚品牌色 */
+  --color-meiyou: #ff4d88;
+  --color-meiyou-light: rgba(255, 77, 136, 0.06);
+  --color-meiyou-hover: #e6447a;
+
+  /* 美柚语义色 */
+  --color-meiyou-success: #00cc99;
+  --color-meiyou-warning: #ffaa00;
+  --color-meiyou-danger: #ff4d4d;
+  --color-meiyou-link: #4f7cae;
+
+  /* 美柚文字色 */
+  --color-meiyou-text-primary: rgba(0, 0, 0, 0.8);
+  --color-meiyou-text-secondary: rgba(0, 0, 0, 0.6);
+  --color-meiyou-text-placeholder: rgba(0, 0, 0, 0.3);
+  --color-meiyou-text-white: rgba(255, 255, 255, 0.9);
+
+  /* 美柚背景色 */
+  --color-meiyou-bg: #f2f2f5;
+  --color-meiyou-bg-card: #ffffff;
+  --color-meiyou-bg-hover: rgba(255, 77, 136, 0.04);
+
+  /* 美柚边框/分割 */
+  --color-meiyou-border: rgba(0, 0, 0, 0.06);
+  --color-meiyou-divider: rgba(0, 0, 0, 0.04);
+
+  /* 圆角体系 - 4px/8px/12px */
+  --radius-xs: 4px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
+  --radius-3xl: 16px;
+  --radius-4xl: 20px;
+
+  /* 字体 */
   --font-sans:
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', ui-sans-serif,
     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -55,72 +86,73 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.5rem;
+  /* 美柚设计变量 - 映射到 shadcn 变量 */
+  --background: #f2f2f5;
+  --foreground: rgba(0, 0, 0, 0.8);
+  --card: #ffffff;
+  --card-foreground: rgba(0, 0, 0, 0.8);
+  --popover: #ffffff;
+  --popover-foreground: rgba(0, 0, 0, 0.8);
+  --primary: #ff4d88;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 77, 136, 0.06);
+  --secondary-foreground: rgba(0, 0, 0, 0.8);
+  --muted: #f2f2f5;
+  --muted-foreground: rgba(0, 0, 0, 0.6);
+  --accent: rgba(255, 77, 136, 0.06);
+  --accent-foreground: #ff4d88;
+  --destructive: #ff4d4d;
+  --border: rgba(0, 0, 0, 0.06);
+  --input: rgba(0, 0, 0, 0.06);
+  --ring: rgba(255, 77, 136, 0.3);
+  --chart-1: #ff4d88;
+  --chart-2: #00cc99;
+  --chart-3: #ffaa00;
+  --chart-4: #4f7cae;
+  --chart-5: rgba(0, 0, 0, 0.6);
+  --sidebar: #ffffff;
+  --sidebar-foreground: rgba(0, 0, 0, 0.8);
+  --sidebar-primary: #ff4d88;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 77, 136, 0.06);
+  --sidebar-accent-foreground: #ff4d88;
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --sidebar-ring: rgba(255, 77, 136, 0.3);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1a1a1a;
+  --foreground: rgba(255, 255, 255, 0.9);
+  --card: #2a2a2a;
+  --card-foreground: rgba(255, 255, 255, 0.9);
+  --popover: #2a2a2a;
+  --popover-foreground: rgba(255, 255, 255, 0.9);
+  --primary: #ff4d88;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 77, 136, 0.12);
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: #333333;
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --accent: rgba(255, 77, 136, 0.12);
+  --accent-foreground: #ff4d88;
+  --destructive: #ff4d4d;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(255, 77, 136, 0.3);
+  --chart-1: #ff4d88;
+  --chart-2: #00cc99;
+  --chart-3: #ffaa00;
+  --chart-4: #4f7cae;
+  --chart-5: rgba(255, 255, 255, 0.6);
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: rgba(255, 255, 255, 0.9);
+  --sidebar-primary: #ff4d88;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 77, 136, 0.12);
+  --sidebar-accent-foreground: #ff4d88;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: rgba(255, 77, 136, 0.3);
 }
 
 @layer base {
@@ -136,6 +168,15 @@ body {
   @apply font-sans;
 }
 
+/* 美柚品牌按钮覆盖样式 */
+.btn-meiyou {
+  @apply bg-meiyou hover:bg-meiyou-hover text-white rounded-md;
+}
+
+.btn-meiyou-outline {
+  @apply bg-meiyou-light text-meiyou border border-meiyou/20 hover:bg-meiyou/10 rounded-md;
+}
+
 /* 强制 datetime-local 输入框使用 24 小时制 */
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
@@ -148,4 +189,26 @@ input[type="datetime-local"]:invalid {
 input[type="datetime-local"]:focus,
 input[type="datetime-local"]:valid {
   color: inherit;
+}
+
+/* 美柚卡片样式 */
+.card-meiyou {
+  @apply bg-white rounded-lg border border-meiyou-border;
+}
+
+/* 美柚状态标签 */
+.badge-meiyou-success {
+  @apply bg-emerald-50/80 text-emerald-700 border-emerald-200/60 rounded-xs;
+}
+.badge-meiyou-warning {
+  @apply bg-amber-50/80 text-amber-700 border-amber-200/60 rounded-xs;
+}
+.badge-meiyou-danger {
+  @apply bg-red-50/80 text-red-700 border-red-200/60 rounded-xs;
+}
+.badge-meiyou-default {
+  @apply bg-meiyou-bg text-meiyou-text-secondary border-meiyou-border rounded-xs;
+}
+.badge-meiyou-primary {
+  @apply bg-meiyou/10 text-meiyou border-meiyou/20 rounded-xs;
 }

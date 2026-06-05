@@ -75,11 +75,11 @@ interface Step2Data {
 // ==================== Constants ====================
 
 const categoryColorMap: Record<string, string> = {
-  '促活': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  '转化': 'bg-amber-50 text-amber-700 border-amber-200',
-  '拉新': 'bg-blue-50 text-blue-700 border-blue-200',
+  '促活': 'bg-emerald-50/80 text-emerald-700 border-emerald-200/60',
+  '转化': 'bg-amber-50/80 text-amber-700 border-amber-200/60',
+  '拉新': 'bg-blue-50/80 text-blue-700 border-blue-200/60',
 };
-const defaultCategoryColor = 'bg-slate-50 text-slate-700 border-slate-200';
+const defaultCategoryColor = 'bg-meiyou-bg text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)]';
 
 const defaultCategories = ['促活', '转化', '拉新'];
 
@@ -127,9 +127,9 @@ function ImageUploadField({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-slate-500">{label}</Label>
+      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">{label}</Label>
       {value ? (
-        <div className="relative group w-24 h-16 rounded border border-slate-200 overflow-hidden bg-slate-50">
+        <div className="relative group w-24 h-16 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt={label} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
@@ -182,10 +182,10 @@ function ImageUploadField({
             };
             input.click();
           }}
-          className="w-24 h-16 rounded border-2 border-dashed border-slate-200 hover:border-rose-300 hover:bg-rose-50/30 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer"
+          className="w-24 h-16 rounded border-2 border-dashed border-[var(--color-meiyou-border)] hover:border-meiyou/50 hover:bg-meiyou-light transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer"
         >
-          <Upload className="h-4 w-4 text-slate-400" />
-          <span className="text-[10px] text-slate-400">上传图片</span>
+          <Upload className="h-4 w-4 text-[var(--color-meiyou-text-placeholder)]" />
+          <span className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">上传图片</span>
         </button>
       )}
     </div>
@@ -223,7 +223,7 @@ function AudienceRuleEditor({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+        <span className="text-xs font-medium text-[var(--color-meiyou-text-secondary)] flex items-center gap-1">
           <Users className="h-3 w-3" />
           受众规则
         </span>
@@ -233,7 +233,7 @@ function AudienceRuleEditor({
         </Button>
       </div>
       {rules.length === 0 && (
-        <p className="text-xs text-slate-400 py-1">未设置筛选条件，所有用户可见</p>
+        <p className="text-xs text-[var(--color-meiyou-text-placeholder)] py-1">未设置筛选条件，所有用户可见</p>
       )}
       <div className="space-y-2">
         {rules.map((rule) => (
@@ -299,7 +299,7 @@ function AudienceRuleEditor({
             <Button
               size="sm"
               variant="ghost"
-              className="text-slate-400 hover:text-red-500 h-7 w-7 p-0"
+              className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0"
               onClick={() => removeRule(rule.id)}
             >
               <X className="h-3 w-3" />
@@ -371,8 +371,8 @@ function StepBasicInfo({
       {/* 活动名称 + 活动分类 同行 */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label className="text-sm font-medium text-slate-700">
-            活动名称 <span className="text-rose-500">*</span>
+          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+            活动名称 <span className="text-meiyou">*</span>
           </Label>
           <Input
             className="mt-1.5"
@@ -382,8 +382,8 @@ function StepBasicInfo({
           />
         </div>
         <div>
-          <Label className="text-sm font-medium text-slate-700">
-            活动分类 <span className="text-rose-500">*</span>
+          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+            活动分类 <span className="text-meiyou">*</span>
           </Label>
           <div className="mt-1.5">
             <Select
@@ -410,10 +410,10 @@ function StepBasicInfo({
 
       {/* 选择模板 */}
       <div>
-        <Label className="text-sm font-medium text-slate-700">
-          选择活动模板 <span className="text-rose-500">*</span>
+        <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+          选择活动模板 <span className="text-meiyou">*</span>
         </Label>
-        <p className="text-xs text-slate-400 mt-1 mb-3">
+        <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
           {isEdit ? '切换模板将重置组件配置' : '选择模板后将自动加载模板预设组件'}
         </p>
         <div className="grid grid-cols-3 gap-2">
@@ -430,10 +430,10 @@ function StepBasicInfo({
                   key={template.id}
                   className={`transition-all py-0 ${
                     isDisabled
-                      ? 'opacity-50 cursor-not-allowed bg-slate-50'
+                      ? 'opacity-50 cursor-not-allowed bg-meiyou-bg'
                       : data.templateId === template.id
-                        ? 'ring-2 ring-rose-500 border-rose-300 shadow-md cursor-pointer'
-                        : 'hover:border-slate-400 hover:shadow-sm cursor-pointer'
+                        ? 'ring-2 ring-meiyou border-meiyou/40 shadow-md cursor-pointer'
+                        : 'hover:border-[var(--color-meiyou-border)] hover:shadow-sm cursor-pointer'
                   }`}
                   onClick={() => {
                     if (!isDisabled) handleTemplateSelect(template.id);
@@ -444,7 +444,7 @@ function StepBasicInfo({
                       <CardTitle className="text-[11px] font-medium">{template.name}</CardTitle>
                       <div className="flex items-center gap-1">
                         {isDisabled && (
-                          <Badge className="bg-slate-100 text-slate-400 border-slate-200 text-[9px] px-1 py-0">
+                          <Badge className="bg-meiyou-bg text-[var(--color-meiyou-text-placeholder)] border-[var(--color-meiyou-border)] text-[9px] px-1 py-0">
                             本期不做
                           </Badge>
                         )}
@@ -456,7 +456,7 @@ function StepBasicInfo({
                   </CardHeader>
                   <CardContent className="py-0.5 px-2.5 pb-1.5">
                     <CardDescription className="text-[10px] line-clamp-1">{template.description}</CardDescription>
-                    <div className="mt-1 text-[11px] text-slate-400">
+                    <div className="mt-1 text-[11px] text-[var(--color-meiyou-text-placeholder)]">
                       {template.components.length} 个组件
                     </div>
                   </CardContent>
@@ -469,12 +469,12 @@ function StepBasicInfo({
 
       {/* 活动时间配置 */}
       <div>
-        <Label className="text-sm font-medium text-slate-700">活动时间配置</Label>
+        <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动时间配置</Label>
         <div className="mt-3 space-y-4">
           {/* 活动时间（必填） */}
           <div>
-            <Label className="text-xs text-slate-500">
-              活动时间 <span className="text-rose-500">*</span>
+            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
+              活动时间 <span className="text-meiyou">*</span>
             </Label>
             <TimeRangeField
               startValue={data.sellStartTime}
@@ -486,7 +486,7 @@ function StepBasicInfo({
           <div className="grid grid-cols-2 gap-4">
             {/* 活动预约时间（非必填） */}
             <div>
-              <Label className="text-xs text-slate-500">
+              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
                 {isMemberDay ? '活动预约时间' : '售卖时间'}
               </Label>
               <TimeRangeField
@@ -505,7 +505,7 @@ function StepBasicInfo({
             </div>
             {/* 活动福利领取时间（非必填） */}
             <div>
-              <Label className="text-xs text-slate-500">
+              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
                 {isMemberDay ? '活动福利领取时间' : '抽奖时间'}
               </Label>
               <TimeRangeField
@@ -526,7 +526,7 @@ function StepBasicInfo({
           {!isMemberDay && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs text-slate-500">退款熔断截单时间</Label>
+                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">退款熔断截单时间</Label>
                 <SingleTimeField
                   value={data.refundCutoffTime}
                   onChange={(val) => onChange({ ...data, refundCutoffTime: val })}
@@ -540,18 +540,18 @@ function StepBasicInfo({
       {/* 限时福利（组件开关） */}
       {data.components.length > 0 && (
         <div>
-          <Label className="text-sm font-medium text-slate-700">限时福利</Label>
-          <p className="text-xs text-slate-400 mt-1 mb-3">
+          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">限时福利</Label>
+          <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
             控制模板内各组件的显隐，必选组件不可关闭
           </p>
-          <div className="rounded-lg border border-slate-200 overflow-hidden">
+          <div className="rounded-lg border border-[var(--color-meiyou-border)] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
+                <tr className="bg-meiyou-bg border-b border-[var(--color-meiyou-border)]">
                   <th className="w-8 px-2 py-2"></th>
-                  <th className="text-left text-xs font-medium text-slate-500 px-3 py-2">组件名称</th>
-                  <th className="text-left text-xs font-medium text-slate-500 px-3 py-2">说明</th>
-                  <th className="text-center text-xs font-medium text-slate-500 px-3 py-2 w-20">状态</th>
+                  <th className="text-left text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2">组件名称</th>
+                  <th className="text-left text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2">说明</th>
+                  <th className="text-center text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2 w-20">状态</th>
                 </tr>
               </thead>
               <tbody>
@@ -562,29 +562,29 @@ function StepBasicInfo({
                     onDragStart={() => handleCompDragStart(index)}
                     onDragOver={(e) => handleCompDragOver(e, index)}
                     onDragEnd={handleCompDragEnd}
-                    className={`border-b border-slate-100 last:border-b-0 transition-opacity ${
+                    className={`border-b border-[var(--color-meiyou-divider)] last:border-b-0 transition-opacity ${
                       compDragIndex === index ? 'opacity-50' : 'opacity-100'
-                    } ${compDragIndex !== null && compDragIndex !== index ? 'border-t-2 border-t-rose-300' : ''}`}
+                    } ${compDragIndex !== null && compDragIndex !== index ? 'border-t-2 border-t-meiyou/40' : ''}`}
                   >
                     <td className="px-2 py-2 cursor-grab active:cursor-grabbing">
-                      <GripVertical className="h-4 w-4 text-slate-300 hover:text-slate-500" />
+                      <GripVertical className="h-4 w-4 text-[var(--color-meiyou-border)] hover:text-[var(--color-meiyou-text-secondary)]" />
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-700">{comp.name}</span>
+                        <span className="text-sm text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
                         {comp.required && (
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 bg-slate-50 text-slate-400 border-slate-200">
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 bg-meiyou-bg text-[var(--color-meiyou-text-placeholder)] border-[var(--color-meiyou-border)]">
                             必选
                           </Badge>
                         )}
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-xs text-slate-400">{comp.description}</td>
+                    <td className="px-3 py-2 text-xs text-[var(--color-meiyou-text-placeholder)]">{comp.description}</td>
                     <td className="px-3 py-2 text-center">
                       <Switch
                         checked={comp.enabled}
                         disabled={comp.required}
-                        className="data-[state=checked]:bg-rose-500"
+                        className="data-[state=checked]:bg-meiyou"
                         onCheckedChange={() => handleToggleComponent(comp.key)}
                       />
                     </td>
@@ -624,16 +624,16 @@ function StepComponentConfig({
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-[var(--color-meiyou-text-secondary)]">
         对已启用的组件进行详细配置，关闭的组件无需配置
       </p>
 
       {/* 氛围头图 */}
       {isComponentEnabled('header_banner') && (
-        <Card className="border-slate-200">
+        <Card className="border-[var(--color-meiyou-border)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Image className="h-4 w-4 text-slate-500" />
+              <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               氛围头图
             </CardTitle>
           </CardHeader>
@@ -688,10 +688,10 @@ function StepComponentConfig({
 
       {/* 规则弹窗 */}
       {isComponentEnabled('rule_popup') && (
-        <Card className="border-slate-200">
+        <Card className="border-[var(--color-meiyou-border)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Image className="h-4 w-4 text-slate-500" />
+              <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               规则弹窗
             </CardTitle>
           </CardHeader>
@@ -706,14 +706,14 @@ function StepComponentConfig({
                     onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
                   />
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-slate-500">规则文本</Label>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文本</Label>
                     <Textarea
                       placeholder="请输入活动规则文案，支持文字说明与跳转链接..."
                       rows={5}
                       value={cfg.ruleText}
                       onChange={(e) => updateConfig('rule_popup', { ...cfg, ruleText: e.target.value })}
                     />
-                    <p className="text-[10px] text-slate-400">支持直接输入URL作为跳转链接</p>
+                    <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">支持直接输入URL作为跳转链接</p>
                   </div>
                 </>
               );
@@ -724,10 +724,10 @@ function StepComponentConfig({
 
       {/* 按钮 */}
       {isComponentEnabled('cta_button') && (
-        <Card className="border-slate-200">
+        <Card className="border-[var(--color-meiyou-border)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <MousePointerClick className="h-4 w-4 text-slate-500" />
+              <MousePointerClick className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               按钮
             </CardTitle>
           </CardHeader>
@@ -752,14 +752,14 @@ function StepComponentConfig({
               return (
                 <div className="space-y-4">
                   {periods.map(({ key, label, desc }) => (
-                    <div key={key} className="border border-slate-100 rounded-lg p-3 space-y-3">
+                    <div key={key} className="border border-[var(--color-meiyou-divider)] rounded-lg p-3 space-y-3">
                       <div>
-                        <p className="text-xs font-medium text-slate-700">{label}</p>
-                        <p className="text-[10px] text-slate-400">{desc}</p>
+                        <p className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{label}</p>
+                        <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">{desc}</p>
                       </div>
                       <div className="grid grid-cols-3 gap-3">
                         <div className="space-y-1">
-                          <Label className="text-[11px] text-slate-500">按钮文案</Label>
+                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
                           <Input
                             placeholder="如：立即预约"
                             value={cfg[key].buttonText}
@@ -768,24 +768,24 @@ function StepComponentConfig({
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[11px] text-slate-500">按钮颜色</Label>
+                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</Label>
                           <div className="flex gap-2 items-center">
                             <input
                               type="color"
-                              value={cfg[key].buttonColor || '#f43f5e'}
+                              value={cfg[key].buttonColor || '#ff4d88'}
                               onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
-                              className="h-8 w-8 rounded border border-slate-200 cursor-pointer"
+                              className="h-8 w-8 rounded border border-[var(--color-meiyou-border)] cursor-pointer"
                             />
                             <Input
-                              value={cfg[key].buttonColor || '#f43f5e'}
+                              value={cfg[key].buttonColor || '#ff4d88'}
                               onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
                               className="h-8 text-xs flex-1"
-                              placeholder="#f43f5e"
+                              placeholder="#ff4d88"
                             />
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[11px] text-slate-500">跳转链接</Label>
+                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
                           <Input
                             placeholder="https://"
                             value={cfg[key].jumpLink}
@@ -843,10 +843,10 @@ function FlashSaleConfigCard({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[var(--color-meiyou-border)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Image className="h-4 w-4 text-slate-500" />
+          <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           限时抢购
         </CardTitle>
       </CardHeader>
@@ -870,32 +870,32 @@ function FlashSaleConfigCard({
         {/* 福利商品列表 */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
               福利商品
-              <span className="text-xs text-slate-400 ml-1">({config.products.length}个)</span>
+              <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
             </span>
-            <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white" onClick={addProduct}>
+            <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
               <Plus className="h-3 w-3 mr-1" />
               添加商品
             </Button>
           </div>
 
           {config.products.length === 0 && (
-            <div className="text-center py-6 text-slate-400 text-sm border rounded-lg border-dashed border-slate-300">
+            <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
               暂无商品，点击"添加商品"开始配置
             </div>
           )}
 
           <div className="space-y-4">
             {config.products.map((product, idx) => (
-              <Card key={product.id} className="border-slate-200 bg-slate-50/50">
+              <Card key={product.id} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-700">商品 {idx + 1}</span>
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">商品 {idx + 1}</span>
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-slate-400 hover:text-red-500 h-7 w-7 p-0"
+                      className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0"
                       onClick={() => removeProduct(product.id)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -906,7 +906,7 @@ function FlashSaleConfigCard({
                   {/* 商品基础信息 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs text-slate-500">商品ID <span className="text-rose-500">*</span></Label>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入商品ID"
@@ -915,7 +915,7 @@ function FlashSaleConfigCard({
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-slate-500">库存 <span className="text-rose-500">*</span></Label>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">库存 <span className="text-meiyou">*</span></Label>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入库存数量"
@@ -947,7 +947,7 @@ function FlashSaleConfigCard({
                   {/* 链接与文案 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs text-slate-500">跳转链接</Label>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入跳转链接URL"
@@ -956,7 +956,7 @@ function FlashSaleConfigCard({
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-slate-500">推送文案</Label>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">推送文案</Label>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入推送文案"
@@ -969,7 +969,7 @@ function FlashSaleConfigCard({
                   {/* 场次配置 */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs text-slate-500">场次配置</Label>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">场次配置</Label>
                       <Button
                         type="button"
                         variant="outline"
@@ -984,15 +984,15 @@ function FlashSaleConfigCard({
                       </Button>
                     </div>
                     {(product.timeSessions || []).map((session, sessionIdx) => (
-                      <div key={session.id} className="bg-slate-50/80 rounded-lg p-3 space-y-3">
+                      <div key={session.id} className="bg-meiyou-bg/80 rounded-lg p-3 space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-slate-600">第 {sessionIdx + 1} 场</span>
+                          <span className="text-xs font-medium text-[var(--color-meiyou-text-placeholder)]">第 {sessionIdx + 1} 场</span>
                           {(product.timeSessions || []).length > 1 && (
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-5 text-xs text-rose-500 hover:text-rose-600"
+                              className="h-5 text-xs text-meiyou hover:text-meiyou-hover"
                               onClick={() => {
                                 updateProduct(product.id, { timeSessions: product.timeSessions.filter((s) => s.id !== session.id) });
                               }}
@@ -1003,7 +1003,7 @@ function FlashSaleConfigCard({
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <Label className="text-xs text-slate-500">预约时间</Label>
+                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">预约时间</Label>
                             <TimeRangeField
                               startValue={session.bookingStartTime}
                               endValue={session.bookingEndTime}
@@ -1018,7 +1018,7 @@ function FlashSaleConfigCard({
                             />
                           </div>
                           <div>
-                            <Label className="text-xs text-slate-500">抢购时间</Label>
+                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">抢购时间</Label>
                             <TimeRangeField
                               startValue={session.rushStartTime}
                               endValue={session.rushEndTime}
@@ -1085,12 +1085,12 @@ function FreePurchaseConfigCard({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[var(--color-meiyou-border)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Tag className="h-4 w-4 text-slate-500" />
+          <Tag className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           0元购
-          <span className="text-xs text-slate-400 font-normal">下单全额返现金</span>
+          <span className="text-xs text-[var(--color-meiyou-text-placeholder)] font-normal">下单全额返现金</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -1107,19 +1107,19 @@ function FreePurchaseConfigCard({
             />
         </div>
         <div className="flex items-center justify-between">
-          <Label className="text-xs text-slate-500">返现类目ID</Label>
+          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">返现类目ID</Label>
           <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
             <Plus className="h-3 w-3 mr-1" />
             添加类目
           </Button>
         </div>
         {config.categoryIds.length === 0 ? (
-          <div className="text-center py-6 text-slate-400 text-xs">暂无类目ID，请点击添加</div>
+          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-xs">暂无类目ID，请点击添加</div>
         ) : (
           <div className="space-y-2">
             {config.categoryIds.map((catId, index) => (
               <div key={index} className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 w-6 text-right shrink-0">{index + 1}.</span>
+                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] w-6 text-right shrink-0">{index + 1}.</span>
                 <Input
                   className="h-8 text-sm flex-1"
                   placeholder="输入类目ID"
@@ -1148,7 +1148,7 @@ function FreePurchaseConfigCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 text-rose-500 hover:text-rose-600"
+                    className="h-7 w-7 p-0 text-meiyou hover:text-meiyou-hover"
                     onClick={() => removeCategoryId(index)}
                   >
                     <Trash2 className="h-3 w-3" />
@@ -1212,10 +1212,10 @@ function BenefitConfigCard({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[var(--color-meiyou-border)]">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Image className="h-4 w-4 text-slate-500" />
+          <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           {title}
         </CardTitle>
       </CardHeader>
@@ -1233,18 +1233,18 @@ function BenefitConfigCard({
             />
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
             商品列表
-            <span className="text-xs text-slate-400 ml-1">({config.products.length}个)</span>
+            <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
           </span>
-          <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white" onClick={addProduct}>
+          <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
             <Plus className="h-3 w-3 mr-1" />
             添加商品
           </Button>
         </div>
 
         {config.products.length === 0 && (
-          <div className="text-center py-6 text-slate-400 text-sm border rounded-lg border-dashed border-slate-300">
+          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
             暂无商品，点击"添加商品"开始配置
           </div>
         )}
@@ -1253,7 +1253,7 @@ function BenefitConfigCard({
           {config.products.map((product, idx) => (
             <div
               key={product.id}
-              className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-white"
+              className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
             >
               {/* 排序控制 */}
               <div className="flex flex-col gap-0.5 pt-1">
@@ -1281,7 +1281,7 @@ function BenefitConfigCard({
               <div className="flex-1 space-y-3">
                 <div className="grid grid-cols-4 gap-3">
                   <div>
-                    <Label className="text-xs text-slate-500">商品ID <span className="text-rose-500">*</span></Label>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
                     <Input
                       className="mt-1 h-8 text-sm"
                       placeholder="输入商品ID"
@@ -1290,7 +1290,7 @@ function BenefitConfigCard({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-500">福利图片</Label>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
                     <Input
                       className="mt-1 h-8 text-sm"
                       placeholder="输入图片URL"
@@ -1299,7 +1299,7 @@ function BenefitConfigCard({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-500">展示方式</Label>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
                     <Select
                       value={product.displayMode}
                       onValueChange={(val) =>
@@ -1316,7 +1316,7 @@ function BenefitConfigCard({
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-500">排序</Label>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
                     <Input
                       className="mt-1 h-8 text-sm"
                       type="number"
@@ -1338,7 +1338,7 @@ function BenefitConfigCard({
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-slate-400 hover:text-red-500 h-7 w-7 p-0 mt-1"
+                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
                 onClick={() => removeProduct(product.id)}
               >
                 <X className="h-3.5 w-3.5" />
@@ -1521,10 +1521,10 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-2xl font-semibold text-[var(--color-meiyou-text-primary)]">
             {isEdit ? '编辑活动' : '新建活动'}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-[var(--color-meiyou-text-secondary)]">
             {isEdit
               ? '修改活动配置信息'
               : '选定模板与基础信息 → 填充组件素材，两步完成活动配置'}
@@ -1547,21 +1547,21 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
                     isCompleted
                       ? 'bg-emerald-500 text-white'
                       : isCurrent
-                        ? 'bg-rose-500 text-white'
-                        : 'bg-slate-200 text-slate-500'
+                        ? 'bg-meiyou text-white'
+                        : 'bg-meiyou-bg text-[var(--color-meiyou-text-secondary)]'
                   }`}
                 >
                   {isCompleted ? <Check className="h-4 w-4" /> : step.num}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <StepIcon className={`h-4 w-4 ${isCurrent ? 'text-rose-500' : isCompleted ? 'text-emerald-500' : 'text-slate-400'}`} />
-                  <span className={`text-sm ${isCurrent ? 'text-slate-900 font-medium' : isCompleted ? 'text-emerald-600' : 'text-slate-400'}`}>
+                  <StepIcon className={`h-4 w-4 ${isCurrent ? 'text-meiyou' : isCompleted ? 'text-emerald-500' : 'text-[var(--color-meiyou-text-placeholder)]'}`} />
+                  <span className={`text-sm ${isCurrent ? 'text-[var(--color-meiyou-text-primary)] font-medium' : isCompleted ? 'text-emerald-600' : 'text-[var(--color-meiyou-text-placeholder)]'}`}>
                     {step.label}
                   </span>
                 </div>
               </div>
               {index < stepConfig.length - 1 && (
-                <div className={`w-16 h-0.5 mx-3 ${isCompleted ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                <div className={`w-16 h-0.5 mx-3 ${isCompleted ? 'bg-emerald-500' : 'bg-meiyou-bg'}`} />
               )}
             </div>
           );
@@ -1588,7 +1588,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
-          className="border-slate-300"
+          className="border-[var(--color-meiyou-divider)]"
           onClick={() => {
             if (currentStep === 1) {
               router.push('/activities');
@@ -1601,12 +1601,12 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           {currentStep === 1 ? '返回列表' : '上一步'}
         </Button>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="border-slate-300">
+          <Button variant="outline" className="border-[var(--color-meiyou-divider)]">
             保存草稿
           </Button>
           {currentStep < 2 ? (
             <Button
-              className="bg-rose-500 hover:bg-rose-600 text-white"
+              className="bg-meiyou hover:bg-meiyou-hover text-white"
               disabled={!canProceed()}
               onClick={() => setCurrentStep((prev) => prev + 1)}
             >

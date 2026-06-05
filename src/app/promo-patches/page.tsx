@@ -53,7 +53,7 @@ import { mockPromoPatches, mockPlans, mockLotteryPools } from '@/lib/mock-data';
 const typeConfig: Record<PromoPatchType, { label: string; color: string; icon: React.ElementType; desc: string }> = {
   price_discount: {
     label: '价格立减',
-    color: 'bg-rose-50 text-rose-700 border-rose-200',
+    color: 'bg-pink-50 text-pink-700 border-pink-200',
     icon: DollarSign,
     desc: '针对特定套餐的优惠金额或折扣',
   },
@@ -125,12 +125,12 @@ function PatchConfigForm({ type }: { type: PromoPatchType }) {
             {mockPlans.map((plan) => (
               <label
                 key={plan.id}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 p-3 cursor-pointer hover:bg-slate-50"
+                className="flex items-center gap-2 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50"
               >
-                <input type="checkbox" className="rounded border-slate-300" />
+                <input type="checkbox" className="rounded border-gray-300" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{plan.name}</p>
-                  <p className="text-xs text-slate-500">¥{plan.price}/{plan.duration}</p>
+                  <p className="text-sm font-medium text-gray-900">{plan.name}</p>
+                  <p className="text-xs text-gray-500">¥{plan.price}/{plan.duration}</p>
                 </div>
               </label>
             ))}
@@ -227,12 +227,12 @@ function CreatePatchDialog() {
             <div className="flex items-center gap-2 mb-2">
               {(() => {
                 const TypeIcon = typeConfig[patchType].icon;
-                return <TypeIcon className="h-4 w-4 text-slate-500" />;
+                return <TypeIcon className="h-4 w-4 text-gray-500" />;
               })()}
-              <span className="text-sm font-medium text-slate-700">
+              <span className="text-sm font-medium text-gray-700">
                 {typeConfig[patchType].label}配置
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-gray-400">
                 {typeConfig[patchType].desc}
               </span>
             </div>
@@ -241,10 +241,10 @@ function CreatePatchDialog() {
         )}
       </div>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="outline" className="border-slate-300">
+        <Button variant="outline" className="border-gray-300">
           取消
         </Button>
-        <Button className="bg-rose-500 hover:bg-rose-600 text-white" disabled={!patchType}>
+        <Button className="bg-meiyou hover:bg-pink-600 text-white" disabled={!patchType}>
           创建策略
         </Button>
       </div>
@@ -258,15 +258,15 @@ function PatchDetailContent({ patch }: { patch: PromoPatch }) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <p className="text-xs text-slate-500 mb-1">策略类型</p>
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+          <p className="text-xs text-gray-500 mb-1">策略类型</p>
           <Badge variant="outline" className={typeConfig[patch.type].color}>
             {typeConfig[patch.type].label}
           </Badge>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <p className="text-xs text-slate-500 mb-1">状态</p>
-          <Badge variant="outline" className={patch.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}>
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+          <p className="text-xs text-gray-500 mb-1">状态</p>
+          <Badge variant="outline" className={patch.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200'}>
             {patch.status === 'active' ? '启用中' : '已停用'}
           </Badge>
         </div>
@@ -276,17 +276,17 @@ function PatchDetailContent({ patch }: { patch: PromoPatch }) {
 
       {patch.type === 'price_discount' && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-slate-700">立减配置</h4>
+          <h4 className="text-sm font-medium text-gray-700">立减配置</h4>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">目标套餐</p>
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">目标套餐</p>
+              <p className="text-sm font-medium text-gray-900">
                 {(config as { targetPlanName: string }).targetPlanName}
               </p>
             </div>
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">优惠幅度</p>
-              <p className="text-sm font-medium text-rose-600">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">优惠幅度</p>
+              <p className="text-sm font-medium text-meiyou">
                 {(config as { discountUnit: string; discountAmount: number }).discountUnit === 'yuan'
                   ? `直减 ¥${(config as { discountAmount: number }).discountAmount}`
                   : `${(config as { discountAmount: number }).discountAmount}% OFF`}
@@ -298,17 +298,17 @@ function PatchDetailContent({ patch }: { patch: PromoPatch }) {
 
       {patch.type === 'bonus_duration' && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-slate-700">加赠配置</h4>
+          <h4 className="text-sm font-medium text-gray-700">加赠配置</h4>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">赠送天数</p>
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">赠送天数</p>
               <p className="text-sm font-medium text-blue-600">
                 +{(config as { bonusDays: number }).bonusDays} 天
               </p>
             </div>
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">适用套餐</p>
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">适用套餐</p>
+              <p className="text-sm font-medium text-gray-900">
                 {(config as { targetPlanNames: string[] }).targetPlanNames.join('、')}
               </p>
             </div>
@@ -318,23 +318,23 @@ function PatchDetailContent({ patch }: { patch: PromoPatch }) {
 
       {patch.type === 'gift' && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-slate-700">赠礼配置</h4>
+          <h4 className="text-sm font-medium text-gray-700">赠礼配置</h4>
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">赠礼名称</p>
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">赠礼名称</p>
+              <p className="text-sm font-medium text-gray-900">
                 {(config as { giftName: string }).giftName}
               </p>
             </div>
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">赠礼类型</p>
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">赠礼类型</p>
+              <p className="text-sm font-medium text-gray-900">
                 {{ physical: '实物礼包', coupon: '场景券', virtual: '虚拟权益' }[(config as { giftType: string }).giftType] || (config as { giftType: string }).giftType}
               </p>
             </div>
-            <div className="rounded-lg border border-slate-200 p-3">
-              <p className="text-xs text-slate-500 mb-1">库存数量</p>
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-lg border border-gray-200 p-3">
+              <p className="text-xs text-gray-500 mb-1">库存数量</p>
+              <p className="text-sm font-medium text-gray-900">
                 {(config as { stockCount: number }).stockCount.toLocaleString()}
               </p>
             </div>
@@ -361,14 +361,14 @@ export default function PromoPatchesPage() {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">营销策略库</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-gray-900">营销策略库</h1>
+          <p className="mt-1 text-sm text-gray-500">
             优惠、加赠时长等"策略补丁"配置，运营统一维护营销补丁包
           </p>
         </div>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-rose-500 hover:bg-rose-600 text-white">
+            <Button className="bg-meiyou hover:bg-pink-600 text-white">
               <Plus className="mr-2 h-4 w-4" />
               新建策略
             </Button>
@@ -382,15 +382,15 @@ export default function PromoPatchesPage() {
         {Object.entries(typeConfig).map(([key, config]) => {
           const TypeIcon = config.icon;
           return (
-            <Card key={key} className="border-slate-200">
+            <Card key={key} className="border-gray-200">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <TypeIcon className="h-4 w-4 text-slate-500" />
+                  <TypeIcon className="h-4 w-4 text-gray-500" />
                   <Badge variant="outline" className={config.color}>
                     {config.label}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-500">{config.desc}</p>
+                <p className="text-xs text-gray-500">{config.desc}</p>
               </CardContent>
             </Card>
           );
@@ -398,11 +398,11 @@ export default function PromoPatchesPage() {
       </div>
 
       {/* 策略列表 */}
-      <Card className="border-slate-200">
+      <Card className="border-gray-200">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50 hover:bg-slate-50">
+              <TableRow className="bg-gray-50 hover:bg-gray-50">
                 <TableHead className="w-[260px]">策略名称</TableHead>
                 <TableHead className="w-[120px]">类型</TableHead>
                 <TableHead>配置摘要</TableHead>
@@ -430,8 +430,8 @@ export default function PromoPatchesPage() {
                   <TableRow key={patch.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <TypeIcon className="h-4 w-4 text-slate-400" />
-                        <span className="font-medium text-slate-900 text-sm">{patch.name}</span>
+                        <TypeIcon className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium text-gray-900 text-sm">{patch.name}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -439,7 +439,7 @@ export default function PromoPatchesPage() {
                         {typeConfig[patch.type].label}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">{summary}</TableCell>
+                    <TableCell className="text-sm text-gray-600">{summary}</TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Switch
@@ -447,12 +447,12 @@ export default function PromoPatchesPage() {
                           onCheckedChange={() => handleToggleStatus(patch.id)}
                           className="data-[state=checked]:bg-emerald-500"
                         />
-                        <span className={`text-xs ${patch.status === 'active' ? 'text-emerald-600' : 'text-slate-400'}`}>
+                        <span className={`text-xs ${patch.status === 'active' ? 'text-emerald-600' : 'text-gray-400'}`}>
                           {patch.status === 'active' ? '启用' : '停用'}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center text-xs text-slate-500">
+                    <TableCell className="text-center text-xs text-gray-500">
                       {new Date(patch.updatedAt).toLocaleDateString('zh-CN')}
                     </TableCell>
                     <TableCell className="text-center">

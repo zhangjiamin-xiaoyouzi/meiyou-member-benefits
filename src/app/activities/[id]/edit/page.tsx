@@ -43,7 +43,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-400">加载中...</div>
+        <div className="text-gray-400">加载中...</div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
   if (!activity) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-400">活动不存在</div>
+        <div className="text-gray-400">活动不存在</div>
       </div>
     );
   }

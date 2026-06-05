@@ -50,7 +50,7 @@ function NewActivityContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-slate-400">
+      <div className="flex items-center justify-center py-20 text-gray-400">
         加载中...
       </div>
     );
@@ -61,7 +61,7 @@ function NewActivityContent() {
 
 export default function NewActivityPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-20 text-slate-400">加载中...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-20 text-gray-400">加载中...</div>}>
       <NewActivityContent />
     </Suspense>
   );
