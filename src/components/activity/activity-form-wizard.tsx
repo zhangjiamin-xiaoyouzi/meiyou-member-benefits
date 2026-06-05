@@ -470,45 +470,68 @@ function StepBasicInfo({
       {/* 活动时间配置 */}
       <div>
         <Label className="text-sm font-medium text-slate-700">活动时间配置</Label>
-        <div className="mt-3 grid grid-cols-2 gap-4">
+        <div className="mt-3 space-y-4">
+          {/* 活动时间（必填） */}
           <div>
             <Label className="text-xs text-slate-500">
-              {isMemberDay ? '活动预约时间' : '售卖时间'} <span className="text-rose-500">*</span>
+              活动时间 <span className="text-rose-500">*</span>
             </Label>
             <TimeRangeField
               startValue={data.sellStartTime}
-              endValue={data.sellEndTime}
+              endValue={data.bufferEndTime}
               onStartChange={(val) => onChange({ ...data, sellStartTime: val })}
-              onEndChange={(val) => onChange({ ...data, sellEndTime: val })}
+              onEndChange={(val) => onChange({ ...data, bufferEndTime: val })}
             />
           </div>
-          <div>
-            <Label className="text-xs text-slate-500">
-              {isMemberDay ? '活动福利领取时间' : '抽奖时间'} <span className="text-rose-500">*</span>
-            </Label>
-            <TimeRangeField
-              startValue={data.lotteryStartTime}
-              endValue={data.lotteryEndTime}
-              onStartChange={(val) => onChange({ ...data, lotteryStartTime: val })}
-              onEndChange={(val) => onChange({ ...data, lotteryEndTime: val })}
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-slate-500">
-              {isMemberDay ? '活动结束时间' : '缓冲截止时间'} <span className="text-rose-500">*</span>
-            </Label>
-            <SingleTimeField
-              value={data.bufferEndTime}
-              onChange={(val) => onChange({ ...data, bufferEndTime: val })}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            {/* 活动预约时间（非必填） */}
+            <div>
+              <Label className="text-xs text-slate-500">
+                {isMemberDay ? '活动预约时间' : '售卖时间'}
+              </Label>
+              <TimeRangeField
+                startValue={data.sellStartTime}
+                endValue={data.sellEndTime}
+                onStartChange={(val) => {
+                  if (data.sellStartTime && val < data.sellStartTime) return;
+                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  onChange({ ...data, sellStartTime: val });
+                }}
+                onEndChange={(val) => {
+                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  onChange({ ...data, sellEndTime: val });
+                }}
+              />
+            </div>
+            {/* 活动福利领取时间（非必填） */}
+            <div>
+              <Label className="text-xs text-slate-500">
+                {isMemberDay ? '活动福利领取时间' : '抽奖时间'}
+              </Label>
+              <TimeRangeField
+                startValue={data.lotteryStartTime}
+                endValue={data.lotteryEndTime}
+                onStartChange={(val) => {
+                  if (data.sellStartTime && val < data.sellStartTime) return;
+                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  onChange({ ...data, lotteryStartTime: val });
+                }}
+                onEndChange={(val) => {
+                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  onChange({ ...data, lotteryEndTime: val });
+                }}
+              />
+            </div>
           </div>
           {!isMemberDay && (
-            <div>
-              <Label className="text-xs text-slate-500">退款熔断截单时间</Label>
-              <SingleTimeField
-                value={data.refundCutoffTime}
-                onChange={(val) => onChange({ ...data, refundCutoffTime: val })}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-slate-500">退款熔断截单时间</Label>
+                <SingleTimeField
+                  value={data.refundCutoffTime}
+                  onChange={(val) => onChange({ ...data, refundCutoffTime: val })}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -1427,7 +1450,9 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       return (
         step1Data.templateId !== '' &&
         step1Data.name !== '' &&
-        step1Data.category !== ''
+        step1Data.category !== '' &&
+        step1Data.sellStartTime !== '' &&
+        step1Data.bufferEndTime !== ''
       );
     }
     return true;

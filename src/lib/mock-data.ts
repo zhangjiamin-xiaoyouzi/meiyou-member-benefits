@@ -52,7 +52,7 @@ export const mockTemplates: Template[] = [
     preview: '/template-a.png',
     components: [
       { id: 'comp_101', name: '氛围头图', key: 'header_banner', description: '顶部活动氛围图', enabled: true, required: true },
-      { id: 'comp_102', name: '限时抢购', key: 'flash_sale', description: '限时抢购模块，支持配置福利商品与受众', enabled: true, required: true },
+      { id: 'comp_102', name: '限时抢购', key: 'flash_sale', description: '限时抢购模块，支持配置福利商品与受众', enabled: true, required: false },
       { id: 'comp_103', name: '0元福利', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
       { id: 'comp_105', name: '规则弹窗', key: 'rule_popup', description: '活动规则说明弹窗', enabled: true, required: true },
       { id: 'comp_106', name: '0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
