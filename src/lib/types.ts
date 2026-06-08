@@ -109,7 +109,7 @@ export interface LotteryConfig {
 
 export interface MaterialConfig {
   headerBanner?: string;
-  ruleText?: string;
+  ruleRichText?: string;
   popupBg?: string;
   marqueeText?: string;
 }
@@ -199,7 +199,7 @@ export interface FreePurchaseConfig {
 /** 规则弹窗配置 */
 export interface RulePopupConfig {
   iconImage: string;
-  ruleText: string;
+  ruleRichText: string;
 }
 
 /** 按钮组件单阶段配置 */

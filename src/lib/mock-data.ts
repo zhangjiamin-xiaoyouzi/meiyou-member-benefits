@@ -209,7 +209,7 @@ export const mockActivities: Activity[] = [
     },
     materialConfig: {
       headerBanner: '/banners/618_header.png',
-      ruleText: '活动期间订阅会员即可参与抽奖，每人限抽3次',
+      ruleRichText: '活动期间订阅会员即可参与抽奖，每人限抽3次',
       popupBg: '/banners/618_popup.png',
       marqueeText: '恭喜用户***获得全棉时代礼包',
     },
@@ -259,7 +259,7 @@ export const mockActivities: Activity[] = [
     },
     materialConfig: {
       headerBanner: '/banners/member_day_header.png',
-      ruleText: '会员日专属优惠，限时1天',
+      ruleRichText: '会员日专属优惠，限时1天',
     },
     components: {
       header_banner: true,

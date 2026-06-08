@@ -192,9 +192,7 @@ export default function ActivityPreviewPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowRulePopup(false)}>
             <div className="bg-white rounded-xl mx-6 p-4 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
               <div className="text-sm font-semibold mb-3">活动规则</div>
-              <div className="text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
-                {cfg.ruleText || '暂无规则说明'}
-              </div>
+              <div className="text-xs text-gray-600 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: cfg.ruleRichText || '<p>暂无规则说明</p>' }} />
               <button
                 className="mt-4 w-full py-2 bg-gray-100 rounded-lg text-xs text-gray-600"
                 onClick={() => setShowRulePopup(false)}

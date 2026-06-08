@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -675,7 +675,7 @@ function StepComponentConfig({
           </CardHeader>
           <CardContent className="space-y-4">
             {(() => {
-              const cfg: RulePopupConfig = configs.rule_popup || { iconImage: '', ruleText: '' };
+              const cfg: RulePopupConfig = configs.rule_popup || { iconImage: '', ruleRichText: '' };
               return (
                 <>
                   <ImageUploadField
@@ -684,14 +684,12 @@ function StepComponentConfig({
                     onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
                   />
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文本</Label>
-                    <Textarea
-                      placeholder="请输入活动规则文案，支持文字说明与跳转链接..."
-                      rows={5}
-                      value={cfg.ruleText}
-                      onChange={(e) => updateConfig('rule_popup', { ...cfg, ruleText: e.target.value })}
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文案</Label>
+                    <RichTextEditor
+                      value={cfg.ruleRichText}
+                      onChange={(val) => updateConfig('rule_popup', { ...cfg, ruleRichText: val })}
+                      placeholder="请输入活动规则文案，支持富文本编辑..."
                     />
-                    <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">支持直接输入URL作为跳转链接</p>
                   </div>
                 </>
               );
@@ -838,6 +836,49 @@ const GRADIENT_DIRECTION_OPTIONS = [
   { value: 'to bottom right', label: '左上到右下 ↘' },
   { value: 'to bottom left', label: '右上到左下 ↙' },
 ];
+
+/** 富文本编辑器组件（基于 react-quill） */
+function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+}) {
+  const Quill = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ReactQuill = require('react-quill-new');
+    return ReactQuill.default || ReactQuill;
+  }, []);
+
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ color: [] }, { background: [] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link'],
+        ['clean'],
+      ],
+    }),
+    []
+  );
+
+  return (
+    <div className="rich-text-editor-wrapper border border-[var(--color-meiyou-border)] rounded-lg overflow-hidden">
+      <Quill
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        modules={modules}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
 
 function GlobalConfigCard({
   config,
