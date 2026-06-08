@@ -678,15 +678,6 @@ function StepComponentConfig({
         />
       )}
 
-      {/* 会员专属生活券包 */}
-      {isComponentEnabled('free_benefit') && (
-        <BenefitConfigCard
-          title="会员专属生活券包"
-          config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('free_benefit', val)}
-        />
-      )}
-
       {/* 会员专属0元购 */}
       {isComponentEnabled('free_purchase') && (
         <FreePurchaseConfigCard
@@ -738,6 +729,15 @@ function StepComponentConfig({
             })()}
           </CardContent>
         </Card>
+      )}
+
+      {/* 会员专属生活券包 */}
+      {isComponentEnabled('free_benefit') && (
+        <BenefitConfigCard
+          title="会员专属生活券包"
+          config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+          onChange={(val) => updateConfig('free_benefit', val)}
+        />
       )}
 
       {/* 吸底按钮 */}
