@@ -687,7 +687,7 @@ function StepComponentConfig({
         />
       )}
 
-      {/* 0元购 */}
+      {/* 会员专属0元购 */}
       {isComponentEnabled('free_purchase') && (
         <FreePurchaseConfigCard
           config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
@@ -1334,7 +1334,7 @@ function FreePurchaseConfigCard({
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
           <Tag className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-          0元购
+          会员专属0元购
           <span className="text-xs text-[var(--color-meiyou-text-placeholder)] font-normal">下单全额返现金</span>
         </CardTitle>
       </CardHeader>

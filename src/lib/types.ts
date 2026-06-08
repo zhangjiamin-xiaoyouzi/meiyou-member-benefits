@@ -189,7 +189,7 @@ export interface BenefitConfig {
   products: BenefitProduct[];
 }
 
-/** 0元购配置 */
+/** 会员专属0元购配置 */
 export interface FreePurchaseConfig {
   moduleHeaderImage: string;
   moduleBgImage: string;

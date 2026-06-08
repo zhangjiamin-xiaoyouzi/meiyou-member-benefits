@@ -56,7 +56,7 @@ export const mockTemplates: Template[] = [
       { id: 'comp_102', name: '会员限时福利', key: 'flash_sale', description: '会员限时福利模块，支持配置福利商品与受众', enabled: true, required: false },
       { id: 'comp_103', name: '会员专属生活券包', key: 'free_benefit', description: '会员专属生活券包组件', enabled: true, required: false },
       { id: 'comp_105', name: '规则弹窗', key: 'rule_popup', description: '活动规则说明弹窗', enabled: true, required: true },
-      { id: 'comp_106', name: '0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
+      { id: 'comp_106', name: '会员专属0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
       { id: 'comp_107', name: '会员专属礼', key: 'exclusive_gift', description: '会员专属限量礼品', enabled: false, required: false },
       { id: 'comp_108', name: '吸底按钮', key: 'cta_button', description: '底部吸底行动引导按钮', enabled: false, required: false },
     ],

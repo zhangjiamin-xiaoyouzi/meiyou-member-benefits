@@ -143,17 +143,17 @@ export default function ActivityPreviewPage() {
     );
   };
 
-  /** 渲染0元购 */
+  /** 渲染会员专属0元购 */
   const renderFreePurchase = () => {
     const cfg = configs.free_purchase as FreePurchaseConfig | undefined;
     if (!cfg) return null;
     return (
       <div key="free_purchase" className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
         {cfg.moduleHeaderImage && (
-          <img src={cfg.moduleHeaderImage} alt="0元购头图" className="w-full block" />
+          <img src={cfg.moduleHeaderImage} alt="会员专属0元购头图" className="w-full block" />
         )}
         <div className="px-3 py-2">
-          <div className="text-center text-xs font-semibold text-green-600 mb-2">0元购</div>
+          <div className="text-center text-xs font-semibold text-green-600 mb-2">会员专属0元购</div>
           <div className="bg-white rounded-lg p-3 text-xs text-gray-600">
             <div>下单全额返现金</div>
             {cfg.categoryIds?.length > 0 && (
