@@ -664,37 +664,6 @@ function StepComponentConfig({
         </Card>
       )}
 
-      {/* 全局配置 */}
-      <GlobalConfigCard
-        config={configs.global_config || { ...defaultGlobalConfig }}
-        onChange={(val) => updateConfig('global_config', val)}
-      />
-
-      {/* 会员限时福利 */}
-      {isComponentEnabled('flash_sale') && (
-        <FlashSaleConfigCard
-          config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
-          onChange={(val) => updateConfig('flash_sale', val)}
-        />
-      )}
-
-      {/* 会员专属0元购 */}
-      {isComponentEnabled('free_purchase') && (
-        <FreePurchaseConfigCard
-          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('free_purchase', val)}
-        />
-      )}
-
-      {/* 会员专属礼 */}
-      {isComponentEnabled('exclusive_gift') && (
-        <BenefitConfigCard
-          title="会员专属礼"
-          config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('exclusive_gift', val)}
-        />
-      )}
-
       {/* 规则弹窗 */}
       {isComponentEnabled('rule_popup') && (
         <Card className="border-[var(--color-meiyou-border)]">
@@ -729,6 +698,37 @@ function StepComponentConfig({
             })()}
           </CardContent>
         </Card>
+      )}
+
+      {/* 全局配置 */}
+      <GlobalConfigCard
+        config={configs.global_config || { ...defaultGlobalConfig }}
+        onChange={(val) => updateConfig('global_config', val)}
+      />
+
+      {/* 会员限时福利 */}
+      {isComponentEnabled('flash_sale') && (
+        <FlashSaleConfigCard
+          config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
+          onChange={(val) => updateConfig('flash_sale', val)}
+        />
+      )}
+
+      {/* 会员专属0元购 */}
+      {isComponentEnabled('free_purchase') && (
+        <FreePurchaseConfigCard
+          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
+          onChange={(val) => updateConfig('free_purchase', val)}
+        />
+      )}
+
+      {/* 会员专属礼 */}
+      {isComponentEnabled('exclusive_gift') && (
+        <BenefitConfigCard
+          title="会员专属礼"
+          config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+          onChange={(val) => updateConfig('exclusive_gift', val)}
+        />
       )}
 
       {/* 会员专属生活券包 */}
