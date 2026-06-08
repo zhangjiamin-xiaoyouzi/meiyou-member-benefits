@@ -678,10 +678,10 @@ function StepComponentConfig({
         />
       )}
 
-      {/* 免费领券 */}
+      {/* 更多福利 */}
       {isComponentEnabled('free_benefit') && (
         <BenefitConfigCard
-          title="免费领券"
+          title="更多福利"
           config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('free_benefit', val)}
         />
@@ -1298,7 +1298,7 @@ function FlashSaleConfigCard({
   );
 }
 
-// ==================== 免费领券/专属礼配置卡片 ====================
+// ==================== 更多福利/专属礼配置卡片 ====================
 
 function FreePurchaseConfigCard({
   config,

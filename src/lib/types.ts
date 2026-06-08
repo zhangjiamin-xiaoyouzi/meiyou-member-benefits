@@ -172,7 +172,7 @@ export interface FlashSaleConfig {
   products: FlashSaleProduct[];
 }
 
-/** 免费领券/专属礼商品 */
+/** 更多福利/专属礼商品 */
 export interface BenefitProduct {
   id: string;
   productId: string;
@@ -182,7 +182,7 @@ export interface BenefitProduct {
   audienceRules: ComponentAudienceRule[];
 }
 
-/** 免费领券/专属礼配置 */
+/** 更多福利/专属礼配置 */
 export interface BenefitConfig {
   moduleHeaderImage: string;
   moduleBgImage: string;
