@@ -142,7 +142,7 @@ export interface ComponentAudienceRule {
   value: string | string[];
 }
 
-/** 限时抢购-福利商品 */
+/** 会员限时福利-福利商品 */
 /** 抢购场次（预约+抢购时间对） */
 export interface TimeSession {
   id: string;
@@ -165,7 +165,7 @@ export interface FlashSaleProduct {
   audienceRules: ComponentAudienceRule[];
 }
 
-/** 限时抢购配置 */
+/** 会员限时福利配置 */
 export interface FlashSaleConfig {
   moduleHeaderImage: string;
   moduleBgImage: string;

@@ -670,7 +670,7 @@ function StepComponentConfig({
         onChange={(val) => updateConfig('global_config', val)}
       />
 
-      {/* 限时抢购 */}
+      {/* 会员限时福利 */}
       {isComponentEnabled('flash_sale') && (
         <FlashSaleConfigCard
           config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
@@ -1051,7 +1051,7 @@ function GlobalConfigCard({
   );
 }
 
-// ==================== 限时抢购配置卡片 ====================
+// ==================== 会员限时福利配置卡片 ====================
 
 function FlashSaleConfigCard({
   config,
@@ -1092,7 +1092,7 @@ function FlashSaleConfigCard({
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
           <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-          限时抢购
+          会员限时福利
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

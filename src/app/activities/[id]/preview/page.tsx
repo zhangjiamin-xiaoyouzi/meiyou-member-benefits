@@ -82,17 +82,17 @@ export default function ActivityPreviewPage() {
     );
   };
 
-  /** 渲染限时抢购 */
+  /** 渲染会员限时福利 */
   const renderFlashSale = () => {
     const cfg = configs.flash_sale as FlashSaleConfig | undefined;
     if (!cfg) return null;
     return (
       <div key="flash_sale" className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
         {cfg.moduleHeaderImage && (
-          <img src={cfg.moduleHeaderImage} alt="限时抢购头图" className="w-full block" />
+          <img src={cfg.moduleHeaderImage} alt="会员限时福利头图" className="w-full block" />
         )}
         <div className="px-3 py-2">
-          <div className="text-center text-xs font-semibold text-meiyou mb-2">限时抢购</div>
+          <div className="text-center text-xs font-semibold text-meiyou mb-2">会员限时福利</div>
           {cfg.products?.map((product) => (
             <div key={product.id} className="bg-white rounded-lg mb-2 overflow-hidden shadow-sm">
               <div className="flex">
