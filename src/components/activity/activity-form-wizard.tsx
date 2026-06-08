@@ -640,6 +640,12 @@ function StepComponentConfig({
         对已启用的组件进行详细配置，关闭的组件无需配置
       </p>
 
+      {/* 全局配置 */}
+      <GlobalConfigCard
+        config={configs.global_config || { ...defaultGlobalConfig }}
+        onChange={(val) => updateConfig('global_config', val)}
+      />
+
       {/* 氛围头图 */}
       {isComponentEnabled('header_banner') && (
         <Card className="border-[var(--color-meiyou-border)]">
@@ -697,12 +703,6 @@ function StepComponentConfig({
           </CardContent>
         </Card>
       )}
-
-      {/* 全局配置 */}
-      <GlobalConfigCard
-        config={configs.global_config || { ...defaultGlobalConfig }}
-        onChange={(val) => updateConfig('global_config', val)}
-      />
 
       {/* 会员限时福利 */}
       {isComponentEnabled('flash_sale') && (

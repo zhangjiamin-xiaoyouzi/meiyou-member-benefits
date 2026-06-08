@@ -51,9 +51,9 @@ export const mockTemplates: Template[] = [
     description: '适用于每月会员日活动，预留会员限时福利、会员专属生活券包、会员专属礼等组件。',
     preview: '/template-a.png',
     components: [
+      { id: 'comp_100', name: '全局配置', key: 'global_config', description: '活动页面全局背景配置', enabled: true, required: true },
       { id: 'comp_101', name: '氛围头图', key: 'header_banner', description: '顶部活动氛围图', enabled: true, required: true },
       { id: 'comp_105', name: '规则弹窗', key: 'rule_popup', description: '活动规则说明弹窗', enabled: true, required: true },
-      { id: 'comp_100', name: '全局配置', key: 'global_config', description: '活动页面全局背景配置', enabled: true, required: true },
       { id: 'comp_102', name: '会员限时福利', key: 'flash_sale', description: '会员限时福利模块，支持配置福利商品与受众', enabled: true, required: false },
       { id: 'comp_107', name: '会员专属礼', key: 'exclusive_gift', description: '会员专属限量礼品', enabled: false, required: false },
       { id: 'comp_106', name: '会员专属0元购', key: 'free_purchase', description: '下单全额返现金', enabled: false, required: false },
