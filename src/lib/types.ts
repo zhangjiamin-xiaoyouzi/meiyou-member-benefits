@@ -116,6 +116,18 @@ export interface MaterialConfig {
 
 // ==================== 会员日组件配置类型 ====================
 
+/** 全局配置 */
+export type BackgroundType = 'solid' | 'gradient' | 'image';
+
+export interface GlobalConfig {
+  backgroundType: BackgroundType;
+  solidColor: string;           // 纯色背景颜色值
+  gradientStart: string;        // 渐变色起始颜色
+  gradientEnd: string;          // 渐变色结束颜色
+  gradientDirection: string;    // 渐变方向：to-right / to-bottom / to-bottom-right 等
+  backgroundImage: string;      // 背景图片 URL
+}
+
 /** 氛围头图配置 */
 export interface HeaderBannerConfig {
   imageUrl: string;
@@ -206,6 +218,7 @@ export interface ActionButtonConfig {
 
 /** 组件配置集合 */
 export interface ComponentConfigs {
+  global_config?: GlobalConfig;
   header_banner?: HeaderBannerConfig;
   flash_sale?: FlashSaleConfig;
   free_benefit?: BenefitConfig;

@@ -41,6 +41,7 @@ import type {
   AudienceRule,
   Activity,
   ComponentConfigs,
+  GlobalConfig,
   HeaderBannerConfig,
   FlashSaleConfig,
   FlashSaleProduct,
@@ -112,6 +113,17 @@ const ruleValueOptions: Record<string, { value: string; label: string }[]> = {
     { value: 'mother', label: '宝妈' },
     { value: 'tfc', label: '备孕' },
   ],
+};
+
+// ==================== 全局配置默认值 ====================
+
+const defaultGlobalConfig: GlobalConfig = {
+  backgroundType: 'solid',
+  solidColor: '#f2f2f5',
+  gradientStart: '#ff4d88',
+  gradientEnd: '#ff8fab',
+  gradientDirection: 'to bottom',
+  backgroundImage: '',
 };
 
 // ==================== 图片上传占位组件 ====================
@@ -652,6 +664,12 @@ function StepComponentConfig({
         </Card>
       )}
 
+      {/* 全局配置 */}
+      <GlobalConfigCard
+        config={configs.global_config || { ...defaultGlobalConfig }}
+        onChange={(val) => updateConfig('global_config', val)}
+      />
+
       {/* 限时抢购 */}
       {isComponentEnabled('flash_sale') && (
         <FlashSaleConfigCard
@@ -803,6 +821,233 @@ function StepComponentConfig({
         </Card>
       )}
     </div>
+  );
+}
+
+// ==================== 全局配置卡片 ====================
+
+const BACKGROUND_TYPE_OPTIONS = [
+  { value: 'solid' as const, label: '纯色' },
+  { value: 'gradient' as const, label: '渐变色' },
+  { value: 'image' as const, label: '图片' },
+];
+
+const GRADIENT_DIRECTION_OPTIONS = [
+  { value: 'to right', label: '从左到右 →' },
+  { value: 'to bottom', label: '从上到下 ↓' },
+  { value: 'to bottom right', label: '左上到右下 ↘' },
+  { value: 'to bottom left', label: '右上到左下 ↙' },
+];
+
+function GlobalConfigCard({
+  config,
+  onChange,
+}: {
+  config: GlobalConfig;
+  onChange: (config: GlobalConfig) => void;
+}) {
+  const cfg = { ...defaultGlobalConfig, ...config };
+
+  const updateField = <K extends keyof GlobalConfig>(key: K, value: GlobalConfig[K]) => {
+    onChange({ ...cfg, [key]: value });
+  };
+
+  return (
+    <Card className="border-[var(--color-meiyou-border)] shadow-meiyou-card">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded bg-meiyou/10 flex items-center justify-center">
+            <Settings2 className="h-4 w-4 text-meiyou" />
+          </div>
+          <CardTitle className="text-base font-medium">全局配置</CardTitle>
+        </div>
+        <CardDescription className="text-xs text-[var(--color-meiyou-text-secondary)]">
+          配置活动页面的全局背景样式
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* 背景类型选择 */}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">背景类型</Label>
+          <div className="flex gap-2">
+            {BACKGROUND_TYPE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => updateField('backgroundType', opt.value)}
+                className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                  cfg.backgroundType === opt.value
+                    ? 'bg-meiyou text-white border-meiyou'
+                    : 'bg-white text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)] hover:border-meiyou/40'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 纯色配置 */}
+        {cfg.backgroundType === 'solid' && (
+          <div className="space-y-1.5">
+            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">背景颜色</Label>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <input
+                  type="color"
+                  value={cfg.solidColor}
+                  onChange={(e) => updateField('solidColor', e.target.value)}
+                  className="w-10 h-10 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+                />
+              </div>
+              <Input
+                value={cfg.solidColor}
+                onChange={(e) => updateField('solidColor', e.target.value)}
+                placeholder="#f2f2f5"
+                className="w-32 h-8 text-xs"
+              />
+              {/* 预设颜色 */}
+              <div className="flex gap-1.5 ml-2">
+                {['#f2f2f5', '#fff5f7', '#fff0f5', '#ffffff', '#1a1a2e'].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => updateField('solidColor', color)}
+                    className={`w-7 h-7 rounded border-2 transition-transform hover:scale-110 ${
+                      cfg.solidColor === color ? 'border-meiyou scale-110' : 'border-[var(--color-meiyou-border)]'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* 预览 */}
+            <div className="mt-2 rounded-lg border border-[var(--color-meiyou-border)] overflow-hidden">
+              <div className="h-16 flex items-center justify-center text-xs text-[var(--color-meiyou-text-placeholder)]" style={{ backgroundColor: cfg.solidColor }}>
+                纯色背景预览
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 渐变色配置 */}
+        {cfg.backgroundType === 'gradient' && (
+          <div className="space-y-3">
+            <div className="flex gap-4">
+              {/* 起始颜色 */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">起始颜色</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={cfg.gradientStart}
+                    onChange={(e) => updateField('gradientStart', e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+                  />
+                  <Input
+                    value={cfg.gradientStart}
+                    onChange={(e) => updateField('gradientStart', e.target.value)}
+                    className="w-24 h-7 text-xs"
+                  />
+                </div>
+              </div>
+              {/* 结束颜色 */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">结束颜色</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={cfg.gradientEnd}
+                    onChange={(e) => updateField('gradientEnd', e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+                  />
+                  <Input
+                    value={cfg.gradientEnd}
+                    onChange={(e) => updateField('gradientEnd', e.target.value)}
+                    className="w-24 h-7 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+            {/* 渐变方向 */}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">渐变方向</Label>
+              <div className="flex gap-2">
+                {GRADIENT_DIRECTION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => updateField('gradientDirection', opt.value)}
+                    className={`px-3 py-1.5 text-xs rounded border transition-colors ${
+                      cfg.gradientDirection === opt.value
+                        ? 'bg-meiyou text-white border-meiyou'
+                        : 'bg-white text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)] hover:border-meiyou/40'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* 预设渐变 */}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">预设渐变</Label>
+              <div className="flex gap-2">
+                {[
+                  { start: '#ff4d88', end: '#ff8fab', label: '品牌粉' },
+                  { start: '#ff6b6b', end: '#ffa502', label: '暖橙' },
+                  { start: '#a18cd1', end: '#fbc2eb', label: '淡紫' },
+                  { start: '#667eea', end: '#764ba2', label: '深蓝紫' },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => {
+                      updateField('gradientStart', preset.start);
+                      updateField('gradientEnd', preset.end);
+                    }}
+                    className="w-16 h-8 rounded border border-[var(--color-meiyou-border)] transition-transform hover:scale-105"
+                    style={{ background: `linear-gradient(to right, ${preset.start}, ${preset.end})` }}
+                    title={preset.label}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* 预览 */}
+            <div className="mt-1 rounded-lg border border-[var(--color-meiyou-border)] overflow-hidden">
+              <div
+                className="h-16 flex items-center justify-center text-xs text-white/80"
+                style={{ background: `linear-gradient(${cfg.gradientDirection}, ${cfg.gradientStart}, ${cfg.gradientEnd})` }}
+              >
+                渐变背景预览
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 图片背景配置 */}
+        {cfg.backgroundType === 'image' && (
+          <div className="space-y-3">
+            <ImageUploadField
+              label="背景图片"
+              value={cfg.backgroundImage}
+              onChange={(val) => updateField('backgroundImage', val)}
+            />
+            {cfg.backgroundImage && (
+              <div className="rounded-lg border border-[var(--color-meiyou-border)] overflow-hidden">
+                <div
+                  className="h-20 flex items-center justify-center text-xs text-white/80 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${cfg.backgroundImage})` }}
+                >
+                  图片背景预览
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

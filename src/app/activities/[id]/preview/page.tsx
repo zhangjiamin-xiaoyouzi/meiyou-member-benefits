@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Activity, ComponentConfigs, FlashSaleConfig, BenefitConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig } from '@/lib/types';
+import type { Activity, ComponentConfigs, GlobalConfig, FlashSaleConfig, BenefitConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig } from '@/lib/types';
 
 /** 将 snake_case 深度转为 camelCase */
 function toCamelCaseDeep(obj: unknown): unknown {
@@ -49,7 +49,27 @@ export default function ActivityPreviewPage() {
   // 按模板中定义的顺序获取已启用的组件 key
   const enabledKeys = Object.entries(components)
     .filter(([, enabled]) => enabled)
-    .map(([key]) => key);
+    .map(([key]) => key)
+    .filter(key => key !== 'global_config'); // 全局配置不在组件列表中单独渲染
+
+  /** 计算全局背景样式 */
+  const getGlobalBgStyle = (): React.CSSProperties => {
+    const cfg = configs.global_config as GlobalConfig | undefined;
+    if (!cfg) return {};
+    switch (cfg.backgroundType) {
+      case 'solid':
+        return { backgroundColor: cfg.solidColor || '#f2f2f5' };
+      case 'gradient':
+        return { background: `linear-gradient(${cfg.gradientDirection || 'to bottom'}, ${cfg.gradientStart || '#ff4d88'}, ${cfg.gradientEnd || '#ff8fab'})` };
+      case 'image':
+        if (cfg.backgroundImage) {
+          return { backgroundImage: `url(${cfg.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+        }
+        return {};
+      default:
+        return {};
+    }
+  };
 
   /** 渲染氛围头图 */
   const renderHeaderBanner = () => {
@@ -236,7 +256,7 @@ export default function ActivityPreviewPage() {
         </div>
 
         {/* 活动内容区 */}
-        <div className="overflow-y-auto" style={{ maxHeight: 'calc(667px - 70px)' }}>
+        <div className="overflow-y-auto" style={{ maxHeight: 'calc(667px - 70px)', ...getGlobalBgStyle() }}>
           {enabledKeys.map(key => {
             const renderer = componentRenderers[key];
             return renderer ? renderer() : null;
