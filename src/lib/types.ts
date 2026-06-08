@@ -160,7 +160,6 @@ export interface FlashSaleProduct {
   benefitImage: string;
   popupImage: string;
   jumpLink: string;
-  pushText: string;
   timeSessions: TimeSession[];
   audienceRules: ComponentAudienceRule[];
 }

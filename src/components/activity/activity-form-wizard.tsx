@@ -1111,7 +1111,6 @@ function FlashSaleConfigCard({
       benefitImage: '',
       popupImage: '',
       jumpLink: '',
-      pushText: '',
       timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
       audienceRules: [],
     };
@@ -1240,15 +1239,6 @@ function FlashSaleConfigCard({
                         placeholder="输入跳转链接URL"
                         value={product.jumpLink}
                         onChange={(e) => updateProduct(product.id, { jumpLink: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">推送文案</Label>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="输入推送文案"
-                        value={product.pushText}
-                        onChange={(e) => updateProduct(product.id, { pushText: e.target.value })}
                       />
                     </div>
                   </div>

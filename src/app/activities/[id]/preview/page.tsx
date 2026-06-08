@@ -100,7 +100,6 @@ export default function ActivityPreviewPage() {
                 <div className="flex-1 p-2 text-xs">
                   <div className="font-medium text-gray-800">商品ID: {product.productId}</div>
                   <div className="text-gray-400 mt-1">库存: {product.stock}</div>
-                  {product.pushText && <div className="text-meiyou mt-1">{product.pushText}</div>}
                   {product.timeSessions?.map((session, idx) => (
                     <div key={session.id || idx} className="text-gray-400 mt-0.5 text-[10px]">
                       第{idx + 1}场: {session.rushStartTime?.slice(0, 16).replace('T', ' ')} ~ {session.rushEndTime?.slice(11, 16)}
