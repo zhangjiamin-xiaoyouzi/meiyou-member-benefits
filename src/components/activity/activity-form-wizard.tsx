@@ -695,10 +695,10 @@ function StepComponentConfig({
         />
       )}
 
-      {/* 专属礼 */}
+      {/* 会员专属礼 */}
       {isComponentEnabled('exclusive_gift') && (
         <BenefitConfigCard
-          title="专属礼"
+          title="会员专属礼"
           config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('exclusive_gift', val)}
         />
@@ -1298,7 +1298,7 @@ function FlashSaleConfigCard({
   );
 }
 
-// ==================== 更多福利/专属礼配置卡片 ====================
+// ==================== 更多福利/会员专属礼配置卡片 ====================
 
 function FreePurchaseConfigCard({
   config,
