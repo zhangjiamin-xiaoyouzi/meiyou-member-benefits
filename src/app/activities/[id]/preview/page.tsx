@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Activity, ComponentConfigs, GlobalConfig, FlashSaleConfig, BenefitConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig } from '@/lib/types';
+import type { Activity, ComponentConfigs, GlobalConfig, FlashSaleConfig, BenefitConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig, StatusButtonConfig } from '@/lib/types';
 
 /** 将 snake_case 深度转为 camelCase */
 function toCamelCaseDeep(obj: unknown): unknown {
@@ -206,21 +206,51 @@ export default function ActivityPreviewPage() {
     );
   };
 
-  /** 渲染按钮 */
+  /** 渲染吸底按钮 - 按用户状态展示 */
   const renderCtaButton = () => {
     const cfg = configs.cta_button as ActionButtonConfig | undefined;
     if (!cfg) return null;
-    // 简单展示当前状态的按钮（默认展示预约期）
-    const period = cfg.bookingPeriod || cfg.claimPeriod || cfg.endPeriod;
-    if (!period) return null;
+    // 展示三种状态的按钮
+    const nonMember = cfg.nonMember;
+    const memberBooked = cfg.memberBooked;
+    const memberNotBooked = cfg.memberNotBooked;
+    if (!nonMember && !memberBooked && !memberNotBooked) return null;
     return (
-      <div key="cta_button" className="w-full px-4 py-3">
-        <button
-          className="w-full py-3 rounded-full text-white font-semibold text-sm"
-          style={{ backgroundColor: period.buttonColor || '#f43f5e' }}
-        >
-          {period.buttonText || '立即参与'}
-        </button>
+      <div key="cta_button" className="w-full px-4 py-3 space-y-2">
+        <div className="text-xs text-gray-400 mb-1">按钮状态预览</div>
+        {nonMember && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 shrink-0">非会员</span>
+            <button
+              className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
+              style={{ backgroundColor: nonMember.buttonColor || '#ff4d88' }}
+            >
+              {nonMember.buttonText || '立即参与'}
+            </button>
+          </div>
+        )}
+        {memberNotBooked && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 shrink-0">会员未预约</span>
+            <button
+              className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
+              style={{ backgroundColor: memberNotBooked.buttonColor || '#ff4d88' }}
+            >
+              {memberNotBooked.buttonText || '立即预约'}
+            </button>
+          </div>
+        )}
+        {memberBooked && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 shrink-0">会员已预约</span>
+            <button
+              className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
+              style={{ backgroundColor: memberBooked.buttonColor || '#ff4d88' }}
+            >
+              {memberBooked.buttonText || '立即领取'}
+            </button>
+          </div>
+        )}
       </div>
     );
   };

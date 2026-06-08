@@ -49,6 +49,7 @@ import type {
   BenefitProduct,
   FreePurchaseConfig,
   ActionButtonConfig,
+  StatusButtonConfig,
   RulePopupConfig,
   ComponentAudienceRule,
 } from '@/lib/types';
@@ -750,24 +751,24 @@ function StepComponentConfig({
           <CardContent className="space-y-4">
             {(() => {
               const cfg: ActionButtonConfig = configs.cta_button || {
-                bookingPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
-                claimPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
-                endPeriod: { buttonText: '', buttonColor: '', jumpLink: '' },
+                nonMember: { buttonText: '', buttonColor: '', jumpLink: '' },
+                memberBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
+                memberNotBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
               };
-              const updatePeriod = (period: 'bookingPeriod' | 'claimPeriod' | 'endPeriod', field: keyof ActionButtonConfig['bookingPeriod'], value: string) => {
+              const updateStatus = (status: 'nonMember' | 'memberBooked' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
                 updateConfig('cta_button', {
                   ...cfg,
-                  [period]: { ...cfg[period], [field]: value },
+                  [status]: { ...cfg[status], [field]: value },
                 });
               };
-              const periods: { key: 'bookingPeriod' | 'claimPeriod' | 'endPeriod'; label: string; desc: string }[] = [
-                { key: 'bookingPeriod', label: '活动预约期', desc: '用户可预约时的按钮配置' },
-                { key: 'claimPeriod', label: '活动领取期', desc: '用户可领取福利时的按钮配置' },
-                { key: 'endPeriod', label: '活动结束期', desc: '活动结束后的按钮配置' },
+              const statuses: { key: 'nonMember' | 'memberBooked' | 'memberNotBooked'; label: string; desc: string }[] = [
+                { key: 'nonMember', label: '非会员', desc: '未开通会员的用户看到的按钮' },
+                { key: 'memberNotBooked', label: '会员未预约', desc: '已开通会员但未预约的用户看到的按钮' },
+                { key: 'memberBooked', label: '会员已预约', desc: '已预约成功的会员看到的按钮' },
               ];
               return (
                 <div className="space-y-4">
-                  {periods.map(({ key, label, desc }) => (
+                  {statuses.map(({ key, label, desc }) => (
                     <div key={key} className="border border-[var(--color-meiyou-divider)] rounded-lg p-3 space-y-3">
                       <div>
                         <p className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{label}</p>
@@ -777,9 +778,9 @@ function StepComponentConfig({
                         <div className="space-y-1">
                           <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
                           <Input
-                            placeholder="如：立即预约"
+                            placeholder="如：立即开通"
                             value={cfg[key].buttonText}
-                            onChange={(e) => updatePeriod(key, 'buttonText', e.target.value)}
+                            onChange={(e) => updateStatus(key, 'buttonText', e.target.value)}
                             className="h-8 text-xs"
                           />
                         </div>
@@ -789,12 +790,12 @@ function StepComponentConfig({
                             <input
                               type="color"
                               value={cfg[key].buttonColor || '#ff4d88'}
-                              onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
+                              onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
                               className="h-8 w-8 rounded border border-[var(--color-meiyou-border)] cursor-pointer"
                             />
                             <Input
                               value={cfg[key].buttonColor || '#ff4d88'}
-                              onChange={(e) => updatePeriod(key, 'buttonColor', e.target.value)}
+                              onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
                               className="h-8 text-xs flex-1"
                               placeholder="#ff4d88"
                             />
@@ -805,7 +806,7 @@ function StepComponentConfig({
                           <Input
                             placeholder="https://"
                             value={cfg[key].jumpLink}
-                            onChange={(e) => updatePeriod(key, 'jumpLink', e.target.value)}
+                            onChange={(e) => updateStatus(key, 'jumpLink', e.target.value)}
                             className="h-8 text-xs"
                           />
                         </div>

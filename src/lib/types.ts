@@ -203,17 +203,18 @@ export interface RulePopupConfig {
 }
 
 /** 按钮组件单阶段配置 */
-export interface PeriodButtonConfig {
+/** 按钮状态配置 */
+export interface StatusButtonConfig {
   buttonText: string;
   buttonColor: string;
   jumpLink: string;
 }
 
-/** 按钮组件配置 */
+/** 吸底按钮组件配置 */
 export interface ActionButtonConfig {
-  bookingPeriod: PeriodButtonConfig;  // 活动预约期
-  claimPeriod: PeriodButtonConfig;    // 活动领取期
-  endPeriod: PeriodButtonConfig;      // 活动结束期
+  nonMember: StatusButtonConfig;        // 非会员
+  memberBooked: StatusButtonConfig;     // 会员已预约
+  memberNotBooked: StatusButtonConfig;  // 会员未预约
 }
 
 /** 组件配置集合 */
