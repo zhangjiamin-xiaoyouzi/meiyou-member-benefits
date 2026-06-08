@@ -1,6 +1,6 @@
+@import 'react-quill-new/dist/quill.snow.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import 'react-quill-new/dist/quill.snow.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -212,4 +212,70 @@ input[type="datetime-local"]:valid {
 }
 .badge-meiyou-primary {
   @apply bg-meiyou/10 text-meiyou border-meiyou/20 rounded-xs;
+}
+
+/* 富文本编辑器样式修复 - 覆盖 Tailwind preflight 对 Quill 的影响 */
+.rich-text-editor-wrapper .ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--color-meiyou-border) !important;
+  background: #fafafa !important;
+  border-radius: 0 !important;
+  padding: 6px 8px !important;
+}
+
+.rich-text-editor-wrapper .ql-container.ql-snow {
+  border: none !important;
+  font-size: 14px !important;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif !important;
+  min-height: 180px !important;
+}
+
+.rich-text-editor-wrapper .ql-editor {
+  min-height: 180px !important;
+  padding: 10px 12px !important;
+  line-height: 1.6 !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.rich-text-editor-wrapper .ql-editor.ql-blank::before {
+  color: rgba(0, 0, 0, 0.3) !important;
+  font-style: normal !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-stroke {
+  stroke: #666 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-fill {
+  fill: #666 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-picker-label {
+  color: #666 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-picker-options {
+  background: #fff !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-picker-item:hover {
+  color: #ff4d88 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-active .ql-stroke,
+.rich-text-editor-wrapper .ql-snow button:hover .ql-stroke {
+  stroke: #ff4d88 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-active .ql-fill,
+.rich-text-editor-wrapper .ql-snow button:hover .ql-fill {
+  fill: #ff4d88 !important;
+}
+
+.rich-text-editor-wrapper .ql-snow .ql-active,
+.rich-text-editor-wrapper .ql-snow button:hover {
+  color: #ff4d88 !important;
 }
