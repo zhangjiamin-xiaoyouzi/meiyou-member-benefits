@@ -116,7 +116,7 @@ export default function ActivityPreviewPage() {
     );
   };
 
-  /** 渲染更多福利/会员专属礼 */
+  /** 渲染会员专属生活券包/会员专属礼 */
   const renderBenefit = (key: string, title: string) => {
     const cfg = configs[key as keyof ComponentConfigs] as BenefitConfig | undefined;
     if (!cfg) return null;
@@ -231,7 +231,7 @@ export default function ActivityPreviewPage() {
   const componentRenderers: Record<string, () => React.ReactNode> = {
     header_banner: renderHeaderBanner,
     flash_sale: renderFlashSale,
-    free_benefit: () => renderBenefit('free_benefit', '更多福利'),
+    free_benefit: () => renderBenefit('free_benefit', '会员专属生活券包'),
     exclusive_gift: () => renderBenefit('exclusive_gift', '会员专属礼'),
     free_purchase: renderFreePurchase,
     rule_popup: renderRulePopup,

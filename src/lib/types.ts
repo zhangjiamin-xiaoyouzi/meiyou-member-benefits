@@ -172,7 +172,7 @@ export interface FlashSaleConfig {
   products: FlashSaleProduct[];
 }
 
-/** 更多福利/会员专属礼商品 */
+/** 会员专属生活券包/会员专属礼商品 */
 export interface BenefitProduct {
   id: string;
   productId: string;
@@ -182,7 +182,7 @@ export interface BenefitProduct {
   audienceRules: ComponentAudienceRule[];
 }
 
-/** 更多福利/会员专属礼配置 */
+/** 会员专属生活券包/会员专属礼配置 */
 export interface BenefitConfig {
   moduleHeaderImage: string;
   moduleBgImage: string;
