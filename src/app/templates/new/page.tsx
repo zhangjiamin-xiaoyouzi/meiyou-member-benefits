@@ -117,7 +117,7 @@ const defaultComponentsByCategory: Record<string, TemplateComponent[]> = {
   '会员日': [
     { id: 'new_comp_1', name: '氛围头图', key: 'header_banner', description: '顶部活动氛围图', enabled: true, required: true },
     { id: 'new_comp_2', name: '限时抢购', key: 'flash_sale', description: '限时抢购模块', enabled: true, required: true },
-    { id: 'new_comp_3', name: '0元福利', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
+    { id: 'new_comp_3', name: '免费领券', key: 'free_benefit', description: '免费领券组件', enabled: true, required: false },
     { id: 'new_comp_5', name: '规则弹窗', key: 'rule_popup', description: '活动规则说明弹窗', enabled: true, required: true },
   ],
   '固定节日': [
