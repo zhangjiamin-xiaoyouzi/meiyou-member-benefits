@@ -740,13 +740,13 @@ function StepComponentConfig({
         </Card>
       )}
 
-      {/* 按钮 */}
+      {/* 吸底按钮 */}
       {isComponentEnabled('cta_button') && (
         <Card className="border-[var(--color-meiyou-border)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <MousePointerClick className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-              按钮
+              吸底按钮
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
