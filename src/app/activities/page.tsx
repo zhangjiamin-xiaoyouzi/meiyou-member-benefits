@@ -43,7 +43,7 @@ import type { Activity, ActivityStatus } from '@/lib/types';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
-  active: { label: '进行中', color: 'bg-emerald-50/80 text-emerald-700 border-emerald-200/60' },
+  active: { label: '进行中', color: 'bg-green-50/80 text-green-700 border-green-200/60' },
   scheduled: { label: '待上线', color: 'bg-amber-50/80 text-amber-700 border-amber-200/60' },
   draft: { label: '草稿', color: 'bg-[var(--color-meiyou-bg)] text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)]' },
   expired: { label: '已结束', color: 'bg-gray-50/80 text-gray-400 border-gray-200/60' },
@@ -295,7 +295,7 @@ export default function ActivitiesPage() {
                             </Button>
                           </Link>
                           <Link href={`/activities/new?copyFrom=${activity.id}`}>
-                            <Button variant="ghost" size="sm" className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-success hover:bg-emerald-50/50 rounded-lg">
+                            <Button variant="ghost" size="sm" className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-green-600 hover:bg-green-50/50 rounded-lg">
                               <Copy className="h-3.5 w-3.5 mr-1" />
                               复制
                             </Button>

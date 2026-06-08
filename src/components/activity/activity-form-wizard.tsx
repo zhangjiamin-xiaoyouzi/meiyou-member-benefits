@@ -77,7 +77,7 @@ interface Step2Data {
 // ==================== Constants ====================
 
 const categoryColorMap: Record<string, string> = {
-  '促活': 'bg-emerald-50/80 text-emerald-700 border-emerald-200/60',
+  '促活': 'bg-pink-50/80 text-pink-700 border-pink-200/60',
   '转化': 'bg-amber-50/80 text-amber-700 border-amber-200/60',
   '拉新': 'bg-blue-50/80 text-blue-700 border-blue-200/60',
 };
@@ -1822,7 +1822,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                     isCompleted
-                      ? 'bg-emerald-500 text-white'
+                      ? 'bg-meiyou text-white'
                       : isCurrent
                         ? 'bg-meiyou text-white'
                         : 'bg-meiyou-bg text-[var(--color-meiyou-text-secondary)]'
@@ -1831,14 +1831,14 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
                   {isCompleted ? <Check className="h-4 w-4" /> : step.num}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <StepIcon className={`h-4 w-4 ${isCurrent ? 'text-meiyou' : isCompleted ? 'text-emerald-500' : 'text-[var(--color-meiyou-text-placeholder)]'}`} />
-                  <span className={`text-sm ${isCurrent ? 'text-[var(--color-meiyou-text-primary)] font-medium' : isCompleted ? 'text-emerald-600' : 'text-[var(--color-meiyou-text-placeholder)]'}`}>
+                  <StepIcon className={`h-4 w-4 ${isCurrent ? 'text-meiyou' : isCompleted ? 'text-meiyou' : 'text-[var(--color-meiyou-text-placeholder)]'}`} />
+                  <span className={`text-sm ${isCurrent ? 'text-[var(--color-meiyou-text-primary)] font-medium' : isCompleted ? 'text-meiyou' : 'text-[var(--color-meiyou-text-placeholder)]'}`}>
                     {step.label}
                   </span>
                 </div>
               </div>
               {index < stepConfig.length - 1 && (
-                <div className={`w-16 h-0.5 mx-3 ${isCompleted ? 'bg-emerald-500' : 'bg-meiyou-bg'}`} />
+                <div className={`w-16 h-0.5 mx-3 ${isCompleted ? 'bg-meiyou' : 'bg-meiyou-bg'}`} />
               )}
             </div>
           );
@@ -1892,7 +1892,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
             </Button>
           ) : (
             <Button
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
               onClick={handlePublish}
             >
               <Check className="mr-1 h-4 w-4" />

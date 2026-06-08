@@ -29,7 +29,7 @@ import type { Template, TemplateComponent } from '@/lib/types';
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-pink-50 text-pink-700 border-pink-200',
-  '会员日': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  '会员日': 'bg-green-50 text-green-700 border-green-200',
   '固定节日': 'bg-blue-50 text-blue-700 border-blue-200',
 };
 const defaultCategoryColor = 'bg-gray-50 text-gray-700 border-gray-200';
