@@ -714,20 +714,20 @@ function StepComponentConfig({
         />
       )}
 
-      {/* 会员专属0元购 */}
-      {isComponentEnabled('free_purchase') && (
-        <FreePurchaseConfigCard
-          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('free_purchase', val)}
-        />
-      )}
-
       {/* 会员专属礼 */}
       {isComponentEnabled('exclusive_gift') && (
         <BenefitConfigCard
           title="会员专属礼"
           config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('exclusive_gift', val)}
+        />
+      )}
+
+      {/* 会员专属0元购 */}
+      {isComponentEnabled('free_purchase') && (
+        <FreePurchaseConfigCard
+          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
+          onChange={(val) => updateConfig('free_purchase', val)}
         />
       )}
 
