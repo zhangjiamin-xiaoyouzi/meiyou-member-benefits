@@ -596,7 +596,7 @@ function StepBasicInfo({
                       <Switch
                         checked={comp.enabled}
                         disabled={comp.required}
-                        className="data-[state=checked]:bg-meiyou"
+                        className="data-[state=checked]:bg-meiyou data-[state=unchecked]:bg-gray-200"
                         onCheckedChange={() => handleToggleComponent(comp.key)}
                       />
                     </td>
