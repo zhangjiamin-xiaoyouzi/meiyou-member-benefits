@@ -36,6 +36,8 @@ import {
   Search,
   Pencil,
   ArrowDownCircle,
+  ArrowUpCircle,
+  Trash2,
   QrCode,
   Copy,
 } from 'lucide-react';
@@ -82,6 +84,7 @@ export default function ActivitiesPage() {
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ type: 'online' | 'delete'; activity: Activity } | null>(null);
 
   useEffect(() => {
     fetch('/api/activities')
@@ -112,6 +115,52 @@ export default function ActivitiesPage() {
     } catch {
       // 静默处理
     }
+  };
+
+  const handleOnline = (activity: Activity) => {
+    setConfirmAction({ type: 'online', activity });
+  };
+
+  const confirmOnline = async () => {
+    if (!confirmAction?.activity) return;
+    const activity = confirmAction.activity;
+    try {
+      const res = await fetch(`/api/activities/${activity.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'active' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLocalActivities((prev) =>
+          prev.map((a) => (a.id === activity.id ? { ...a, status: 'active' as ActivityStatus } : a))
+        );
+      }
+    } catch {
+      // 静默处理
+    }
+    setConfirmAction(null);
+  };
+
+  const handleDelete = (activity: Activity) => {
+    setConfirmAction({ type: 'delete', activity });
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmAction?.activity) return;
+    const activity = confirmAction.activity;
+    try {
+      const res = await fetch(`/api/activities/${activity.id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLocalActivities((prev) => prev.filter((a) => a.id !== activity.id));
+      }
+    } catch {
+      // 静默处理
+    }
+    setConfirmAction(null);
   };
 
   const getPreviewUrl = (activity: Activity) => {
@@ -318,6 +367,17 @@ export default function ActivitiesPage() {
                               复制
                             </Button>
                           </Link>
+                        {activity.status === 'draft' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-green-600 hover:bg-green-50/50 rounded-lg"
+                            onClick={() => handleOnline(activity)}
+                          >
+                            <ArrowUpCircle className="h-3.5 w-3.5 mr-1" />
+                            上线
+                          </Button>
+                        )}
                         {activity.status === 'active' && (
                           <Button
                             variant="ghost"
@@ -327,6 +387,17 @@ export default function ActivitiesPage() {
                           >
                             <ArrowDownCircle className="h-3.5 w-3.5 mr-1" />
                             下线
+                          </Button>
+                        )}
+                        {activity.status === 'draft' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-danger hover:bg-red-50/50 rounded-lg"
+                            onClick={() => handleDelete(activity)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5 mr-1" />
+                            删除
                           </Button>
                         )}
                         <Button
@@ -400,6 +471,42 @@ export default function ActivitiesPage() {
           )}
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-lg">关闭</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 上线确认弹窗 */}
+      <AlertDialog open={confirmAction?.type === 'online'} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
+        <AlertDialogContent className="rounded-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认上线</AlertDialogTitle>
+            <AlertDialogDescription>
+              确认将活动「{confirmAction?.activity.name}」上线？上线后活动将变为生效中状态。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-lg">取消</AlertDialogCancel>
+            <Button className="bg-green-600 hover:bg-green-700 text-white rounded-lg" onClick={confirmOnline}>
+              确认上线
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 删除确认弹窗 */}
+      <AlertDialog open={confirmAction?.type === 'delete'} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
+        <AlertDialogContent className="rounded-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确认删除活动「{confirmAction?.activity.name}」？删除后不可恢复。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-lg">取消</AlertDialogCancel>
+            <Button className="bg-[var(--color-meiyou-danger)] hover:bg-red-600 text-white rounded-lg" onClick={confirmDelete}>
+              确认删除
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
