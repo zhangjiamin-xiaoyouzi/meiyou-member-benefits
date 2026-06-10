@@ -615,7 +615,7 @@ function StepBasicInfo({
       {/* 限时福利（组件开关） */}
       {data.components.length > 0 && (
         <div>
-          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">限时福利</Label>
+          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">选择活动组件</Label>
           <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
             控制模板内各组件的显隐，必选组件不可关闭
           </p>
