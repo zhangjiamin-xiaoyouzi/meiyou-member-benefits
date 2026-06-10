@@ -18,18 +18,6 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
   ChevronLeft,
   ChevronRight,
   Check,
@@ -427,58 +415,48 @@ function StepBasicInfo({
             活动分类 <span className="text-meiyou">*</span>
           </Label>
           <div className="mt-1.5 relative">
-            <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
-              <PopoverTrigger asChild>
-                <div className="relative">
-                  <Input
-                    value={categoryInput}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setCategoryInput(val);
-                      onChange({ ...data, category: val });
-                      setCategoryOpen(true);
-                    }}
-                    onFocus={() => setCategoryOpen(true)}
-                    placeholder="输入或选择分类"
-                    className="w-full h-9 rounded-lg bg-white border-[var(--color-meiyou-border)] text-sm pr-8"
-                  />
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-meiyou-text-placeholder)] pointer-events-none" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                className="p-0 rounded-lg w-[var(--radix-popover-trigger-width)]"
-                align="start"
-              >
-                <Command shouldFilter={false}>
-                  <CommandList>
-                    <CommandEmpty className="py-3 text-center text-xs text-[var(--color-meiyou-text-placeholder)]">
-                      无匹配分类，回车确认新建
-                    </CommandEmpty>
-                    <CommandGroup>
-                      {allCategories
-                        .filter((cat) =>
-                          !categoryInput || cat.includes(categoryInput)
-                        )
-                        .map((cat) => (
-                          <CommandItem
-                            key={cat}
-                            value={cat}
-                            onSelect={() => {
-                              setCategoryInput(cat);
-                              onChange({ ...data, category: cat });
-                              setCategoryOpen(false);
-                            }}
-                            className="text-sm rounded-md"
-                          >
-                            <Check className={`mr-2 h-3.5 w-3.5 ${data.category === cat ? 'opacity-100' : 'opacity-0'}`} />
-                            {cat}
-                          </CommandItem>
-                        ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <Input
+              value={categoryInput}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCategoryInput(val);
+                onChange({ ...data, category: val });
+                setCategoryOpen(true);
+              }}
+              onFocus={() => setCategoryOpen(true)}
+              onBlur={() => {
+                // 延迟关闭以允许点击下拉选项
+                setTimeout(() => setCategoryOpen(false), 200);
+              }}
+              placeholder="输入或选择分类"
+              className="w-full h-9 rounded-lg bg-white border-[var(--color-meiyou-border)] text-sm pr-8"
+            />
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-meiyou-text-placeholder)] pointer-events-none" />
+            {categoryOpen && allCategories.filter((cat) =>
+              !categoryInput || cat.includes(categoryInput)
+            ).length > 0 && (
+              <div className="absolute z-50 mt-1 w-full bg-white rounded-lg border border-[var(--color-meiyou-border)] shadow-md py-1 max-h-48 overflow-y-auto">
+                {allCategories
+                  .filter((cat) => !categoryInput || cat.includes(categoryInput))
+                  .map((cat) => (
+                    <div
+                      key={cat}
+                      className={`px-3 py-1.5 text-sm cursor-pointer hover:bg-meiyou-bg/60 flex items-center ${
+                        data.category === cat ? 'text-meiyou font-medium bg-meiyou-bg/30' : 'text-[var(--color-meiyou-text-primary)]'
+                      }`}
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // 阻止 blur 触发
+                        setCategoryInput(cat);
+                        onChange({ ...data, category: cat });
+                        setCategoryOpen(false);
+                      }}
+                    >
+                      <Check className={`mr-2 h-3.5 w-3.5 ${data.category === cat ? 'opacity-100' : 'opacity-0'}`} />
+                      {cat}
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
