@@ -44,9 +44,9 @@ import { DEFAULT_CATEGORIES } from '@/lib/types';
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
   active: { label: '进行中', color: 'bg-green-50/80 text-green-700 border-green-200/60' },
-  scheduled: { label: '待上线', color: 'bg-amber-50/80 text-amber-700 border-amber-200/60' },
+  pending: { label: '待生效', color: 'bg-amber-50/80 text-amber-700 border-amber-200/60' },
   draft: { label: '草稿', color: 'bg-[var(--color-meiyou-bg)] text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)]' },
-  expired: { label: '已结束', color: 'bg-gray-50/80 text-gray-400 border-gray-200/60' },
+  ended: { label: '已结束', color: 'bg-gray-50/80 text-gray-400 border-gray-200/60' },
 };
 
 function toCamelCase(str: string): string {
@@ -101,12 +101,12 @@ export default function ActivitiesPage() {
       const res = await fetch(`/api/activities/${activity.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'expired' }),
+        body: JSON.stringify({ status: 'ended' }),
       });
       const data = await res.json();
       if (data.success) {
         setLocalActivities((prev) =>
-          prev.map((a) => (a.id === activity.id ? { ...a, status: 'expired' as ActivityStatus } : a))
+          prev.map((a) => (a.id === activity.id ? { ...a, status: 'ended' as ActivityStatus } : a))
         );
       }
     } catch {
@@ -255,7 +255,7 @@ export default function ActivitiesPage() {
             </TableHeader>
             <TableBody>
               {filteredActivities.map((activity) => {
-                const status = statusConfig[activity.status];
+                const status = statusConfig[activity.status] || { label: activity.status, color: 'bg-gray-50/80 text-gray-400 border-gray-200/60' };
                 const createdDate = activity.createdAt ? new Date(activity.createdAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
                 const updatedDate = activity.updatedAt ? new Date(activity.updatedAt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-';
 

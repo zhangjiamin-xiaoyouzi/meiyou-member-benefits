@@ -106,7 +106,7 @@ const ruleFieldOptions = [
 const ruleValueOptions: Record<string, { value: string; label: string }[]> = {
   member_status: [
     { value: 'non_member', label: '非会员' },
-    { value: 'expired', label: '已过期' },
+    { value: 'ended', label: '已结束' },
     { value: 'active', label: '活跃会员' },
   ],
   identity: [

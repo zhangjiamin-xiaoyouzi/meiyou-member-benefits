@@ -236,7 +236,7 @@ export const mockActivities: Activity[] = [
 
     templateId: 'tpl_002',
     templateName: '会员日模板',
-    status: 'scheduled',
+    status: 'pending',
     timeConfig: {
       activityStartTime: '2024-07-01T00:00:00Z',
       activityEndTime: '2024-07-01T23:59:59Z',
@@ -329,7 +329,7 @@ export const mockActivities: Activity[] = [
 
     templateId: 'tpl_001',
     templateName: '大促抽奖模板',
-    status: 'expired',
+    status: 'ended',
     timeConfig: {
       activityStartTime: '2023-11-01T00:00:00Z',
       activityEndTime: '2023-11-11T23:59:59Z',

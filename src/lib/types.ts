@@ -66,7 +66,7 @@ export interface PromoPatch {
 
 // ==================== 活动配置类型 ====================
 
-export type ActivityStatus = 'draft' | 'scheduled' | 'active' | 'expired';
+export type ActivityStatus = 'draft' | 'pending' | 'active' | 'ended';
 
 export interface TimeConfig {
   activityStartTime: string;
