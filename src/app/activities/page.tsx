@@ -36,7 +36,7 @@ import {
   Search,
   Pencil,
   ArrowDownCircle,
-  ArrowUpCircle,
+  CircleArrowUp,
   Trash2,
   QrCode,
   Copy,
@@ -383,7 +383,7 @@ export default function ActivitiesPage() {
                             className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-green-600 hover:bg-green-50/50 rounded-lg"
                             onClick={() => handleOnline(activity)}
                           >
-                            <ArrowUpCircle className="h-3.5 w-3.5 mr-1" />
+                            <CircleArrowUp className="h-3.5 w-3.5 mr-1" />
                             上线
                           </Button>
                         )}
