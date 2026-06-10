@@ -180,6 +180,8 @@ export const mockActivities: Activity[] = [
     templateName: '大促抽奖模板',
     status: 'active',
     timeConfig: {
+      activityStartTime: '2024-06-01T00:00:00Z',
+      activityEndTime: '2024-06-20T23:59:59Z',
       sellStartTime: '2024-06-01T00:00:00Z',
       sellEndTime: '2024-06-18T23:59:59Z',
       lotteryStartTime: '2024-06-01T00:00:00Z',
@@ -236,6 +238,8 @@ export const mockActivities: Activity[] = [
     templateName: '会员日模板',
     status: 'scheduled',
     timeConfig: {
+      activityStartTime: '2024-07-01T00:00:00Z',
+      activityEndTime: '2024-07-01T23:59:59Z',
       sellStartTime: '2024-07-01T00:00:00Z',
       sellEndTime: '2024-07-01T23:59:59Z',
     },
@@ -281,6 +285,8 @@ export const mockActivities: Activity[] = [
     templateName: '轻量定向模板',
     status: 'draft',
     timeConfig: {
+      activityStartTime: '2024-07-15T00:00:00Z',
+      activityEndTime: '2024-07-31T23:59:59Z',
       sellStartTime: '2024-07-15T00:00:00Z',
       sellEndTime: '2024-07-31T23:59:59Z',
     },
@@ -325,6 +331,8 @@ export const mockActivities: Activity[] = [
     templateName: '大促抽奖模板',
     status: 'expired',
     timeConfig: {
+      activityStartTime: '2023-11-01T00:00:00Z',
+      activityEndTime: '2023-11-11T23:59:59Z',
       sellStartTime: '2023-11-01T00:00:00Z',
       sellEndTime: '2023-11-11T23:59:59Z',
     },

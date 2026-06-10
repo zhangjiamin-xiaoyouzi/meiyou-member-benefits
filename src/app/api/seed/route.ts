@@ -6,8 +6,8 @@ export async function POST() {
   try {
     const client = getSupabaseClient();
 
-    // Seed templates
-    const { error: tplError } = await client.from('templates').insert(
+    // Seed templates (upsert to handle existing data)
+    const { error: tplError } = await client.from('templates').upsert(
       mockTemplates.map((t) => ({
         id: t.id,
         name: t.name,
@@ -16,24 +16,26 @@ export async function POST() {
         preview: t.preview,
         components: t.components,
         is_active: true,
-      }))
+      })),
+      { onConflict: 'id' }
     );
-    if (tplError) throw new Error(`模板插入失败: ${tplError.message}`);
+    if (tplError) throw new Error(`模板写入失败: ${tplError.message}`);
 
-    // Seed promo patches
-    const { error: patchError } = await client.from('promo_patches').insert(
+    // Seed promo patches (upsert)
+    const { error: patchError } = await client.from('promo_patches').upsert(
       mockPromoPatches.map((p) => ({
         id: p.id,
         name: p.name,
         type: p.type,
         config: p.config,
         status: p.status,
-      }))
+      })),
+      { onConflict: 'id' }
     );
-    if (patchError) throw new Error(`策略插入失败: ${patchError.message}`);
+    if (patchError) throw new Error(`策略写入失败: ${patchError.message}`);
 
-    // Seed activities
-    const { error: actError } = await client.from('activities').insert(
+    // Seed activities (upsert)
+    const { error: actError } = await client.from('activities').upsert(
       mockActivities.map((a) => ({
         id: a.id,
         name: a.name,
@@ -47,9 +49,12 @@ export async function POST() {
         material_config: a.materialConfig,
         components: a.components,
         component_configs: a.componentConfigs || {},
-      }))
+        created_by: a.createdBy || '系统管理员',
+        updated_by: a.updatedBy || '系统管理员',
+      })),
+      { onConflict: 'id' }
     );
-    if (actError) throw new Error(`活动插入失败: ${actError.message}`);
+    if (actError) throw new Error(`活动写入失败: ${actError.message}`);
 
     return NextResponse.json({ success: true, message: '数据初始化完成' });
   } catch (err) {

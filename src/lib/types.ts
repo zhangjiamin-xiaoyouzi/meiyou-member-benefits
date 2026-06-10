@@ -69,8 +69,14 @@ export interface PromoPatch {
 export type ActivityStatus = 'draft' | 'scheduled' | 'active' | 'expired';
 
 export interface TimeConfig {
+  activityStartTime: string;
+  activityEndTime: string;
   sellStartTime: string;
   sellEndTime: string;
+  bookingStartTime?: string;
+  bookingEndTime?: string;
+  claimStartTime?: string;
+  claimEndTime?: string;
   lotteryStartTime?: string;
   lotteryEndTime?: string;
   bufferEndTime?: string;
