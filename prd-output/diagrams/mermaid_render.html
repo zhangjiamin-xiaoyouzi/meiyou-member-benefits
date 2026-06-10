@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,theme:"default",securityLevel:"loose"});window.mermaidReady=false;window.addEventListener("load",function(){setTimeout(function(){window.mermaidReady=true;},3000);});</script><style>body{font-family:sans-serif;margin:20px;background:#fff}.diagram{margin:20px 0;padding:16px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa}h2{color:#333;font-size:16px;margin:24px 0 8px 0}.mermaid svg{max-width:100%}</style></head><body><h2>1. E-R图</h2>
+<div class="diagram" id="diagram-0"><div class="mermaid">
+erDiagram
+    活动模板 ||--o{ 模板组件 : 包含
+    活动 }o--|| 活动模板 : 基于
+    活动 ||--o{ 客群分组 : 包含
+    活动 ||--o{ 组件配置 : 包含
+    客群分组 ||--o{ 受众规则 : 包含
+    客群分组 ||--o{ 货架商品 : 包含
+    货架商品 }o--o{ 营销策略补丁 : 挂载
+
+    活动模板 {
+        string 模板ID
+        string 模板名称
+        string 模板分类
+        string 描述
+    }
+
+    模板组件 {
+        string 组件ID
+        string 组件名称
+        string 组件标识
+        boolean 是否启用
+        boolean 是否必选
+    }
+
+    活动 {
+        string 活动ID
+        string 活动名称
+        string 活动分类
+        string 状态
+        json 时间配置
+        json 组件开关
+    }
+
+    组件配置 {
+        string 所属组件标识
+        json 配置内容
+    }
+
+    客群分组 {
+        string 分组ID
+        string 分组名称
+    }
+
+    受众规则 {
+        string 规则ID
+        string 筛选字段
+        string 运算符
+        string 规则值
+    }
+
+    货架商品 {
+        string 商品ID
+        boolean 是否主推
+        number 排序
+    }
+
+    营销策略补丁 {
+        string 补丁ID
+        string 补丁名称
+        string 补丁类型
+        json 配置
+    }
+</div></div>
+<h2>2. 产品结构图</h2>
+<div class="diagram" id="diagram-1"><div class="mermaid">
+mindmap
+  root((会员日活动配置))
+    活动列表
+      活动筛选
+        按状态筛选
+        按分类筛选
+        按活动ID筛选
+        按名称搜索
+      活动操作
+        新建活动
+        编辑活动
+        上线/下线
+        删除
+        复制
+        预览H5
+    新建活动向导
+      步骤1 选择模板与基础信息
+        活动名称
+        活动分类
+        选择活动分模版
+        活动时间配置
+        选择活动组件
+      步骤2 填充组件素材
+        全局配置
+        氛围头图
+        规则弹窗
+        会员限时福利
+        会员专属礼
+        会员专属0元购
+        会员专属生活券包
+        吸底按钮
+</div></div>
+<h2>3. 产品流程图</h2>
+<div class="diagram" id="diagram-2"><div class="mermaid">
+flowchart TD
+    A[运营进入活动列表] --> B[点击新建活动]
+    B --> C[选择会员日模板]
+    C --> D[填写活动名称与分类]
+    D --> E[配置活动时间]
+    E --> F[选择活动组件开关]
+    F --> G[进入组件素材配置]
+
+    G --> G1[配置全局背景]
+    G1 --> G2[上传氛围头图]
+    G2 --> G3[编辑规则弹窗]
+    G3 --> G4[配置会员限时福利]
+    G4 --> G5[配置会员专属礼]
+    G5 --> G6[配置会员专属0元购]
+    G6 --> G7[配置会员专属生活券包]
+    G7 --> G8[配置吸底按钮]
+
+    G8 --> H{保存方式}
+    H -->|保存草稿| I[活动状态=草稿]
+    H -->|发布活动| J[活动状态=生效中]
+
+    I --> K[活动列表显示草稿]
+    K --> L[可执行：编辑/上线/删除]
+    L -->|上线| J
+
+    J --> M[活动列表显示生效中]
+    M --> N[可执行：编辑/复制/预览/下线]
+    N -->|下线| O[活动状态=已结束]
+</div></div></body></html>
