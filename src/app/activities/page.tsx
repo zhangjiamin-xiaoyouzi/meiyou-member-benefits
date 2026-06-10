@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -99,6 +99,16 @@ export default function ActivitiesPage() {
       });
   }, []);
 
+  // 从已有活动中动态提取全部分类
+  const allCategories = useMemo(() => {
+    const catSet = new Set<string>();
+    DEFAULT_CATEGORIES.forEach((c) => catSet.add(c));
+    localActivities.forEach((a) => {
+      if (a.category) catSet.add(a.category);
+    });
+    return Array.from(catSet);
+  }, [localActivities]);
+
   const handleOffline = async (activity: Activity) => {
     try {
       const res = await fetch(`/api/activities/${activity.id}`, {
@@ -188,7 +198,6 @@ export default function ActivitiesPage() {
   };
 
   const filteredActivities = localActivities
-    .filter((activity) => ['促活', '转化', '拉新'].includes(activity.category))
     .filter((activity) => {
       const matchesStatus = appliedStatus === 'all' || activity.status === appliedStatus;
       const matchesCategory = appliedCategory === 'all' || activity.category === appliedCategory;
@@ -267,7 +276,7 @@ export default function ActivitiesPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部分类</SelectItem>
-                  {DEFAULT_CATEGORIES.map((cat) => (
+                  {allCategories.map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>

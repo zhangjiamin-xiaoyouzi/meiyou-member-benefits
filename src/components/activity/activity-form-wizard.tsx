@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
   ChevronLeft,
   ChevronRight,
@@ -340,7 +352,23 @@ function StepBasicInfo({
   // 活动分类已改为 促活/转化/拉新，模板分类仍保留原值
 
   const [compDragIndex, setCompDragIndex] = useState<number | null>(null);
-  const [allCategories] = useState(defaultCategories);
+  const [allCategories, setAllCategories] = useState<string[]>(defaultCategories);
+  const [categoryInput, setCategoryInput] = useState(data.category);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+
+  // 同步外部 category 变更（编辑模式初始化）
+  useEffect(() => {
+    if (data.category !== categoryInput && !categoryOpen) {
+      setCategoryInput(data.category);
+    }
+  }, [data.category]);
+
+  // 加载已有活动的分类到列表中
+  useEffect(() => {
+    if (data.category && !allCategories.includes(data.category) && !defaultCategories.includes(data.category)) {
+      setAllCategories((prev) => [...prev, data.category]);
+    }
+  }, [data.category]);
 
   const handleTemplateSelect = (templateId: string) => {
     const template = mockTemplates.find((t) => t.id === templateId);
@@ -398,25 +426,59 @@ function StepBasicInfo({
           <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
             活动分类 <span className="text-meiyou">*</span>
           </Label>
-          <div className="mt-1.5">
-            <Select
-              value={data.category}
-              onValueChange={(val) => onChange({ ...data, category: val })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="选择分类" />
-              </SelectTrigger>
-              <SelectContent>
-                {allCategories.map((cat) => (
-                  <SelectItem
-                    key={cat}
-                    value={cat}
-                  >
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="mt-1.5 relative">
+            <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+              <PopoverTrigger asChild>
+                <div className="relative">
+                  <Input
+                    value={categoryInput}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCategoryInput(val);
+                      onChange({ ...data, category: val });
+                      setCategoryOpen(true);
+                    }}
+                    onFocus={() => setCategoryOpen(true)}
+                    placeholder="输入或选择分类"
+                    className="w-full h-9 rounded-lg bg-white border-[var(--color-meiyou-border)] text-sm pr-8"
+                  />
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-meiyou-text-placeholder)] pointer-events-none" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-0 rounded-lg w-[var(--radix-popover-trigger-width)]"
+                align="start"
+              >
+                <Command shouldFilter={false}>
+                  <CommandList>
+                    <CommandEmpty className="py-3 text-center text-xs text-[var(--color-meiyou-text-placeholder)]">
+                      无匹配分类，回车确认新建
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {allCategories
+                        .filter((cat) =>
+                          !categoryInput || cat.includes(categoryInput)
+                        )
+                        .map((cat) => (
+                          <CommandItem
+                            key={cat}
+                            value={cat}
+                            onSelect={() => {
+                              setCategoryInput(cat);
+                              onChange({ ...data, category: cat });
+                              setCategoryOpen(false);
+                            }}
+                            className="text-sm rounded-md"
+                          >
+                            <Check className={`mr-2 h-3.5 w-3.5 ${data.category === cat ? 'opacity-100' : 'opacity-0'}`} />
+                            {cat}
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>
