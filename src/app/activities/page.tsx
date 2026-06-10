@@ -74,10 +74,12 @@ export default function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [idFilter, setIdFilter] = useState('');
   // 实际生效的筛选条件（点击查询后生效）
   const [appliedStatus, setAppliedStatus] = useState<string>('all');
   const [appliedCategory, setAppliedCategory] = useState<string>('all');
   const [appliedSearch, setAppliedSearch] = useState('');
+  const [appliedIds, setAppliedIds] = useState<string[]>([]);
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
 
@@ -121,15 +123,19 @@ export default function ActivitiesPage() {
     setAppliedStatus(statusFilter);
     setAppliedCategory(categoryFilter);
     setAppliedSearch(searchQuery);
+    const ids = idFilter.split(/[,，\s]+/).map((s) => s.trim()).filter(Boolean);
+    setAppliedIds(ids);
   };
 
   const handleReset = () => {
     setStatusFilter('all');
     setCategoryFilter('all');
     setSearchQuery('');
+    setIdFilter('');
     setAppliedStatus('all');
     setAppliedCategory('all');
     setAppliedSearch('');
+    setAppliedIds([]);
   };
 
   const filteredActivities = localActivities
@@ -140,7 +146,8 @@ export default function ActivitiesPage() {
       const matchesSearch =
         !appliedSearch ||
         activity.name.toLowerCase().includes(appliedSearch.toLowerCase());
-      return matchesStatus && matchesCategory && matchesSearch;
+      const matchesIds = appliedIds.length === 0 || appliedIds.includes(activity.id);
+      return matchesStatus && matchesCategory && matchesSearch && matchesIds;
     });
 
   return (
@@ -165,6 +172,16 @@ export default function ActivitiesPage() {
       <Card className="border-[var(--color-meiyou-border)] bg-white rounded-lg shadow-none">
         <CardContent className="p-4">
           <div className="flex items-end gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">活动ID</label>
+              <Input
+                placeholder="多个ID用逗号分隔"
+                className="w-[200px] border-[var(--color-meiyou-border)] focus:border-meiyou focus:ring-meiyou/20 rounded-lg"
+                value={idFilter}
+                onChange={(e) => setIdFilter(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleQuery(); }}
+              />
+            </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">活动名称</label>
               <div className="relative">
