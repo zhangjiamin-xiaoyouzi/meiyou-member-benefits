@@ -226,7 +226,7 @@ export default function ActivitiesPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-meiyou-bg/60 hover:bg-meiyou-bg/60">
-                <TableHead className="w-[200px]">活动名称</TableHead>
+                <TableHead className="w-[220px]">活动ID/名称</TableHead>
                 <TableHead className="w-[100px]">活动分类</TableHead>
                 <TableHead className="w-[120px]">使用模板</TableHead>
                 <TableHead className="w-[200px]">活动时间</TableHead>
@@ -246,6 +246,7 @@ export default function ActivitiesPage() {
                   <TableRow key={activity.id} className="hover:bg-meiyou-bg/40 border-b border-[var(--color-meiyou-divider)]">
                     <TableCell>
                       <div>
+                        <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mb-0.5">{activity.id}</p>
                         <p className="font-medium text-[var(--color-meiyou-text-primary)] text-sm">{activity.name}</p>
                       </div>
                     </TableCell>
