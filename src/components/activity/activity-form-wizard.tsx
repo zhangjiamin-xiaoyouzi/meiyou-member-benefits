@@ -486,7 +486,7 @@ function StepBasicInfo({
       {/* 选择模板 */}
       <div>
         <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-          选择活动组件 <span className="text-meiyou">*</span>
+          选择活动分模版 <span className="text-meiyou">*</span>
         </Label>
         <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
           {isEdit ? '切换模板将重置组件配置' : '选择模板后将自动加载模板预设组件'}
