@@ -93,53 +93,62 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 </table>
 
 <h4>3.2 E-R图</h4>
-<p style="color:#999;font-size:13px;margin-bottom:12px">■ 实体（矩形）&emsp;◆ 关系（菱形）&emsp;┄ 属性（圆角矩形）&emsp;数字 = 基数</p>
+<div style="display:flex;justify-content:center;gap:20px;align-items:center;color:#888;font-size:13px;margin-bottom:12px">
+  <span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:22px;height:14px;background:#e8f4fd;border:2px solid #3b82f6;border-radius:3px"></span>实体</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:14px;height:14px;background:#fef3c7;border:2px solid #f59e0b;transform:rotate(45deg);border-radius:2px"></span>关系</span>
+  <span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:22px;height:14px;background:#f0fdf4;border:2px solid #22c55e;border-radius:7px"></span>属性</span>
+  <span style="color:#64748b">1/N/M = 基数</span>
+</div>
 <div class="mermaid">
 flowchart TB
-    TMPL[活动模板]
-    TMPL --- T1(模板ID)
-    TMPL --- T2(模板名称)
-    TMPL --- T3(模板分类)
-    TMPL --- T4(描述)
+    classDef entity fill:#e8f4fd,stroke:#3b82f6,stroke-width:2.5px,color:#1e3a5f,font-weight:bold,font-size:15px,padding:8px
+    classDef relation fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e,font-weight:bold,font-size:13px
+    classDef attr fill:#f0fdf4,stroke:#22c55e,stroke-width:1.5px,color:#166534,font-size:12px
 
-    TCOMP[模板组件]
-    TCOMP --- TC1(组件ID)
-    TCOMP --- TC2(组件名称)
-    TCOMP --- TC3(组件标识)
-    TCOMP --- TC4(是否必选)
+    TMPL[活动模板]:::entity
+    TMPL --- T1(模板ID):::attr
+    TMPL --- T2(模板名称):::attr
+    TMPL --- T3(模板分类):::attr
+    TMPL --- T4(描述):::attr
 
-    ACT[活动]
-    ACT --- A1(活动ID)
-    ACT --- A2(活动名称)
-    ACT --- A3(活动分类)
-    ACT --- A4(状态)
-    ACT --- A5(时间配置)
+    TCOMP[模板组件]:::entity
+    TCOMP --- TC1(组件ID):::attr
+    TCOMP --- TC2(组件名称):::attr
+    TCOMP --- TC3(组件标识):::attr
+    TCOMP --- TC4(是否必选):::attr
 
-    CCONF[组件配置]
-    CCONF --- CC1(所属组件标识)
-    CCONF --- CC2(配置内容)
+    ACT[活动]:::entity
+    ACT --- A1(活动ID):::attr
+    ACT --- A2(活动名称):::attr
+    ACT --- A3(活动分类):::attr
+    ACT --- A4(状态):::attr
+    ACT --- A5(时间配置):::attr
 
-    GROUP[客群分组]
-    GROUP --- G1(分组ID)
-    GROUP --- G2(分组名称)
+    CCONF[组件配置]:::entity
+    CCONF --- CC1(所属组件标识):::attr
+    CCONF --- CC2(配置内容):::attr
 
-    RULE[受众规则]
-    RULE --- R1(规则ID)
-    RULE --- R2(筛选字段)
-    RULE --- R3(运算符)
-    RULE --- R4(规则值)
+    GROUP[客群分组]:::entity
+    GROUP --- G1(分组ID):::attr
+    GROUP --- G2(分组名称):::attr
 
-    SHELF[货架商品]
-    SHELF --- S1(商品ID)
-    SHELF --- S2(是否主推)
-    SHELF --- S3(排序)
+    RULE[受众规则]:::entity
+    RULE --- R1(规则ID):::attr
+    RULE --- R2(筛选字段):::attr
+    RULE --- R3(运算符):::attr
+    RULE --- R4(规则值):::attr
 
-    TMPL -- "1" --> R1{包含} -- "N" --> TCOMP
-    ACT -- "N" --> R2{基于} -- "1" --> TMPL
-    ACT -- "1" --> R3{配置} -- "N" --> CCONF
-    ACT -- "1" --> R4{划分} -- "N" --> GROUP
-    GROUP -- "1" --> R5{筛选} -- "N" --> RULE
-    GROUP -- "1" --> R6{展示} -- "N" --> SHELF
+    SHELF[货架商品]:::entity
+    SHELF --- S1(商品ID):::attr
+    SHELF --- S2(是否主推):::attr
+    SHELF --- S3(排序):::attr
+
+    TMPL -- "1" --> R1{包含}:::relation -- "N" --> TCOMP
+    ACT -- "N" --> R2{基于}:::relation -- "1" --> TMPL
+    ACT -- "1" --> R3{配置}:::relation -- "N" --> CCONF
+    ACT -- "1" --> R4{划分}:::relation -- "N" --> GROUP
+    GROUP -- "1" --> R5{筛选}:::relation -- "N" --> RULE
+    GROUP -- "1" --> R6{展示}:::relation -- "N" --> SHELF
 </div>
 
 <h4>3.3 产品结构图</h4>
@@ -399,9 +408,16 @@ flowchart TD
 <script>
 mermaid.initialize({
   startOnLoad: true,
-  theme: 'default',
+  theme: 'base',
+  themeVariables: {
+    primaryColor:'#e8f4fd',primaryTextColor:'#1e3a5f',primaryBorderColor:'#3b82f6',
+    lineColor:'#94a3b8',secondaryColor:'#fef3c7',secondaryBorderColor:'#f59e0b',
+    tertiaryColor:'#f0fdf4',tertiaryBorderColor:'#22c55e',
+    fontSize:'14px',fontFamily:'PingFang SC,Microsoft YaHei,system-ui',
+    edgeLabelBackground:'#fff'
+  },
   er: { useMaxWidth: true },
-  flowchart: { useMaxWidth: true, curve: 'basis' },
+  flowchart: { useMaxWidth: true, curve: 'basis', padding: 16, nodeSpacing: 40, rankSpacing: 60 },
   mindmap: { useMaxWidth: true }
 });
 </script>
