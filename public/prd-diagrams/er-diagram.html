@@ -2,162 +2,158 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>E-R图 - 会员日模板活动管理</title>
+<title>E-R图 - 会员日活动管理系统</title>
 <style>
-  body { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; background: #fff; margin: 0; padding: 20px; }
-  h2 { text-align: center; color: #333; margin-bottom: 10px; }
-  .legend { display: flex; gap: 30px; justify-content: center; margin-bottom: 24px; font-size: 13px; color: #666; }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  svg { display: block; margin: 0 auto; }
+  body { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:#fff; margin:0; padding:20px; display:flex; justify-content:center; }
+  svg { max-width:100%; height:auto; }
+  .entity { fill:#eff6ff; stroke:#3b82f6; stroke-width:2; rx:4; }
+  .entity-text { font-size:14px; font-weight:600; fill:#1e40af; text-anchor:middle; dominant-baseline:central; }
+  .relation { fill:#fffbeb; stroke:#f59e0b; stroke-width:2; }
+  .relation-text { font-size:12px; font-weight:600; fill:#92400e; text-anchor:middle; dominant-baseline:central; }
+  .attr { fill:#f0fdf4; stroke:#22c55e; stroke-width:1.5; }
+  .attr-text { font-size:11px; fill:#166534; text-anchor:middle; dominant-baseline:central; }
+  .pk-attr { fill:#fef9c3; stroke:#eab308; stroke-width:1.5; }
+  .pk-text { font-size:11px; fill:#854d0e; text-anchor:middle; dominant-baseline:central; font-weight:600; }
+  .link { stroke:#94a3b8; stroke-width:1; fill:none; }
+  .main-link { stroke:#94a3b8; stroke-width:1.5; fill:none; }
+  .card { font-size:11px; fill:#64748b; font-weight:700; }
 </style>
 </head>
 <body>
-<h2>E-R图 - 会员日模板活动管理</h2>
-<div class="legend">
-  <div class="legend-item"><div style="width:20px;height:14px;border:2px solid #3b82f6;background:#eff6ff;border-radius:2px;"></div> 实体</div>
-  <div class="legend-item"><div style="width:14px;height:14px;border:2px solid #f59e0b;background:#fffbeb;transform:rotate(45deg);"></div> 关系</div>
-  <div class="legend-item"><div style="width:20px;height:14px;border:2px solid #22c55e;background:#f0fdf4;border-radius:10px;"></div> 属性</div>
-  <div class="legend-item"><span style="font-weight:600;color:#64748b;font-size:14px;">1 / N</span> 基数</div>
-</div>
+<svg width="780" height="580" viewBox="0 0 780 580">
+  <!-- 图例 -->
+  <rect x="10" y="5" width="16" height="12" rx="2" class="entity"/><text x="30" y="14" font-size="11" fill="#666" dominant-baseline="central">实体</text>
+  <polygon points="95,11 103,5 111,11 103,17" class="relation"/><text x="117" y="14" font-size="11" fill="#666" dominant-baseline="central">关系</text>
+  <ellipse cx="180" cy="11" rx="12" ry="8" class="attr"/><text x="197" y="14" font-size="11" fill="#666" dominant-baseline="central">属性</text>
+  <ellipse cx="248" cy="11" rx="12" ry="8" class="pk-attr"/><text x="265" y="14" font-size="11" fill="#666" dominant-baseline="central">主键</text>
+  <text x="315" y="14" font-size="11" fill="#666" dominant-baseline="central" font-weight="700">1/N</text><text x="335" y="14" font-size="11" fill="#666" dominant-baseline="central">基数</text>
 
-<svg width="1000" height="1200" viewBox="0 0 1000 1200">
-  <defs>
-    <marker id="arrow" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0,6 2,0 4" fill="#94a3b8"/></marker>
-  </defs>
-
-  <!-- ============ 第1层：活动模板 y=60 ============ -->
-  <!-- 实体: 活动模板 -->
-  <rect x="400" y="40" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="490" y="66" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">活动模板</text>
+  <!-- ========== 第1行：活动模板 ========== -->
+  <rect x="300" y="40" width="140" height="36" class="entity"/>
+  <text x="370" y="58" class="entity-text">活动模板</text>
   <!-- 属性 -->
-  <ellipse cx="230" cy="30" rx="52" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="230" y="35" text-anchor="middle" font-size="11" fill="#166534">模板ID</text>
-  <line x1="282" y1="30" x2="400" y2="52" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="230" cy="65" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="230" y="70" text-anchor="middle" font-size="11" fill="#166534">模板名称</text>
-  <line x1="285" y1="65" x2="400" y2="60" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="230" cy="100" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="230" y="105" text-anchor="middle" font-size="11" fill="#166534">模板分类</text>
-  <line x1="285" y1="100" x2="400" y2="68" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="750" cy="45" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="750" y="50" text-anchor="middle" font-size="11" fill="#166534">描述</text>
-  <line x1="695" y1="45" x2="580" y2="55" stroke="#94a3b8" stroke-width="1"/>
+  <ellipse cx="175" cy="40" rx="40" ry="14" class="pk-attr"/><text x="175" y="40" class="pk-text">模板ID</text>
+  <line x1="215" y1="40" x2="300" y2="52" class="link"/>
+  <ellipse cx="175" cy="72" rx="44" ry="14" class="attr"/><text x="175" y="72" class="attr-text">模板名称</text>
+  <line x1="219" y1="72" x2="300" y2="64" class="link"/>
+  <ellipse cx="565" cy="40" rx="44" ry="14" class="attr"/><text x="565" y="40" class="attr-text">模板分类</text>
+  <line x1="521" y1="40" x2="440" y2="52" class="link"/>
+  <ellipse cx="565" cy="72" rx="30" ry="14" class="attr"/><text x="565" y="72" class="attr-text">描述</text>
+  <line x1="535" y1="72" x2="440" y2="64" class="link"/>
 
-  <!-- ============ 关系: 包含 y=150 ============ -->
-  <polygon points="490,135 535,160 490,185 445,160" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="490" y="165" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">包含</text>
-  <line x1="490" y1="80" x2="490" y2="135" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="500" y="105" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="490" y1="185" x2="490" y2="240" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="500" y="218" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- 关系：包含 -->
+  <polygon points="370,115 395,130 370,145 345,130" class="relation"/>
+  <text x="370" y="130" class="relation-text">包含</text>
+  <line x1="370" y1="76" x2="370" y2="115" class="main-link"/>
+  <text x="378" y="95" class="card">1</text>
+  <line x1="370" y1="145" x2="370" y2="180" class="main-link"/>
+  <text x="378" y="165" class="card">N</text>
 
-  <!-- ============ 第2层：模板组件 y=280 ============ -->
-  <rect x="400" y="240" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="490" y="266" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">模板组件</text>
-  <!-- 属性 -->
-  <ellipse cx="230" cy="240" rx="52" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="230" y="245" text-anchor="middle" font-size="11" fill="#166534">组件ID</text>
-  <line x1="282" y1="240" x2="400" y2="255" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="230" cy="275" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="230" y="280" text-anchor="middle" font-size="11" fill="#166534">组件名称</text>
-  <line x1="285" y1="275" x2="400" y2="264" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="750" cy="250" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="750" y="255" text-anchor="middle" font-size="11" fill="#166534">组件标识</text>
-  <line x1="695" y1="250" x2="580" y2="258" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="750" cy="285" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="750" y="290" text-anchor="middle" font-size="11" fill="#166534">是否必选</text>
-  <line x1="695" y1="285" x2="580" y2="270" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ========== 第2行：模板组件 ========== -->
+  <rect x="300" y="180" width="140" height="36" class="entity"/>
+  <text x="370" y="198" class="entity-text">模板组件</text>
+  <ellipse cx="175" cy="180" rx="40" ry="14" class="pk-attr"/><text x="175" y="180" class="pk-text">组件ID</text>
+  <line x1="215" y1="180" x2="300" y2="192" class="link"/>
+  <ellipse cx="175" cy="212" rx="44" ry="14" class="attr"/><text x="175" y="212" class="attr-text">组件名称</text>
+  <line x1="219" y1="212" x2="300" y2="204" class="link"/>
+  <ellipse cx="565" cy="190" rx="44" ry="14" class="attr"/><text x="565" y="190" class="attr-text">组件标识</text>
+  <line x1="521" y1="190" x2="440" y2="195" class="link"/>
+  <ellipse cx="565" cy="222" rx="44" ry="14" class="attr"/><text x="565" y="222" class="attr-text">是否必选</text>
+  <line x1="521" y1="218" x2="440" y2="208" class="link"/>
 
-  <!-- ============ 关系: 基于 y=370 ============ -->
-  <polygon points="270,355 315,380 270,405 225,380" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="270" y="385" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">基于</text>
-  <line x1="270" y1="355" x2="400" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="345" y="310" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="270" y1="405" x2="270" y2="460" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="280" y="438" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- 关系：基于 -->
+  <polygon points="220,270 245,285 220,300 195,285" class="relation"/>
+  <text x="220" y="285" class="relation-text">基于</text>
+  <line x1="220" y1="300" x2="220" y2="340" class="main-link"/>
+  <text x="228" y="323" class="card">N</text>
+  <line x1="245" y1="275" x2="300" y2="216" class="main-link"/>
+  <text x="268" y="248" class="card">1</text>
 
-  <!-- ============ 第3层：活动 y=500 ============ -->
-  <rect x="180" y="460" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="270" y="486" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">活动</text>
-  <!-- 属性 -->
-  <ellipse cx="50" cy="430" rx="52" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="435" text-anchor="middle" font-size="11" fill="#166534">活动ID</text>
-  <line x1="102" y1="430" x2="180" y2="470" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="50" cy="465" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="470" text-anchor="middle" font-size="11" fill="#166534">活动名称</text>
-  <line x1="105" y1="465" x2="180" y2="475" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="50" cy="500" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="505" text-anchor="middle" font-size="11" fill="#166534">活动分类</text>
-  <line x1="105" y1="500" x2="180" y2="485" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="50" cy="535" rx="42" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="540" text-anchor="middle" font-size="11" fill="#166534">状态</text>
-  <line x1="92" y1="535" x2="180" y2="490" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="50" cy="570" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="575" text-anchor="middle" font-size="11" fill="#166534">时间配置</text>
-  <line x1="105" y1="570" x2="180" y2="495" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="50" cy="605" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="50" y="610" text-anchor="middle" font-size="11" fill="#166534">组件开关</text>
-  <line x1="105" y1="605" x2="180" y2="498" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ========== 第3行：活动 ========== -->
+  <rect x="150" y="340" width="140" height="36" class="entity"/>
+  <text x="220" y="358" class="entity-text">活动</text>
+  <ellipse cx="48" cy="325" rx="40" ry="14" class="pk-attr"/><text x="48" y="325" class="pk-text">活动ID</text>
+  <line x1="88" y1="325" x2="150" y2="348" class="link"/>
+  <ellipse cx="48" cy="355" rx="44" ry="14" class="attr"/><text x="48" y="355" class="attr-text">活动名称</text>
+  <line x1="92" y1="355" x2="150" y2="355" class="link"/>
+  <ellipse cx="48" cy="385" rx="44" ry="14" class="attr"/><text x="48" y="385" class="attr-text">活动分类</text>
+  <line x1="92" y1="385" x2="150" y2="365" class="link"/>
+  <ellipse cx="48" cy="415" rx="30" ry="14" class="attr"/><text x="48" y="415" class="attr-text">状态</text>
+  <line x1="78" y1="415" x2="150" y2="372" class="link"/>
+  <ellipse cx="48" cy="445" rx="44" ry="14" class="attr"/><text x="48" y="445" class="attr-text">时间配置</text>
+  <line x1="92" y1="442" x2="155" y2="376" class="link"/>
+  <ellipse cx="48" cy="475" rx="44" ry="14" class="attr"/><text x="48" y="475" class="attr-text">组件开关</text>
+  <line x1="92" y1="470" x2="160" y2="376" class="link"/>
 
-  <!-- ============ 关系: 配置 y=590 ============ -->
-  <polygon points="490,570 535,595 490,620 445,595" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="490" y="600" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">配置</text>
-  <line x1="360" y1="490" x2="445" y2="585" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="395" y="530" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="535" y1="595" x2="620" y2="595" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="575" y="588" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- 关系：配置 -->
+  <polygon points="490,355 515,370 490,385 465,370" class="relation"/>
+  <text x="490" y="370" class="relation-text">配置</text>
+  <line x1="290" y1="362" x2="465" y2="370" class="main-link"/>
+  <text x="375" y="362" class="card">1</text>
+  <line x1="515" y1="370" x2="580" y2="370" class="main-link"/>
+  <text x="548" y="363" class="card">N</text>
 
-  <!-- ============ 第4层：组件配置 y=600 ============ -->
-  <rect x="620" y="575" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="710" y="601" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">组件配置</text>
-  <!-- 属性 -->
-  <ellipse cx="890" cy="580" rx="65" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="890" y="585" text-anchor="middle" font-size="11" fill="#166534">所属组件标识</text>
-  <line x1="825" y1="580" x2="800" y2="590" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="890" cy="615" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="890" y="620" text-anchor="middle" font-size="11" fill="#166534">配置内容</text>
-  <line x1="835" y1="615" x2="800" y2="600" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ========== 第3行右：组件配置 ========== -->
+  <rect x="580" y="352" width="140" height="36" class="entity"/>
+  <text x="650" y="370" class="entity-text">组件配置</text>
+  <ellipse cx="730" cy="345" rx="56" ry="14" class="attr"/><text x="730" y="345" class="attr-text">所属组件标识</text>
+  <line x1="680" y1="348" x2="720" y2="358" class="link"/>
+  <ellipse cx="730" cy="380" rx="44" ry="14" class="attr"/><text x="730" y="380" class="attr-text">配置内容</text>
+  <line x1="686" y1="376" x2="720" y2="370" class="link"/>
 
-  <!-- ============ 关系: 划分 y=720 ============ -->
-  <polygon points="270,700 315,725 270,750 225,725" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="270" y="730" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">划分</text>
-  <line x1="270" y1="500" x2="270" y2="700" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="280" y="600" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="270" y1="750" x2="270" y2="800" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="280" y="780" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- 关系：划分 -->
+  <polygon points="220,460 245,475 220,490 195,475" class="relation"/>
+  <text x="220" y="475" class="relation-text">划分</text>
+  <line x1="220" y1="376" x2="220" y2="460" class="main-link"/>
+  <text x="228" y="415" class="card">1</text>
+  <line x1="220" y1="490" x2="220" y2="520" class="main-link"/>
+  <text x="228" y="510" class="card">N</text>
 
-  <!-- ============ 第5层：客群分组 y=840 ============ -->
-  <rect x="180" y="800" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="270" y="826" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">客群分组</text>
-  <!-- 属性 -->
-  <ellipse cx="80" cy="810" rx="48" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="80" y="815" text-anchor="middle" font-size="11" fill="#166534">分组ID</text>
-  <line x1="128" y1="810" x2="180" y2="818" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="80" cy="845" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="80" y="850" text-anchor="middle" font-size="11" fill="#166534">分组名称</text>
-  <line x1="135" y1="845" x2="180" y2="830" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ========== 第4行左：客群分组 ========== -->
+  <rect x="150" y="520" width="140" height="36" class="entity"/>
+  <text x="220" y="538" class="entity-text">客群分组</text>
+  <ellipse cx="48" cy="510" rx="40" ry="14" class="pk-attr"/><text x="48" y="510" class="pk-text">分组ID</text>
+  <line x1="88" y1="512" x2="150" y2="530" class="link"/>
+  <ellipse cx="48" cy="545" rx="44" ry="14" class="attr"/><text x="48" y="545" class="attr-text">分组名称</text>
+  <line x1="92" y1="542" x2="150" y2="540" class="link"/>
 
-  <!-- ============ 关系: 筛选 y=920 ============ -->
-  <polygon points="440,900 485,925 440,950 395,925" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="440" y="930" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">筛选</text>
-  <line x1="360" y1="835" x2="395" y2="915" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="370" y="875" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="485" y1="925" x2="570" y2="925" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="525" y="918" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- 关系：筛选 -->
+  <polygon points="420,540 445,555 420,570 395,555" class="relation"/>
+  <text x="420" y="555" class="relation-text">筛选</text>
+  <line x1="290" y1="540" x2="395" y2="553" class="main-link"/>
+  <text x="340" y="542" class="card">1</text>
+  <line x1="445" y1="555" x2="500" y2="555" class="main-link"/>
+  <text x="472" y="548" class="card">N</text>
 
-  <!-- ============ 第6层a：受众规则 y=920 ============ -->
-  <rect x="570" y="905" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="660" y="931" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">受众规则</text>
-  <!-- 属性 -->
-  <ellipse cx="830" cy="885" rx="48" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="830" y="890" text-anchor="middle" font-size="11" fill="#166534">规则ID</text>
-  <line x1="778" y1="885" x2="750" y2="915" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="830" cy="920" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="830" y="925" text-anchor="middle" font-size="11" fill="#166534">筛选字段</text>
-  <line x1="775" y1="920" x2="750" y2="925" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="830" cy="955" rx="48" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="830" y="960" text-anchor="middle" font-size="11" fill="#166534">运算符</text>
-  <line x1="782" y1="955" x2="750" y2="938" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="830" cy="990" rx="48" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="830" y="995" text-anchor="middle" font-size="11" fill="#166534">规则值</text>
-  <line x1="782" y1="990" x2="750" y2="942" stroke="#94a3b8" stroke-width="1"/>
+  <!-- 关系：展示 -->
+  <polygon points="220,575 245,590 220,605 195,590" class="relation"/>
+  <text x="220" y="590" class="relation-text">展示</text>
+  <line x1="220" y1="556" x2="220" y2="575" class="main-link"/>
+  <text x="228" y="568" class="card">1</text>
+  <line x1="245" y1="590" x2="330" y2="600" class="main-link"/>
+  <text x="285" y="592" class="card">N</text>
 
-  <!-- ============ 关系: 展示 y=920 ============ -->
-  <polygon points="270,900 315,925 270,950 225,925" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-  <text x="270" y="930" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">展示</text>
-  <line x1="270" y1="840" x2="270" y2="900" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="280" y="875" font-size="12" fill="#64748b" font-weight="600">1</text>
-  <line x1="315" y1="925" x2="400" y2="960" stroke="#94a3b8" stroke-width="1.5"/>
-  <text x="355" y="938" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <!-- ========== 第4行中：受众规则 ========== -->
+  <rect x="500" y="540" width="140" height="36" class="entity"/>
+  <text x="570" y="558" class="entity-text">受众规则</text>
+  <ellipse cx="690" cy="530" rx="40" ry="14" class="pk-attr"/><text x="690" y="530" class="pk-text">规则ID</text>
+  <line x1="654" y1="533" x2="640" y2="548" class="link"/>
+  <ellipse cx="690" cy="560" rx="44" ry="14" class="attr"/><text x="690" y="560" class="attr-text">筛选字段</text>
+  <line x1="646" y1="560" x2="640" y2="558" class="link"/>
+  <ellipse cx="690" cy="590" rx="38" ry="14" class="attr"/><text x="690" y="590" class="attr-text">运算符</text>
+  <line x1="652" y1="586" x2="640" y2="570" class="link"/>
+  <ellipse cx="690" cy="620" rx="38" ry="14" class="attr"/><text x="690" y="620" class="attr-text">规则值</text>
+  <line x1="652" y1="614" x2="640" y2="575" class="link"/>
 
-  <!-- ============ 第6层b：货架商品 y=960 ============ -->
-  <rect x="400" y="950" width="180" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-  <text x="490" y="976" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">货架商品</text>
-  <!-- 属性 -->
-  <ellipse cx="400" cy="1040" rx="48" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="400" y="1045" text-anchor="middle" font-size="11" fill="#166534">商品ID</text>
-  <line x1="420" y1="1025" x2="440" y2="990" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="500" cy="1040" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="500" y="1045" text-anchor="middle" font-size="11" fill="#166534">是否主推</text>
-  <line x1="490" y1="1025" x2="490" y2="990" stroke="#94a3b8" stroke-width="1"/>
-  <ellipse cx="590" cy="1040" rx="42" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/><text x="590" y="1045" text-anchor="middle" font-size="11" fill="#166534">排序</text>
-  <line x1="570" y1="1025" x2="540" y2="990" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ========== 第4行右下：货架商品 ========== -->
+  <rect x="330" y="600" width="140" height="36" class="entity"/>
+  <text x="400" y="618" class="entity-text">货架商品</text>
+  <ellipse cx="330" cy="655" rx="40" ry="14" class="pk-attr"/><text x="330" y="655" class="pk-text">商品ID</text>
+  <line x1="345" y1="642" x2="360" y2="636" class="link"/>
+  <ellipse cx="400" cy="660" rx="44" ry="14" class="attr"/><text x="400" y="660" class="attr-text">是否主推</text>
+  <line x1="400" y1="646" x2="400" y2="636" class="link"/>
+  <ellipse cx="475" cy="655" rx="30" ry="14" class="attr"/><text x="475" y="655" class="attr-text">排序</text>
+  <line x1="450" y1="645" x2="440" y2="636" class="link"/>
 </svg>
 </body>
 </html>
