@@ -95,66 +95,66 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 <h4>3.2 E-R图</h4>
 <div class="mermaid">
 erDiagram
-    活动模板 ||--o{ 模板组件 : 包含
-    活动 }o--|| 活动模板 : 基于
-    活动 ||--o{ 客群分组 : 包含
-    活动 ||--o{ 组件配置 : 包含
-    客群分组 ||--o{ 受众规则 : 包含
-    客群分组 ||--o{ 货架商品 : 包含
-    货架商品 }o--o{ 营销策略补丁 : 挂载
+    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : contains
+    ACTIVITY }o--|| ACTIVITY_TEMPLATE : based_on
+    ACTIVITY ||--o{ AUDIENCE_GROUP : contains
+    ACTIVITY ||--o{ COMPONENT_CONFIG : contains
+    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : contains
+    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : contains
+    SHELF_PRODUCT }o--o{ PROMO_PATCH : mounts
 
-    活动模板 {
-        string 模板ID
-        string 模板名称
-        string 模板分类
-        string 描述
+    ACTIVITY_TEMPLATE {
+        string template_id
+        string template_name
+        string category
+        string description
     }
 
-    模板组件 {
-        string 组件ID
-        string 组件名称
-        string 组件标识
-        string 是否启用
-        string 是否必选
+    TEMPLATE_COMPONENT {
+        string component_id
+        string component_name
+        string component_key
+        string enabled
+        string required
     }
 
-    活动 {
-        string 活动ID
-        string 活动名称
-        string 活动分类
-        string 状态
-        string 时间配置
-        string 组件开关
+    ACTIVITY {
+        string activity_id
+        string activity_name
+        string category
+        string status
+        string time_config
+        string component_switches
     }
 
-    组件配置 {
-        string 所属组件标识
-        string 配置内容
+    COMPONENT_CONFIG {
+        string component_key
+        string config_data
     }
 
-    客群分组 {
-        string 分组ID
-        string 分组名称
+    AUDIENCE_GROUP {
+        string group_id
+        string group_name
     }
 
-    受众规则 {
-        string 规则ID
-        string 筛选字段
-        string 运算符
-        string 规则值
+    AUDIENCE_RULE {
+        string rule_id
+        string field
+        string operator
+        string value
     }
 
-    货架商品 {
-        string 商品ID
-        string 是否主推
-        string 排序
+    SHELF_PRODUCT {
+        string product_id
+        string is_primary
+        string sort_order
     }
 
-    营销策略补丁 {
-        string 补丁ID
-        string 补丁名称
-        string 补丁类型
-        string配置
+    PROMO_PATCH {
+        string patch_id
+        string patch_name
+        string patch_type
+        string config
     }
 </div>
 
