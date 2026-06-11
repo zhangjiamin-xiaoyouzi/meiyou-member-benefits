@@ -134,19 +134,12 @@ flowchart TB
     SHELF --- S2(是否主推)
     SHELF --- S3(排序)
 
-    PATCH[营销策略补丁]
-    PATCH --- P1(补丁ID)
-    PATCH --- P2(补丁名称)
-    PATCH --- P3(补丁类型)
-    PATCH --- P4(配置)
-
     TMPL -- "1" --> R1{包含} -- "N" --> TCOMP
     ACT -- "N" --> R2{基于} -- "1" --> TMPL
     ACT -- "1" --> R3{配置} -- "N" --> CCONF
     ACT -- "1" --> R4{划分} -- "N" --> GROUP
     GROUP -- "1" --> R5{筛选} -- "N" --> RULE
     GROUP -- "1" --> R6{展示} -- "N" --> SHELF
-    SHELF -- "N" --> R7{挂载} -- "M" --> PATCH
 </div>
 
 <h4>3.3 产品结构图</h4>
