@@ -86,7 +86,7 @@ const defaultCategoryColor = 'bg-meiyou-bg text-[var(--color-meiyou-text-seconda
 const defaultCategories = ['促活', '转化', '拉新'];
 
 const stepConfig = [
-  { num: 1, label: '选择模板与基础信息', icon: Puzzle },
+  { num: 1, label: '配置基础信息与活动组件', icon: Puzzle },
   { num: 2, label: '填充组件素材', icon: Settings2 },
 ];
 
