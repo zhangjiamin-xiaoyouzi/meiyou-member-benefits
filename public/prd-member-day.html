@@ -103,49 +103,49 @@ erDiagram
     AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : "1:N 展示"
 
     ACTIVITY_TEMPLATE {
-        string 模板ID
-        string 模板名称
-        string 模板分类
-        string 描述
+        string template_id
+        string template_name
+        string category
+        string description
     }
 
     TEMPLATE_COMPONENT {
-        string 组件ID
-        string 组件名称
-        string 组件标识
-        string 是否必选
+        string component_id
+        string component_name
+        string component_key
+        string is_required
     }
 
     ACTIVITY {
-        string 活动ID
-        string 活动名称
-        string 活动分类
-        string 状态
-        string 时间配置
-        string 组件开关
+        string activity_id
+        string activity_name
+        string category
+        string status
+        string time_config
+        string component_switch
     }
 
     COMPONENT_CONFIG {
-        string 所属组件标识
-        string 配置内容
+        string component_key
+        string config_content
     }
 
     AUDIENCE_GROUP {
-        string 分组ID
-        string 分组名称
+        string group_id
+        string group_name
     }
 
     AUDIENCE_RULE {
-        string 规则ID
-        string 筛选字段
-        string 运算符
-        string 规则值
+        string rule_id
+        string filter_field
+        string operator
+        string rule_value
     }
 
     SHELF_PRODUCT {
-        string 商品ID
-        string 是否主推
-        string 排序
+        string product_id
+        string is_featured
+        string sort_order
     }
 </div>
 

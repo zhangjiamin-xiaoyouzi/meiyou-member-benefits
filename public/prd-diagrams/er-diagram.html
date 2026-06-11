@@ -3,38 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>E-R图 — 会员日活动配置</title>
-<script src="https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js"></script>
-<script>
-if(typeof mermaid==='undefined'){
-  document.write('<script src="https://cdn.bootcdn.net/ajax/libs/mermaid/10.9.1/mermaid.min.js"><\/script>');
-}
-if(typeof mermaid==='undefined'){
-  document.write('<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"><\/script>');
-}
-</script>
 <style>
 body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fff}
 h2{color:#333;text-align:center;margin-bottom:30px;font-size:22px}
 .diagram-container{max-width:1100px;margin:0 auto}
+.error-msg{color:#e53e3e;text-align:center;padding:40px;font-size:16px}
 </style>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  if(typeof mermaid!=='undefined'){
-    mermaid.initialize({
-      startOnLoad:true,
-      theme:'default',
-      er:{
-        useMaxWidth:true
-      }
-    });
-  }
-});
-</script>
 </head>
 <body>
 <h2>E-R图 — 会员日活动配置系统</h2>
 <div class="diagram-container">
-<div class="mermaid">
+<div id="mermaid-diagram" class="mermaid">
 erDiagram
     ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : "1:N 包含"
     ACTIVITY }o--|| ACTIVITY_TEMPLATE : "N:1 基于"
@@ -44,51 +23,116 @@ erDiagram
     AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : "1:N 展示"
 
     ACTIVITY_TEMPLATE {
-        string 模板ID
-        string 模板名称
-        string 模板分类
-        string 描述
+        string template_id
+        string template_name
+        string category
+        string description
     }
 
     TEMPLATE_COMPONENT {
-        string 组件ID
-        string 组件名称
-        string 组件标识
-        string 是否必选
+        string component_id
+        string component_name
+        string component_key
+        string is_required
     }
 
     ACTIVITY {
-        string 活动ID
-        string 活动名称
-        string 活动分类
-        string 状态
-        string 时间配置
-        string 组件开关
+        string activity_id
+        string activity_name
+        string category
+        string status
+        string time_config
+        string component_switch
     }
 
     COMPONENT_CONFIG {
-        string 所属组件标识
-        string 配置内容
+        string component_key
+        string config_content
     }
 
     AUDIENCE_GROUP {
-        string 分组ID
-        string 分组名称
+        string group_id
+        string group_name
     }
 
     AUDIENCE_RULE {
-        string 规则ID
-        string 筛选字段
-        string 运算符
-        string 规则值
+        string rule_id
+        string filter_field
+        string operator
+        string rule_value
     }
 
     SHELF_PRODUCT {
-        string 商品ID
-        string 是否主推
-        string 排序
+        string product_id
+        string is_featured
+        string sort_order
     }
 </div>
+<div id="error-fallback" style="display:none">
+  <p class="error-msg">Mermaid 图表加载失败，请尝试刷新页面。</p>
+  <pre style="background:#f7f7f7;padding:20px;border-radius:8px;font-size:14px;overflow-x:auto">
+实体关系说明：
+
+活动模板(ACTIVITY_TEMPLATE) ──1:N──▶ 模板组件(TEMPLATE_COMPONENT)
+  关系：包含
+  活动模板属性：模板ID、模板名称、模板分类、描述
+  模板组件属性：组件ID、组件名称、组件标识、是否必选
+
+活动(ACTIVITY) ──N:1──▶ 活动模板(ACTIVITY_TEMPLATE)
+  关系：基于
+  活动属性：活动ID、活动名称、活动分类、状态、时间配置、组件开关
+
+活动(ACTIVITY) ──1:N──▶ 组件配置(COMPONENT_CONFIG)
+  关系：配置
+  组件配置属性：所属组件标识、配置内容
+
+活动(ACTIVITY) ──1:N──▶ 客群分组(AUDIENCE_GROUP)
+  关系：划分
+  客群分组属性：分组ID、分组名称
+
+客群分组(AUDIENCE_GROUP) ──1:N──▶ 受众规则(AUDIENCE_RULE)
+  关系：筛选
+  受众规则属性：规则ID、筛选字段、运算符、规则值
+
+客群分组(AUDIENCE_GROUP) ──1:N──▶ 货架商品(SHELF_PRODUCT)
+  关系：展示
+  货架商品属性：商品ID、是否主推、排序
+  </pre>
 </div>
+</div>
+
+<script>
+function loadMermaid(src) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+var cdnList = [
+  'https://cdn.bootcdn.net/ajax/libs/mermaid/10.9.1/mermaid.min.js',
+  'https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js',
+  'https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js',
+  'https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js'
+];
+
+function tryLoad(index) {
+  if (index >= cdnList.length) {
+    document.getElementById('mermaid-diagram').style.display = 'none';
+    document.getElementById('error-fallback').style.display = 'block';
+    return;
+  }
+  loadMermaid(cdnList[index]).then(function() {
+    mermaid.initialize({ startOnLoad: true, theme: 'default', er: { useMaxWidth: true } });
+  }).catch(function() {
+    tryLoad(index + 1);
+  });
+}
+
+tryLoad(0);
+</script>
 </body>
 </html>
