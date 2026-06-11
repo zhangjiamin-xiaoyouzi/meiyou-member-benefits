@@ -622,22 +622,28 @@ function StepBasicInfo({
                     <td className="px-2 py-2 cursor-grab active:cursor-grabbing">
                       <GripVertical className="h-4 w-4 text-[var(--color-meiyou-border)] hover:text-[var(--color-meiyou-text-secondary)]" />
                     </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
-                        {comp.required && (
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 bg-meiyou-bg text-[var(--color-meiyou-text-placeholder)] border-[var(--color-meiyou-border)]">
-                            必选
-                          </Badge>
-                        )}
+                    <td className="px-3 py-2.5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
+                          {comp.required ? (
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-[var(--color-meiyou)]/8 text-[var(--color-meiyou)] border-[var(--color-meiyou)]/20">
+                              必选
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-gray-50 text-[var(--color-meiyou-text-placeholder)] border-[var(--color-meiyou-border)]">
+                              非必选
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 leading-relaxed">{comp.description}</p>
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-xs text-[var(--color-meiyou-text-placeholder)]">{comp.description}</td>
                     <td className="px-3 py-2 text-center">
                       <Switch
                         checked={comp.enabled}
                         disabled={comp.required}
-                        className="data-[state=checked]:bg-meiyou data-[state=unchecked]:bg-gray-200"
+                        className={`data-[state=checked]:bg-meiyou data-[state=unchecked]:bg-gray-200 ${comp.required ? 'opacity-70 cursor-not-allowed' : ''}`}
                         onCheckedChange={() => handleToggleComponent(comp.key)}
                       />
                     </td>
