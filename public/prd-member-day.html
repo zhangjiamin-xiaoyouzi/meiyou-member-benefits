@@ -93,70 +93,70 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 </table>
 
 <h4>3.2 E-R图</h4>
-<div class="mermaid">
-erDiagram
-    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : contains
-    ACTIVITY }o--|| ACTIVITY_TEMPLATE : based_on
-    ACTIVITY ||--o{ AUDIENCE_GROUP : contains
-    ACTIVITY ||--o{ COMPONENT_CONFIG : contains
-    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : contains
-    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : contains
-    SHELF_PRODUCT }o--o{ PROMO_PATCH : mounts
+<p><strong>实体关系总览：</strong></p>
+<table style="border-collapse:collapse;width:100%;margin-bottom:16px;">
+  <thead>
+    <tr style="background:#f5f5f5;">
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">源实体</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">关系</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">目标实体</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td style="border:1px solid #ddd;padding:8px;">活动模板</td><td style="border:1px solid #ddd;padding:8px;">1 → N</td><td style="border:1px solid #ddd;padding:8px;">模板组件</td><td style="border:1px solid #ddd;padding:8px;">一个模板包含多个组件</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">活动</td><td style="border:1px solid #ddd;padding:8px;">N → 1</td><td style="border:1px solid #ddd;padding:8px;">活动模板</td><td style="border:1px solid #ddd;padding:8px;">活动基于某个模板创建</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">活动</td><td style="border:1px solid #ddd;padding:8px;">1 → N</td><td style="border:1px solid #ddd;padding:8px;">客群分组</td><td style="border:1px solid #ddd;padding:8px;">一个活动包含多个客群分组</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">活动</td><td style="border:1px solid #ddd;padding:8px;">1 → N</td><td style="border:1px solid #ddd;padding:8px;">组件配置</td><td style="border:1px solid #ddd;padding:8px;">一个活动包含多个组件配置</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">客群分组</td><td style="border:1px solid #ddd;padding:8px;">1 → N</td><td style="border:1px solid #ddd;padding:8px;">受众规则</td><td style="border:1px solid #ddd;padding:8px;">一个分组包含多条筛选规则</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">客群分组</td><td style="border:1px solid #ddd;padding:8px;">1 → N</td><td style="border:1px solid #ddd;padding:8px;">货架商品</td><td style="border:1px solid #ddd;padding:8px;">一个分组包含多个货架商品</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">货架商品</td><td style="border:1px solid #ddd;padding:8px;">N ↔ N</td><td style="border:1px solid #ddd;padding:8px;">营销策略补丁</td><td style="border:1px solid #ddd;padding:8px;">商品可挂载多个策略补丁</td></tr>
+  </tbody>
+</table>
 
-    ACTIVITY_TEMPLATE {
-        string template_id
-        string template_name
-        string category
-        string description
-    }
-
-    TEMPLATE_COMPONENT {
-        string component_id
-        string component_name
-        string component_key
-        string enabled
-        string required
-    }
-
-    ACTIVITY {
-        string activity_id
-        string activity_name
-        string category
-        string status
-        string time_config
-        string component_switches
-    }
-
-    COMPONENT_CONFIG {
-        string component_key
-        string config_data
-    }
-
-    AUDIENCE_GROUP {
-        string group_id
-        string group_name
-    }
-
-    AUDIENCE_RULE {
-        string rule_id
-        string field
-        string operator
-        string value
-    }
-
-    SHELF_PRODUCT {
-        string product_id
-        string is_primary
-        string sort_order
-    }
-
-    PROMO_PATCH {
-        string patch_id
-        string patch_name
-        string patch_type
-        string config
-    }
-</div>
+<p><strong>实体字段明细：</strong></p>
+<table style="border-collapse:collapse;width:100%;margin-bottom:16px;">
+  <thead>
+    <tr style="background:#f5f5f5;">
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">实体</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">字段名</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">类型</th>
+      <th style="border:1px solid #ddd;padding:8px;text-align:left;">说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="4">活动模板</td><td style="border:1px solid #ddd;padding:8px;">模板ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">唯一标识，如 tpl_002</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">模板名称</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"会员日模板"</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">模板分类</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"周期活动"</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">描述</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">模板适用场景说明</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="5">模板组件</td><td style="border:1px solid #ddd;padding:8px;">组件ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">组件唯一标识</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">组件名称</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"会员限时福利"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">组件标识</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"flashSale"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">是否启用</td><td style="border:1px solid #ddd;padding:8px;">boolean</td><td style="border:1px solid #ddd;padding:8px;">组件开关状态</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">是否必选</td><td style="border:1px solid #ddd;padding:8px;">boolean</td><td style="border:1px solid #ddd;padding:8px;">必选组件不可关闭</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="6">活动</td><td style="border:1px solid #ddd;padding:8px;">活动ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">唯一标识，如 act_001</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">活动名称</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">运营自定义名称</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">活动分类</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">自定义分类，如"促活"</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">状态</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">草稿/待生效/生效中/已结束</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">时间配置</td><td style="border:1px solid #ddd;padding:8px;">json</td><td style="border:1px solid #ddd;padding:8px;">活动开始/结束等时间节点</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">组件开关</td><td style="border:1px solid #ddd;padding:8px;">json</td><td style="border:1px solid #ddd;padding:8px;">各组件启用/关闭配置</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="2">组件配置</td><td style="border:1px solid #ddd;padding:8px;">所属组件标识</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">关联的组件key</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">配置内容</td><td style="border:1px solid #ddd;padding:8px;">json</td><td style="border:1px solid #ddd;padding:8px;">组件详细配置数据</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="2">客群分组</td><td style="border:1px solid #ddd;padding:8px;">分组ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">客群分组唯一标识</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">分组名称</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"默认客群"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="4">受众规则</td><td style="border:1px solid #ddd;padding:8px;">规则ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">规则唯一标识</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">筛选字段</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"会员等级"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">运算符</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"等于"/"包含"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">规则值</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">筛选目标值</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="3">货架商品</td><td style="border:1px solid #ddd;padding:8px;">商品ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">套餐商品唯一标识</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">是否主推</td><td style="border:1px solid #ddd;padding:8px;">boolean</td><td style="border:1px solid #ddd;padding:8px;">主推/次推标记</td></tr>
+    <tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:8px;">排序</td><td style="border:1px solid #ddd;padding:8px;">number</td><td style="border:1px solid #ddd;padding:8px;">货架展示排序值</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;font-weight:bold;" rowspan="4">营销策略补丁</td><td style="border:1px solid #ddd;padding:8px;">补丁ID</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">补丁唯一标识</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">补丁名称</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">如"立减5元"</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">补丁类型</td><td style="border:1px solid #ddd;padding:8px;">string</td><td style="border:1px solid #ddd;padding:8px;">价格立减/加赠时长/开卡赠礼</td></tr>
+    <tr><td style="border:1px solid #ddd;padding:8px;">配置</td><td style="border:1px solid #ddd;padding:8px;">json</td><td style="border:1px solid #ddd;padding:8px;">补丁详细配置数据</td></tr>
+  </tbody>
+</table>
 
 <h4>3.3 产品结构图</h4>
 <div class="mermaid">
