@@ -701,6 +701,7 @@ function StepComponentConfig({
               <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               氛围头图
             </CardTitle>
+            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">顶部活动氛围图片</p>
           </CardHeader>
           <CardContent>
             {(() => {
@@ -725,6 +726,7 @@ function StepComponentConfig({
               <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               规则弹窗
             </CardTitle>
+            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">活动规则说明弹窗</p>
           </CardHeader>
           <CardContent className="space-y-4">
             {(() => {
@@ -763,6 +765,7 @@ function StepComponentConfig({
       {isComponentEnabled('exclusive_gift') && (
         <BenefitConfigCard
           title="会员专属礼"
+          description="配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）"
           config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('exclusive_gift', val)}
         />
@@ -780,6 +783,7 @@ function StepComponentConfig({
       {isComponentEnabled('free_benefit') && (
         <BenefitConfigCard
           title="会员专属生活券包"
+          description="配置会员专属生活券包（如：美团外卖红包、古茗88折券）"
           config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
           onChange={(val) => updateConfig('free_benefit', val)}
         />
@@ -793,6 +797,7 @@ function StepComponentConfig({
               <MousePointerClick className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
               吸底按钮
             </CardTitle>
+            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">对会员与非会员配置按钮与跳转链接</p>
           </CardHeader>
           <CardContent className="space-y-4">
             {(() => {
@@ -950,7 +955,7 @@ function GlobalConfigCard({
           <CardTitle className="text-base font-medium">全局配置</CardTitle>
         </div>
         <CardDescription className="text-xs text-[var(--color-meiyou-text-secondary)]">
-          配置活动页面的全局背景样式
+          配置页面全局背景配置
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -1181,6 +1186,7 @@ function FlashSaleConfigCard({
           <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           会员限时福利
         </CardTitle>
+        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">配置商品多轮预约与限量抢购（如沪上阿姨奶茶）</p>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* 模块图片 */}
@@ -1413,8 +1419,8 @@ function FreePurchaseConfigCard({
         <CardTitle className="text-sm flex items-center gap-2">
           <Tag className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           会员专属0元购
-          <span className="text-xs text-[var(--color-meiyou-text-placeholder)] font-normal">下单全额返现金</span>
         </CardTitle>
+        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">配置返现商品，会员下单后返现</p>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
@@ -1488,10 +1494,12 @@ function FreePurchaseConfigCard({
 
 function BenefitConfigCard({
   title,
+  description,
   config,
   onChange,
 }: {
   title: string;
+  description?: string;
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
@@ -1541,6 +1549,7 @@ function BenefitConfigCard({
           <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
           {title}
         </CardTitle>
+        {description && <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">{description}</p>}
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
