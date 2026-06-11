@@ -4,7 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PRD - 活动列表会员日模板功能</title>
-
+<script src="https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if(typeof mermaid==='undefined'){document.write('<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/mermaid/9.4.3/mermaid.min.js"><\/script>');}</script>
+<script>if(typeof mermaid==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"><\/script>');}</script>
 <style>
 body{font-family:PingFang SC,Microsoft YaHei,system-ui,sans-serif;max-width:960px;margin:0 auto;padding:20px 24px;color:rgba(0,0,0,0.8);line-height:1.7;font-size:14px}
 h1{font-size:24px;font-weight:600;border-bottom:2px solid #ff4d88;padding-bottom:8px;margin:24px 0 16px;color:#ff4d88}
@@ -20,7 +22,7 @@ td{padding:6px 10px;font-size:13px;border:1px solid #ddd}
 hr{border:none;border-top:1px solid #eee;margin:16px 0}
 .meta-table th{background:#d9e2f3;width:120px}
 .meta-table td{font-weight:500}
-
+.mermaid{margin:16px auto;text-align:center}
 </style>
 </head>
 <body>
@@ -91,13 +93,145 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 </table>
 
 <h4>3.2 E-R图</h4>
-<div style="text-align:center;margin:16px auto"><img src="prd-diagrams/er-diagram.png" alt="E-R图" style="max-width:100%;border:1px solid #eee;border-radius:8px"/></div>
+<div class="mermaid">
+flowchart TB
+    subgraph TMPL["📋 活动模板"]
+        direction LR
+        T1["模板ID"]
+        T2["模板名称"]
+        T3["模板分类"]
+        T4["描述"]
+    end
+
+    subgraph COMP["🧩 模板组件"]
+        direction LR
+        C1["组件ID"]
+        C2["组件名称"]
+        C3["组件标识"]
+        C4["是否启用"]
+        C5["是否必选"]
+    end
+
+    subgraph ACT["🎯 活动"]
+        direction LR
+        A1["活动ID"]
+        A2["活动名称"]
+        A3["活动分类"]
+        A4["状态"]
+        A5["时间配置"]
+        A6["组件开关"]
+    end
+
+    subgraph CFG["⚙️ 组件配置"]
+        direction LR
+        F1["所属组件标识"]
+        F2["配置内容"]
+    end
+
+    subgraph GRP["👥 客群分组"]
+        direction LR
+        G1["分组ID"]
+        G2["分组名称"]
+    end
+
+    subgraph RULE["📐 受众规则"]
+        direction LR
+        R1["规则ID"]
+        R2["筛选字段"]
+        R3["运算符"]
+        R4["规则值"]
+    end
+
+    subgraph PRD["🛒 货架商品"]
+        direction LR
+        P1["商品ID"]
+        P2["是否主推"]
+        P3["排序"]
+    end
+
+    subgraph PATCH["🏷️ 营销策略补丁"]
+        direction LR
+        H1["补丁ID"]
+        H2["补丁名称"]
+        H3["补丁类型"]
+        H4["配置"]
+    end
+
+    TMPL -- "1:N 包含" --> COMP
+    ACT -- "N:1 基于" --> TMPL
+    ACT -- "1:N 包含" --> GRP
+    ACT -- "1:N 包含" --> CFG
+    GRP -- "1:N 包含" --> RULE
+    GRP -- "1:N 包含" --> PRD
+    PRD -- "N:M 挂载" --> PATCH
+</div>
 
 <h4>3.3 产品结构图</h4>
-<div style="text-align:center;margin:16px auto"><img src="prd-diagrams/structure-diagram.png" alt="产品结构图" style="max-width:100%;border:1px solid #eee;border-radius:8px"/></div>
+<div class="mermaid">
+mindmap
+  root((会员日活动配置))
+    活动列表
+      活动筛选
+        按状态筛选
+        按分类筛选
+        按活动ID筛选
+        按名称搜索
+      活动操作
+        新建活动
+        编辑活动
+        上线/下线
+        删除
+        复制
+        预览H5
+    新建活动向导
+      步骤1 选择模板与基础信息
+        活动名称
+        活动分类
+        选择活动分模版
+        活动时间配置
+        选择活动组件
+      步骤2 填充组件素材
+        全局配置
+        氛围头图
+        规则弹窗
+        会员限时福利
+        会员专属礼
+        会员专属0元购
+        会员专属生活券包
+        吸底按钮
+</div>
 
 <h4>3.4 产品流程图</h4>
-<div style="text-align:center;margin:16px auto"><img src="prd-diagrams/flow-diagram.png" alt="产品流程图" style="max-width:100%;border:1px solid #eee;border-radius:8px"/></div>
+<div class="mermaid">
+flowchart TD
+    A[运营进入活动列表] --> B[点击新建活动]
+    B --> C[选择会员日模板]
+    C --> D[填写活动名称与分类]
+    D --> E[配置活动时间]
+    E --> F[选择活动组件开关]
+    F --> G[进入组件素材配置]
+    
+    G --> G1[配置全局背景]
+    G1 --> G2[上传氛围头图]
+    G2 --> G3[编辑规则弹窗]
+    G3 --> G4[配置会员限时福利]
+    G4 --> G5[配置会员专属礼]
+    G5 --> G6[配置会员专属0元购]
+    G6 --> G7[配置会员专属生活券包]
+    G7 --> G8[配置吸底按钮]
+    
+    G8 --> H{保存方式}
+    H -->|保存草稿| I[活动状态=草稿]
+    H -->|发布活动| J[活动状态=生效中]
+    
+    I --> K[活动列表显示草稿]
+    K --> L[可执行：编辑/上线/删除]
+    L -->|上线| J
+    
+    J --> M[活动列表显示生效中]
+    M --> N[可执行：编辑/复制/预览/下线]
+    N -->|下线| O[活动状态=已结束]
+</div>
 
 <h4>3.5 原型图</h4>
 <p>参见项目页面 <code>/activities/new</code> 新建活动页面，以及 <code>/activities</code> 活动列表页面。</p>
@@ -286,5 +420,14 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 </tbody>
 </table>
 
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'default',
+  er: { useMaxWidth: true },
+  flowchart: { useMaxWidth: true, curve: 'basis' },
+  mindmap: { useMaxWidth: true }
+});
+</script>
 </body>
 </html>
