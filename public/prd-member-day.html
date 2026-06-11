@@ -94,68 +94,76 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 
 <h4>3.2 E-R图</h4>
 <div class="mermaid">
-erDiagram
-    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : contains
-    ACTIVITY }o--|| ACTIVITY_TEMPLATE : based_on
-    ACTIVITY ||--o{ AUDIENCE_GROUP : contains
-    ACTIVITY ||--o{ COMPONENT_CONFIG : contains
-    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : contains
-    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : contains
-    SHELF_PRODUCT }o--o{ PROMO_PATCH : mounts
+flowchart TB
+    subgraph TMPL["📋 活动模板"]
+        direction LR
+        T1["模板ID"]
+        T2["模板名称"]
+        T3["模板分类"]
+        T4["描述"]
+    end
 
-    ACTIVITY_TEMPLATE {
-        string template_id
-        string template_name
-        string category
-        string description
-    }
+    subgraph COMP["🧩 模板组件"]
+        direction LR
+        C1["组件ID"]
+        C2["组件名称"]
+        C3["组件标识"]
+        C4["是否启用"]
+        C5["是否必选"]
+    end
 
-    TEMPLATE_COMPONENT {
-        string component_id
-        string component_name
-        string component_key
-        string enabled
-        string required
-    }
+    subgraph ACT["🎯 活动"]
+        direction LR
+        A1["活动ID"]
+        A2["活动名称"]
+        A3["活动分类"]
+        A4["状态"]
+        A5["时间配置"]
+        A6["组件开关"]
+    end
 
-    ACTIVITY {
-        string activity_id
-        string activity_name
-        string category
-        string status
-        string time_config
-        string component_switches
-    }
+    subgraph CFG["⚙️ 组件配置"]
+        direction LR
+        F1["所属组件标识"]
+        F2["配置内容"]
+    end
 
-    COMPONENT_CONFIG {
-        string component_key
-        string config_data
-    }
+    subgraph GRP["👥 客群分组"]
+        direction LR
+        G1["分组ID"]
+        G2["分组名称"]
+    end
 
-    AUDIENCE_GROUP {
-        string group_id
-        string group_name
-    }
+    subgraph RULE["📐 受众规则"]
+        direction LR
+        R1["规则ID"]
+        R2["筛选字段"]
+        R3["运算符"]
+        R4["规则值"]
+    end
 
-    AUDIENCE_RULE {
-        string rule_id
-        string field
-        string operator
-        string value
-    }
+    subgraph PRD["🛒 货架商品"]
+        direction LR
+        P1["商品ID"]
+        P2["是否主推"]
+        P3["排序"]
+    end
 
-    SHELF_PRODUCT {
-        string product_id
-        string is_primary
-        string sort_order
-    }
+    subgraph PATCH["🏷️ 营销策略补丁"]
+        direction LR
+        H1["补丁ID"]
+        H2["补丁名称"]
+        H3["补丁类型"]
+        H4["配置"]
+    end
 
-    PROMO_PATCH {
-        string patch_id
-        string patch_name
-        string patch_type
-        string config
-    }
+    TMPL -- "1:N 包含" --> COMP
+    ACT -- "N:1 基于" --> TMPL
+    ACT -- "1:N 包含" --> GRP
+    ACT -- "1:N 包含" --> CFG
+    GRP -- "1:N 包含" --> RULE
+    GRP -- "1:N 包含" --> PRD
+    PRD -- "N:M 挂载" --> PATCH
 </div>
 
 <h4>3.3 产品结构图</h4>

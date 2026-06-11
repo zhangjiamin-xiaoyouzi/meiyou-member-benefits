@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>产品流程图 - 会员日活动配置</title>
+<script src="https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if(typeof mermaid==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"><\/script>');}</script>
+<style>
+body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fff}
+h2{color:#333;text-align:center}
+.mermaid{margin:20px auto;text-align:center;max-width:1200px}
+</style>
+</head>
+<body>
+<h2>产品流程图 — 会员日活动配置</h2>
+<div class="mermaid">
+flowchart TD
+    A[运营进入活动列表] --> B[点击新建活动]
+    B --> C[选择会员日模板]
+    C --> D[填写活动名称与分类]
+    D --> E[配置活动时间]
+    E --> F[选择活动组件开关]
+    F --> G[进入组件素材配置]
+    
+    G --> G1[配置全局背景]
+    G1 --> G2[上传氛围头图]
+    G2 --> G3[编辑规则弹窗]
+    G3 --> G4[配置会员限时福利]
+    G4 --> G5[配置会员专属礼]
+    G5 --> G6[配置会员专属0元购]
+    G6 --> G7[配置会员专属生活券包]
+    G7 --> G8[配置吸底按钮]
+    
+    G8 --> H{保存方式}
+    H -->|保存草稿| I[活动状态=草稿]
+    H -->|发布活动| J[活动状态=生效中]
+    
+    I --> K[活动列表显示草稿]
+    K --> L[可执行：编辑/上线/删除]
+    L -->|上线| J
+    
+    J --> M[活动列表显示生效中]
+    M --> N[可执行：编辑/复制/预览/下线]
+    N -->|下线| O[活动状态=已结束]
+</div>
+<script>mermaid.initialize({startOnLoad:true,theme:'default'});</script>
+</body>
+</html>

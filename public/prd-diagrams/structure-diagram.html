@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>产品结构图 - 会员日活动配置</title>
+<script src="https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js"></script>
+<script>if(typeof mermaid==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"><\/script>');}</script>
+<style>
+body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fff}
+h2{color:#333;text-align:center}
+.mermaid{margin:20px auto;text-align:center;max-width:1200px}
+</style>
+</head>
+<body>
+<h2>产品结构图 — 会员日活动配置</h2>
+<div class="mermaid">
+mindmap
+  root((会员日活动配置))
+    活动列表
+      活动筛选
+        按状态筛选
+        按分类筛选
+        按活动ID筛选
+        按名称搜索
+      活动操作
+        新建活动
+        编辑活动
+        上线/下线
+        删除
+        复制
+        预览H5
+    新建活动向导
+      步骤1 选择模板与基础信息
+        活动名称
+        活动分类
+        选择活动分模版
+        活动时间配置
+        选择活动组件
+      步骤2 填充组件素材
+        全局配置
+        氛围头图
+        规则弹窗
+        会员限时福利
+        会员专属礼
+        会员专属0元购
+        会员专属生活券包
+        吸底按钮
+</div>
+<script>mermaid.initialize({startOnLoad:true,theme:'default'});</script>
+</body>
+</html>
