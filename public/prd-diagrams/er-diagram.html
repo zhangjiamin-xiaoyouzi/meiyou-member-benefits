@@ -13,40 +13,17 @@ if(typeof mermaid==='undefined'){
 }
 </script>
 <style>
-body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fafafa}
-h2{color:#333;text-align:center;margin-bottom:6px;font-size:22px}
-.legend{text-align:center;color:#888;font-size:13px;margin-bottom:24px;display:flex;justify-content:center;gap:24px;align-items:center}
-.legend-item{display:flex;align-items:center;gap:6px}
-.legend-entity{width:28px;height:18px;background:#e8f4fd;border:2px solid #3b82f6;border-radius:3px}
-.legend-relation{width:18px;height:18px;background:#fef3c7;border:2px solid #f59e0b;transform:rotate(45deg);border-radius:2px}
-.legend-attr{width:28px;height:18px;background:#f0fdf4;border:2px solid #22c55e;border-radius:9px}
+body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fff}
+h2{color:#333;text-align:center;margin-bottom:30px;font-size:22px}
+.diagram-container{max-width:1100px;margin:0 auto}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   if(typeof mermaid!=='undefined'){
     mermaid.initialize({
       startOnLoad:true,
-      theme:'base',
-      themeVariables:{
-        primaryColor:'#e8f4fd',
-        primaryTextColor:'#1e3a5f',
-        primaryBorderColor:'#3b82f6',
-        lineColor:'#94a3b8',
-        secondaryColor:'#fef3c7',
-        secondaryBorderColor:'#f59e0b',
-        tertiaryColor:'#f0fdf4',
-        tertiaryBorderColor:'#22c55e',
-        fontSize:'14px',
-        fontFamily:'PingFang SC,Microsoft YaHei,system-ui',
-        edgeLabelBackground:'#fff'
-      },
-      flowchart:{
-        htmlLabels:true,
-        curve:'basis',
-        padding:16,
-        nodeSpacing:40,
-        rankSpacing:60,
-        diagramPadding:20,
+      theme:'default',
+      er:{
         useMaxWidth:true
       }
     });
@@ -56,71 +33,62 @@ document.addEventListener('DOMContentLoaded',function(){
 </head>
 <body>
 <h2>E-R图 — 会员日活动配置系统</h2>
-<div class="legend">
-  <span class="legend-item"><span class="legend-entity"></span>实体</span>
-  <span class="legend-item"><span class="legend-relation"></span>关系</span>
-  <span class="legend-item"><span class="legend-attr"></span>属性</span>
-  <span class="legend-item" style="color:#64748b">1/N/M = 基数</span>
-</div>
+<div class="diagram-container">
 <div class="mermaid">
-flowchart TB
-    %% ====== 实体样式 ======
-    classDef entity fill:#e8f4fd,stroke:#3b82f6,stroke-width:2.5px,color:#1e3a5f,font-weight:bold,font-size:15px,padding:8px
-    classDef relation fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e,font-weight:bold,font-size:13px
-    classDef attr fill:#f0fdf4,stroke:#22c55e,stroke-width:1.5px,color:#166534,font-size:12px
+erDiagram
+    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : "1:N 包含"
+    ACTIVITY }o--|| ACTIVITY_TEMPLATE : "N:1 基于"
+    ACTIVITY ||--o{ COMPONENT_CONFIG : "1:N 配置"
+    ACTIVITY ||--o{ AUDIENCE_GROUP : "1:N 划分"
+    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : "1:N 筛选"
+    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : "1:N 展示"
 
-    %% ====== 活动模板 ======
-    TMPL[活动模板]:::entity
-    TMPL --- T1(模板ID):::attr
-    TMPL --- T2(模板名称):::attr
-    TMPL --- T3(模板分类):::attr
-    TMPL --- T4(描述):::attr
+    ACTIVITY_TEMPLATE {
+        string 模板ID
+        string 模板名称
+        string 模板分类
+        string 描述
+    }
 
-    %% ====== 模板组件 ======
-    TCOMP[模板组件]:::entity
-    TCOMP --- TC1(组件ID):::attr
-    TCOMP --- TC2(组件名称):::attr
-    TCOMP --- TC3(组件标识):::attr
-    TCOMP --- TC4(是否必选):::attr
+    TEMPLATE_COMPONENT {
+        string 组件ID
+        string 组件名称
+        string 组件标识
+        string 是否必选
+    }
 
-    %% ====== 活动 ======
-    ACT[活动]:::entity
-    ACT --- A1(活动ID):::attr
-    ACT --- A2(活动名称):::attr
-    ACT --- A3(活动分类):::attr
-    ACT --- A4(状态):::attr
-    ACT --- A5(时间配置):::attr
+    ACTIVITY {
+        string 活动ID
+        string 活动名称
+        string 活动分类
+        string 状态
+        string 时间配置
+        string 组件开关
+    }
 
-    %% ====== 组件配置 ======
-    CCONF[组件配置]:::entity
-    CCONF --- CC1(所属组件标识):::attr
-    CCONF --- CC2(配置内容):::attr
+    COMPONENT_CONFIG {
+        string 所属组件标识
+        string 配置内容
+    }
 
-    %% ====== 客群分组 ======
-    GROUP[客群分组]:::entity
-    GROUP --- G1(分组ID):::attr
-    GROUP --- G2(分组名称):::attr
+    AUDIENCE_GROUP {
+        string 分组ID
+        string 分组名称
+    }
 
-    %% ====== 受众规则 ======
-    RULE[受众规则]:::entity
-    RULE --- R1(规则ID):::attr
-    RULE --- R2(筛选字段):::attr
-    RULE --- R3(运算符):::attr
-    RULE --- R4(规则值):::attr
+    AUDIENCE_RULE {
+        string 规则ID
+        string 筛选字段
+        string 运算符
+        string 规则值
+    }
 
-    %% ====== 货架商品 ======
-    SHELF[货架商品]:::entity
-    SHELF --- S1(商品ID):::attr
-    SHELF --- S2(是否主推):::attr
-    SHELF --- S3(排序):::attr
-
-    %% ====== 关系（菱形） + 基数 ======
-    TMPL -- "1" --> R1{包含}:::relation -- "N" --> TCOMP
-    ACT -- "N" --> R2{基于}:::relation -- "1" --> TMPL
-    ACT -- "1" --> R3{配置}:::relation -- "N" --> CCONF
-    ACT -- "1" --> R4{划分}:::relation -- "N" --> GROUP
-    GROUP -- "1" --> R5{筛选}:::relation -- "N" --> RULE
-    GROUP -- "1" --> R6{展示}:::relation -- "N" --> SHELF
+    SHELF_PRODUCT {
+        string 商品ID
+        string 是否主推
+        string 排序
+    }
+</div>
 </div>
 </body>
 </html>

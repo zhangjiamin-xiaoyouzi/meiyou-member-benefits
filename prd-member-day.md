@@ -64,30 +64,28 @@
 
 ```mermaid
 erDiagram
-    活动模板 ||--o{ 模板组件 : 包含
-    活动 }o--|| 活动模板 : 基于
-    活动 ||--o{ 客群分组 : 包含
-    活动 ||--o{ 组件配置 : 包含
-    客群分组 ||--o{ 受众规则 : 包含
-    客群分组 ||--o{ 货架商品 : 包含
-    货架商品 }o--o{ 营销策略补丁 : 挂载
+    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : "1:N 包含"
+    ACTIVITY }o--|| ACTIVITY_TEMPLATE : "N:1 基于"
+    ACTIVITY ||--o{ COMPONENT_CONFIG : "1:N 配置"
+    ACTIVITY ||--o{ AUDIENCE_GROUP : "1:N 划分"
+    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : "1:N 筛选"
+    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : "1:N 展示"
 
-    活动模板 {
+    ACTIVITY_TEMPLATE {
         string 模板ID
         string 模板名称
         string 模板分类
         string 描述
     }
 
-    模板组件 {
+    TEMPLATE_COMPONENT {
         string 组件ID
         string 组件名称
         string 组件标识
-        string 是否启用
         string 是否必选
     }
 
-    活动 {
+    ACTIVITY {
         string 活动ID
         string 活动名称
         string 活动分类
@@ -96,34 +94,27 @@ erDiagram
         string 组件开关
     }
 
-    组件配置 {
+    COMPONENT_CONFIG {
         string 所属组件标识
         string 配置内容
     }
 
-    客群分组 {
+    AUDIENCE_GROUP {
         string 分组ID
         string 分组名称
     }
 
-    受众规则 {
+    AUDIENCE_RULE {
         string 规则ID
         string 筛选字段
         string 运算符
         string 规则值
     }
 
-    货架商品 {
+    SHELF_PRODUCT {
         string 商品ID
         string 是否主推
         string 排序
-    }
-
-    营销策略补丁 {
-        string 补丁ID
-        string 补丁名称
-        string 补丁类型
-        string 配置
     }
 ```
 
