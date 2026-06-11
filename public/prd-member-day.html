@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PRD - 活动列表会员日模板功能</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
 <style>
 body{font-family:PingFang SC,Microsoft YaHei,system-ui,sans-serif;max-width:960px;margin:0 auto;padding:20px 24px;color:rgba(0,0,0,0.8);line-height:1.7;font-size:14px}
 h1{font-size:24px;font-weight:600;border-bottom:2px solid #ff4d88;padding-bottom:8px;margin:24px 0 16px;color:#ff4d88}
@@ -112,8 +112,8 @@ erDiagram
         string 组件ID
         string 组件名称
         string 组件标识
-        boolean 是否启用
-        boolean 是否必选
+        string 是否启用
+        string 是否必选
     }
 
     活动 {
@@ -121,13 +121,13 @@ erDiagram
         string 活动名称
         string 活动分类
         string 状态
-        json 时间配置
-        json 组件开关
+        string 时间配置
+        string组件开关
     }
 
     组件配置 {
         string 所属组件标识
-        json 配置内容
+        string配置内容
     }
 
     客群分组 {
@@ -144,15 +144,15 @@ erDiagram
 
     货架商品 {
         string 商品ID
-        boolean 是否主推
-        number 排序
+        string 是否主推
+        string 排序
     }
 
     营销策略补丁 {
         string 补丁ID
         string 补丁名称
         string 补丁类型
-        json 配置
+        string配置
     }
 </div>
 

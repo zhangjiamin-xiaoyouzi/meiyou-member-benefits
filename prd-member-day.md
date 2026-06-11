@@ -83,8 +83,8 @@ erDiagram
         string 组件ID
         string 组件名称
         string 组件标识
-        boolean 是否启用
-        boolean 是否必选
+        string 是否启用
+        string 是否必选
     }
 
     活动 {
@@ -92,13 +92,13 @@ erDiagram
         string 活动名称
         string 活动分类
         string 状态
-        json 时间配置
-        json 组件开关
+        string 时间配置
+        string 组件开关
     }
 
     组件配置 {
         string 所属组件标识
-        json 配置内容
+        string 配置内容
     }
 
     客群分组 {
@@ -115,15 +115,15 @@ erDiagram
 
     货架商品 {
         string 商品ID
-        boolean 是否主推
-        number 排序
+        string 是否主推
+        string 排序
     }
 
     营销策略补丁 {
         string 补丁ID
         string 补丁名称
         string 补丁类型
-        json 配置
+        string 配置
     }
 ```
 
