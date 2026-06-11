@@ -93,77 +93,60 @@ hr{border:none;border-top:1px solid #eee;margin:16px 0}
 </table>
 
 <h4>3.2 E-R图</h4>
+<p style="color:#999;font-size:13px;margin-bottom:12px">■ 实体（矩形）&emsp;◆ 关系（菱形）&emsp;┄ 属性（圆角矩形）&emsp;数字 = 基数</p>
 <div class="mermaid">
 flowchart TB
-    subgraph TMPL["📋 活动模板"]
-        direction LR
-        T1["模板ID"]
-        T2["模板名称"]
-        T3["模板分类"]
-        T4["描述"]
-    end
+    TMPL[活动模板]
+    TMPL --- T1(模板ID)
+    TMPL --- T2(模板名称)
+    TMPL --- T3(模板分类)
+    TMPL --- T4(描述)
 
-    subgraph COMP["🧩 模板组件"]
-        direction LR
-        C1["组件ID"]
-        C2["组件名称"]
-        C3["组件标识"]
-        C4["是否启用"]
-        C5["是否必选"]
-    end
+    TCOMP[模板组件]
+    TCOMP --- TC1(组件ID)
+    TCOMP --- TC2(组件名称)
+    TCOMP --- TC3(组件标识)
+    TCOMP --- TC4(是否必选)
 
-    subgraph ACT["🎯 活动"]
-        direction LR
-        A1["活动ID"]
-        A2["活动名称"]
-        A3["活动分类"]
-        A4["状态"]
-        A5["时间配置"]
-        A6["组件开关"]
-    end
+    ACT[活动]
+    ACT --- A1(活动ID)
+    ACT --- A2(活动名称)
+    ACT --- A3(活动分类)
+    ACT --- A4(状态)
+    ACT --- A5(时间配置)
 
-    subgraph CFG["⚙️ 组件配置"]
-        direction LR
-        F1["所属组件标识"]
-        F2["配置内容"]
-    end
+    CCONF[组件配置]
+    CCONF --- CC1(所属组件标识)
+    CCONF --- CC2(配置内容)
 
-    subgraph GRP["👥 客群分组"]
-        direction LR
-        G1["分组ID"]
-        G2["分组名称"]
-    end
+    GROUP[客群分组]
+    GROUP --- G1(分组ID)
+    GROUP --- G2(分组名称)
 
-    subgraph RULE["📐 受众规则"]
-        direction LR
-        R1["规则ID"]
-        R2["筛选字段"]
-        R3["运算符"]
-        R4["规则值"]
-    end
+    RULE[受众规则]
+    RULE --- R1(规则ID)
+    RULE --- R2(筛选字段)
+    RULE --- R3(运算符)
+    RULE --- R4(规则值)
 
-    subgraph PRD["🛒 货架商品"]
-        direction LR
-        P1["商品ID"]
-        P2["是否主推"]
-        P3["排序"]
-    end
+    SHELF[货架商品]
+    SHELF --- S1(商品ID)
+    SHELF --- S2(是否主推)
+    SHELF --- S3(排序)
 
-    subgraph PATCH["🏷️ 营销策略补丁"]
-        direction LR
-        H1["补丁ID"]
-        H2["补丁名称"]
-        H3["补丁类型"]
-        H4["配置"]
-    end
+    PATCH[营销策略补丁]
+    PATCH --- P1(补丁ID)
+    PATCH --- P2(补丁名称)
+    PATCH --- P3(补丁类型)
+    PATCH --- P4(配置)
 
-    TMPL -- "1:N 包含" --> COMP
-    ACT -- "N:1 基于" --> TMPL
-    ACT -- "1:N 包含" --> GRP
-    ACT -- "1:N 包含" --> CFG
-    GRP -- "1:N 包含" --> RULE
-    GRP -- "1:N 包含" --> PRD
-    PRD -- "N:M 挂载" --> PATCH
+    TMPL -- "1" --> R1{包含} -- "N" --> TCOMP
+    ACT -- "N" --> R2{基于} -- "1" --> TMPL
+    ACT -- "1" --> R3{配置} -- "N" --> CCONF
+    ACT -- "1" --> R4{划分} -- "N" --> GROUP
+    GROUP -- "1" --> R5{筛选} -- "N" --> RULE
+    GROUP -- "1" --> R6{展示} -- "N" --> SHELF
+    SHELF -- "N" --> R7{挂载} -- "M" --> PATCH
 </div>
 
 <h4>3.3 产品结构图</h4>
