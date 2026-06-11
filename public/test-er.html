@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ER Test</title>
+</head>
+<body>
+<h1>Test 1: Simple</h1>
+<pre class="mermaid">
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    CUSTOMER {
+        string name
+        string email
+    }
+    ORDER {
+        string order_id
+        string date
+    }
+</pre>
+<script type="module">
+import mermaid from 'https://cdn.bootcdn.net/ajax/libs/mermaid/10.9.1/mermaid.esm.min.mjs';
+mermaid.initialize({startOnLoad:true,theme:'default'});
+</script>
+</body>
+</html>

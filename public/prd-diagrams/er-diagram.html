@@ -1,138 +1,211 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>E-R图 — 会员日活动配置</title>
+<meta charset="utf-8">
+<title>E-R图 - 会员日模板功能</title>
 <style>
-body{font-family:PingFang SC,Microsoft YaHei,system-ui;margin:40px;background:#fff}
-h2{color:#333;text-align:center;margin-bottom:30px;font-size:22px}
-.diagram-container{max-width:1100px;margin:0 auto}
-.error-msg{color:#e53e3e;text-align:center;padding:40px;font-size:16px}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; padding: 40px; font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  h2 { text-align: center; margin-bottom: 30px; font-size: 20px; color: #333; }
+  .legend { display: flex; gap: 24px; justify-content: center; margin-bottom: 30px; font-size: 13px; color: #666; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-rect { width: 20px; height: 14px; border: 2px solid #3b82f6; background: #eff6ff; border-radius: 2px; }
+  .legend-diamond { width: 16px; height: 16px; border: 2px solid #f59e0b; background: #fffbeb; transform: rotate(45deg); }
+  .legend-oval { width: 20px; height: 14px; border: 2px solid #22c55e; background: #f0fdf4; border-radius: 10px; }
+  svg { display: block; margin: 0 auto; }
+  text { font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
 </style>
 </head>
 <body>
-<h2>E-R图 — 会员日活动配置系统</h2>
-<div class="diagram-container">
-<div id="mermaid-diagram" class="mermaid">
-erDiagram
-    ACTIVITY_TEMPLATE ||--o{ TEMPLATE_COMPONENT : "1:N 包含"
-    ACTIVITY }o--|| ACTIVITY_TEMPLATE : "N:1 基于"
-    ACTIVITY ||--o{ COMPONENT_CONFIG : "1:N 配置"
-    ACTIVITY ||--o{ AUDIENCE_GROUP : "1:N 划分"
-    AUDIENCE_GROUP ||--o{ AUDIENCE_RULE : "1:N 筛选"
-    AUDIENCE_GROUP ||--o{ SHELF_PRODUCT : "1:N 展示"
-
-    ACTIVITY_TEMPLATE {
-        string template_id
-        string template_name
-        string category
-        string description
-    }
-
-    TEMPLATE_COMPONENT {
-        string component_id
-        string component_name
-        string component_key
-        string is_required
-    }
-
-    ACTIVITY {
-        string activity_id
-        string activity_name
-        string category
-        string status
-        string time_config
-        string component_switch
-    }
-
-    COMPONENT_CONFIG {
-        string component_key
-        string config_content
-    }
-
-    AUDIENCE_GROUP {
-        string group_id
-        string group_name
-    }
-
-    AUDIENCE_RULE {
-        string rule_id
-        string filter_field
-        string operator
-        string rule_value
-    }
-
-    SHELF_PRODUCT {
-        string product_id
-        string is_featured
-        string sort_order
-    }
-</div>
-<div id="error-fallback" style="display:none">
-  <p class="error-msg">Mermaid 图表加载失败，请尝试刷新页面。</p>
-  <pre style="background:#f7f7f7;padding:20px;border-radius:8px;font-size:14px;overflow-x:auto">
-实体关系说明：
-
-活动模板(ACTIVITY_TEMPLATE) ──1:N──▶ 模板组件(TEMPLATE_COMPONENT)
-  关系：包含
-  活动模板属性：模板ID、模板名称、模板分类、描述
-  模板组件属性：组件ID、组件名称、组件标识、是否必选
-
-活动(ACTIVITY) ──N:1──▶ 活动模板(ACTIVITY_TEMPLATE)
-  关系：基于
-  活动属性：活动ID、活动名称、活动分类、状态、时间配置、组件开关
-
-活动(ACTIVITY) ──1:N──▶ 组件配置(COMPONENT_CONFIG)
-  关系：配置
-  组件配置属性：所属组件标识、配置内容
-
-活动(ACTIVITY) ──1:N──▶ 客群分组(AUDIENCE_GROUP)
-  关系：划分
-  客群分组属性：分组ID、分组名称
-
-客群分组(AUDIENCE_GROUP) ──1:N──▶ 受众规则(AUDIENCE_RULE)
-  关系：筛选
-  受众规则属性：规则ID、筛选字段、运算符、规则值
-
-客群分组(AUDIENCE_GROUP) ──1:N──▶ 货架商品(SHELF_PRODUCT)
-  关系：展示
-  货架商品属性：商品ID、是否主推、排序
-  </pre>
-</div>
+<h2>会员日模板功能 E-R 图</h2>
+<div class="legend">
+  <div class="legend-item"><div class="legend-rect"></div> 实体</div>
+  <div class="legend-item"><div class="legend-diamond"></div> 关系</div>
+  <div class="legend-item"><div class="legend-oval"></div> 属性</div>
 </div>
 
-<script>
-function loadMermaid(src) {
-  return new Promise(function(resolve, reject) {
-    var s = document.createElement('script');
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
+<svg width="1100" height="960" viewBox="0 0 1100 960">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/>
+    </marker>
+  </defs>
 
-var cdnList = [
-  'https://cdn.bootcdn.net/ajax/libs/mermaid/10.9.1/mermaid.min.js',
-  'https://cdn.staticfile.net/mermaid/10.9.1/mermaid.min.js',
-  'https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js',
-  'https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js'
-];
+  <!-- ========== 实体: 活动模板 ========== -->
+  <rect x="430" y="20" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="530" y="46" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">活动模板</text>
+  <!-- 属性 -->
+  <ellipse cx="250" cy="50" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="250" y="55" text-anchor="middle" font-size="12" fill="#166534">模板ID</text>
+  <line x1="305" y1="50" x2="430" y2="40" stroke="#94a3b8" stroke-width="1"/>
 
-function tryLoad(index) {
-  if (index >= cdnList.length) {
-    document.getElementById('mermaid-diagram').style.display = 'none';
-    document.getElementById('error-fallback').style.display = 'block';
-    return;
-  }
-  loadMermaid(cdnList[index]).then(function() {
-    mermaid.initialize({ startOnLoad: true, theme: 'default', er: { useMaxWidth: true } });
-  }).catch(function() {
-    tryLoad(index + 1);
-  });
-}
+  <ellipse cx="250" cy="90" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="250" y="95" text-anchor="middle" font-size="12" fill="#166534">模板名称</text>
+  <line x1="305" y1="90" x2="430" y2="45" stroke="#94a3b8" stroke-width="1"/>
 
-tryLoad(0);
-</script>
+  <ellipse cx="250" cy="130" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="250" y="135" text-anchor="middle" font-size="12" fill="#166534">模板分类</text>
+  <line x1="305" y1="125" x2="430" y2="50" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="810" cy="50" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="810" y="55" text-anchor="middle" font-size="12" fill="#166534">描述</text>
+  <line x1="755" y1="50" x2="630" y2="40" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 包含 (活动模板 → 模板组件) ========== -->
+  <polygon points="530,120 580,150 530,180 480,150" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="530" y="155" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">包含</text>
+  <line x1="530" y1="60" x2="530" y2="120" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="540" y="90" font-size="12" fill="#64748b" font-weight="600">1</text>
+  <line x1="530" y1="180" x2="530" y2="240" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="540" y="215" font-size="12" fill="#64748b" font-weight="600">N</text>
+
+  <!-- ========== 实体: 模板组件 ========== -->
+  <rect x="430" y="240" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="530" y="266" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">模板组件</text>
+  <!-- 属性 -->
+  <ellipse cx="250" cy="250" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="250" y="255" text-anchor="middle" font-size="12" fill="#166534">组件ID</text>
+  <line x1="305" y1="250" x2="430" y2="255" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="250" cy="290" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="250" y="295" text-anchor="middle" font-size="12" fill="#166534">组件名称</text>
+  <line x1="305" y1="285" x2="430" y2="265" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="810" cy="250" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="810" y="255" text-anchor="middle" font-size="12" fill="#166534">组件标识</text>
+  <line x1="755" y1="250" x2="630" y2="255" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="810" cy="290" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="810" y="295" text-anchor="middle" font-size="12" fill="#166534">是否必选</text>
+  <line x1="755" y1="285" x2="630" y2="265" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 基于 (活动 → 活动模板) ========== -->
+  <polygon points="290,390 340,420 290,450 240,420" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="290" y="425" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">基于</text>
+  <line x1="290" y1="390" x2="430" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="350" y="330" font-size="12" fill="#64748b" font-weight="600">N</text>
+  <text x="420" y="300" font-size="12" fill="#64748b" font-weight="600">1</text>
+
+  <!-- ========== 实体: 活动 ========== -->
+  <rect x="60" y="470" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="160" y="496" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">活动</text>
+  <!-- 属性 -->
+  <ellipse cx="60" cy="400" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="405" text-anchor="middle" font-size="12" fill="#166534">活动ID</text>
+  <line x1="80" y1="415" x2="100" y2="470" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="60" cy="440" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="445" text-anchor="middle" font-size="12" fill="#166534">活动名称</text>
+  <line x1="90" y1="435" x2="110" y2="475" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="60" cy="480" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="485" text-anchor="middle" font-size="12" fill="#166534">活动分类</text>
+  <line x1="115" y1="480" x2="60" y2="490" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="60" cy="520" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="525" text-anchor="middle" font-size="12" fill="#166534">状态</text>
+  <line x1="115" y1="520" x2="60" y2="500" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="60" cy="560" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="565" text-anchor="middle" font-size="12" fill="#166534">时间配置</text>
+  <line x1="115" y1="555" x2="120" y2="505" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="60" cy="600" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="60" y="605" text-anchor="middle" font-size="12" fill="#166534">组件开关</text>
+  <line x1="115" y1="595" x2="130" y2="505" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 配置 (活动 → 组件配置) ========== -->
+  <polygon points="350,540 400,570 350,600 300,570" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="350" y="575" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">配置</text>
+  <line x1="260" y1="500" x2="300" y2="560" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="270" y="520" font-size="12" fill="#64748b" font-weight="600">1</text>
+  <line x1="400" y1="570" x2="480" y2="570" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="430" y="563" font-size="12" fill="#64748b" font-weight="600">N</text>
+
+  <!-- ========== 实体: 组件配置 ========== -->
+  <rect x="480" y="550" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="580" y="576" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">组件配置</text>
+  <!-- 属性 -->
+  <ellipse cx="720" cy="540" rx="65" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="720" y="545" text-anchor="middle" font-size="12" fill="#166534">所属组件标识</text>
+  <line x1="665" y1="545" x2="680" y2="560" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="720" cy="580" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="720" y="585" text-anchor="middle" font-size="12" fill="#166534">配置内容</text>
+  <line x1="665" y1="578" x2="680" y2="575" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 划分 (活动 → 客群分组) ========== -->
+  <polygon points="200,660 250,690 200,720 150,690" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="200" y="695" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">划分</text>
+  <line x1="160" y1="510" x2="180" y2="660" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="155" y="580" font-size="12" fill="#64748b" font-weight="600">1</text>
+  <line x1="200" y1="720" x2="200" y2="780" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="210" y="755" font-size="12" fill="#64748b" font-weight="600">N</text>
+
+  <!-- ========== 实体: 客群分组 ========== -->
+  <rect x="100" y="780" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="200" y="806" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">客群分组</text>
+  <!-- 属性 -->
+  <ellipse cx="50" cy="770" rx="45" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="50" y="775" text-anchor="middle" font-size="12" fill="#166534">分组ID</text>
+  <line x1="85" y1="775" x2="100" y2="795" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="50" cy="810" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="50" y="815" text-anchor="middle" font-size="12" fill="#166534">分组名称</text>
+  <line x1="105" y1="810" x2="100" y2="805" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 筛选 (客群分组 → 受众规则) ========== -->
+  <polygon points="370,850 420,880 370,910 320,880" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="370" y="885" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">筛选</text>
+  <line x1="300" y1="810" x2="320" y2="870" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="298" y="840" font-size="12" fill="#64748b" font-weight="600">1</text>
+  <line x1="420" y1="880" x2="530" y2="880" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="470" y="873" font-size="12" fill="#64748b" font-weight="600">N</text>
+
+  <!-- ========== 实体: 受众规则 ========== -->
+  <rect x="530" y="860" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="630" y="886" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">受众规则</text>
+  <!-- 属性 -->
+  <ellipse cx="780" cy="830" rx="45" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="780" y="835" text-anchor="middle" font-size="12" fill="#166534">规则ID</text>
+  <line x1="740" y1="838" x2="730" y2="870" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="790" cy="870" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="790" y="875" text-anchor="middle" font-size="12" fill="#166534">筛选字段</text>
+  <line x1="740" y1="870" x2="730" y2="875" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="790" cy="910" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="790" y="915" text-anchor="middle" font-size="12" fill="#166534">运算符</text>
+  <line x1="740" y1="905" x2="730" y2="892" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="790" cy="950" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="790" y="955" text-anchor="middle" font-size="12" fill="#166534">规则值</text>
+  <line x1="740" y1="945" x2="730" y2="895" stroke="#94a3b8" stroke-width="1"/>
+
+  <!-- ========== 关系: 展示 (客群分组 → 货架商品) ========== -->
+  <polygon points="200,850 250,880 200,910 150,880" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+  <text x="200" y="885" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">展示</text>
+  <line x1="200" y1="820" x2="200" y2="850" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="210" y="840" font-size="12" fill="#64748b" font-weight="600">1</text>
+  <line x1="250" y1="880" x2="330" y2="920" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="290" y="893" font-size="12" fill="#64748b" font-weight="600">N</text>
+
+  <!-- ========== 实体: 货架商品 ========== -->
+  <rect x="330" y="910" width="200" height="40" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="430" y="936" text-anchor="middle" font-size="15" font-weight="600" fill="#1e40af">货架商品</text>
+  <!-- 属性 -->
+  <ellipse cx="370" cy="950" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="370" y="955" text-anchor="middle" font-size="12" fill="#166534">商品ID</text>
+  <line x1="370" y1="935" x2="380" y2="950" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="490" cy="950" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="490" y="955" text-anchor="middle" font-size="12" fill="#166534">是否主推</text>
+  <line x1="490" y1="935" x2="480" y2="950" stroke="#94a3b8" stroke-width="1"/>
+
+  <ellipse cx="430" cy="950" rx="55" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="430" y="955" text-anchor="middle" font-size="12" fill="#166534">排序</text>
+  <line x1="430" y1="935" x2="430" y2="910" stroke="#94a3b8" stroke-width="1"/>
+</svg>
+
 </body>
 </html>
