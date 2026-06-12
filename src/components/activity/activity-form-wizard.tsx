@@ -955,11 +955,11 @@ function StepComponentConfig({
   };
 
   return (
-    <div className="flex gap-6">
-      {/* 左侧快捷目录（HTML5 Drag 排序） */}
-      <div className="w-48 shrink-0">
-        <div className="sticky top-4">
-          <h4 className="text-xs font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-2">组件目录</h4>
+    <div className="relative">
+      {/* 右侧悬浮组件目录 */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-30 w-44">
+        <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-lg px-2 py-3">
+          <h4 className="text-[11px] font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-1">组件目录</h4>
           <nav className="space-y-0.5">
             {enabledComponents.map((comp) => (
               <DraggableNavItem
@@ -970,7 +970,7 @@ function StepComponentConfig({
             ))}
           </nav>
           {availableComponents.length > 0 && (
-            <div className="mt-3 px-2 relative">
+            <div className="mt-2 px-1 relative">
               <button
                 type="button"
                 className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
@@ -988,8 +988,8 @@ function StepComponentConfig({
         </div>
       </div>
 
-      {/* 右侧组件列表（dnd-kit 拖拽排序） */}
-      <div className="flex-1 min-w-0">
+      {/* 组件列表（dnd-kit 拖拽排序） */}
+      <div className="mr-52">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
@@ -1009,7 +1009,7 @@ function StepComponentConfig({
         </DndContext>
       </div>
 
-      {/* 添加组件下拉菜单（fixed定位，避免被侧边栏裁切） */}
+      {/* 添加组件下拉菜单（在悬浮目录左侧弹出） */}
       {addMenuOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
@@ -1017,7 +1017,7 @@ function StepComponentConfig({
             className="fixed z-50 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-xl overflow-hidden"
             style={{
               top: addMenuPosition.y + 4,
-              left: addMenuPosition.left,
+              left: addMenuPosition.left - 248,
               width: 240,
             }}
           >
