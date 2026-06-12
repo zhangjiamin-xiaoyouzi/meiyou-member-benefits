@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Activity, ComponentConfigs, GlobalConfig, FlashSaleConfig, WelfareProductConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig, StatusButtonConfig } from '@/lib/types';
+import type { Activity, ComponentConfigs, GlobalConfig, FlashSaleConfig, BenefitConfig, FreePurchaseConfig, RulePopupConfig, ActionButtonConfig, StatusButtonConfig } from '@/lib/types';
 
 /** 将 snake_case 深度转为 camelCase */
 function toCamelCaseDeep(obj: unknown): unknown {
@@ -112,34 +112,27 @@ export default function ActivityPreviewPage() {
     );
   };
 
-  /** 渲染通用福利商品组件 */
-  const renderWelfareProduct = () => {
-    const wpConfigs = Object.entries(configs)
-      .filter(([key]) => key.startsWith('wp_'))
-      .map(([, val]) => val as WelfareProductConfig);
-    if (!wpConfigs.length) return null;
+  /** 渲染会员专属生活券包/会员专属礼 */
+  const renderBenefit = (key: string, title: string) => {
+    const cfg = configs[key as keyof ComponentConfigs] as BenefitConfig | undefined;
+    if (!cfg) return null;
+    const isDouble = cfg.products?.some(p => p.displayMode === 'double-column');
     return (
-      <>
-        {wpConfigs.map((cfg, idx) => {
-          const isDouble = cfg.products?.some(p => p.displayMode === 'double-column');
-          return (
-            <div key={idx} className="w-full">
-              <div className="px-3 py-2">
-                <div className={isDouble ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
-                  {cfg.products?.map((product) => (
-                    <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
-                      {product.benefitImage && (
-                        <img src={product.benefitImage} alt="" className="w-full h-24 object-cover" />
-                      )}
-                      <div className="p-1.5 text-[10px] text-gray-600 text-center">商品ID: {product.productId}</div>
-                    </div>
-                  ))}
-                </div>
+      <div key={key} className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
+        <div className="px-3 py-2">
+          <div className="text-center text-xs font-semibold text-orange-500 mb-2">{title}</div>
+          <div className={isDouble ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
+            {cfg.products?.map((product) => (
+              <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
+                {product.benefitImage && (
+                  <img src={product.benefitImage} alt="" className="w-full h-24 object-cover" />
+                )}
+                <div className="p-1.5 text-[10px] text-gray-600 text-center">商品ID: {product.productId}</div>
               </div>
-            </div>
-          );
-        })}
-      </>
+            ))}
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -256,7 +249,8 @@ export default function ActivityPreviewPage() {
   const componentRenderers: Record<string, () => React.ReactNode> = {
     header_banner: renderHeaderBanner,
     flash_sale: renderFlashSale,
-    welfare_product: renderWelfareProduct,
+    free_benefit: () => renderBenefit('free_benefit', '会员专属生活券包'),
+    exclusive_gift: () => renderBenefit('exclusive_gift', '会员专属礼'),
     free_purchase: renderFreePurchase,
     rule_popup: renderRulePopup,
     cta_button: renderCtaButton,
