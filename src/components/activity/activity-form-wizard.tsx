@@ -1,7 +1,26 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { GripVertical, Plus } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,8 +42,6 @@ import {
   Check,
   Puzzle,
   Settings2,
-  GripVertical,
-  Plus,
   X,
   Image,
   Upload,
@@ -330,16 +347,17 @@ function StepBasicInfo({
   data,
   onChange,
   isEdit,
+  hideComponentsSection,
 }: {
   data: Step1Data;
   onChange: (data: Step1Data) => void;
   isEdit: boolean;
+  hideComponentsSection?: boolean;
 }) {
   const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
   // 活动分类已改为 促活/转化/拉新，模板分类仍保留原值
 
-  const [compDragIndex, setCompDragIndex] = useState<number | null>(null);
   const [allCategories, setAllCategories] = useState<string[]>(defaultCategories);
   const [categoryInput, setCategoryInput] = useState(data.category);
   const [categoryOpen, setCategoryOpen] = useState(false);
@@ -366,24 +384,6 @@ function StepBasicInfo({
       category: template?.category || '',
       components: template ? template.components.map((c) => ({ ...c })) : [],
     });
-  };
-
-  const handleCompDragStart = (index: number) => {
-    setCompDragIndex(index);
-  };
-
-  const handleCompDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (compDragIndex === null || compDragIndex === index) return;
-    const newComps = [...data.components];
-    const item = newComps.splice(compDragIndex, 1)[0];
-    newComps.splice(index, 0, item);
-    onChange({ ...data, components: newComps });
-    setCompDragIndex(index);
-  };
-
-  const handleCompDragEnd = () => {
-    setCompDragIndex(null);
   };
 
   const handleToggleComponent = (compKey: string) => {
@@ -590,86 +590,107 @@ function StepBasicInfo({
         </div>
       </div>
 
-      {/* 限时福利（组件开关） */}
-      {data.components.length > 0 && (
-        <div>
-          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">选择活动组件</Label>
-          <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
-            控制模板内各组件的显隐，必选组件不可关闭
-          </p>
-          <div className="rounded-lg border border-[var(--color-meiyou-border)] overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-meiyou-bg border-b border-[var(--color-meiyou-border)]">
-                  <th className="w-8 px-2 py-2"></th>
-                  <th className="text-left text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2">组件名称</th>
-                  <th className="text-left text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2">说明</th>
-                  <th className="text-center text-xs font-medium text-[var(--color-meiyou-text-secondary)] px-3 py-2 w-20">状态</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.components.map((comp, index) => (
-                  <tr
-                    key={comp.id}
-                    draggable
-                    onDragStart={() => handleCompDragStart(index)}
-                    onDragOver={(e) => handleCompDragOver(e, index)}
-                    onDragEnd={handleCompDragEnd}
-                    className={`border-b border-[var(--color-meiyou-divider)] last:border-b-0 transition-opacity ${
-                      compDragIndex === index ? 'opacity-50' : 'opacity-100'
-                    } ${compDragIndex !== null && compDragIndex !== index ? 'border-t-2 border-t-meiyou/40' : ''}`}
-                  >
-                    <td className="px-2 py-2 cursor-grab active:cursor-grabbing">
-                      <GripVertical className="h-4 w-4 text-[var(--color-meiyou-border)] hover:text-[var(--color-meiyou-text-secondary)]" />
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
-                          {comp.required ? (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-[var(--color-meiyou)]/8 text-[var(--color-meiyou)] border-[var(--color-meiyou)]/20">
-                              必选
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-gray-50 text-[var(--color-meiyou-text-placeholder)] border-[var(--color-meiyou-border)]">
-                              非必选
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 leading-relaxed">{comp.description}</p>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <Switch
-                        checked={comp.enabled}
-                        disabled={comp.required}
-                        className={`data-[state=checked]:bg-meiyou data-[state=unchecked]:bg-gray-200 ${comp.required ? 'opacity-70 cursor-not-allowed' : ''}`}
-                        onCheckedChange={() => handleToggleComponent(comp.key)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
 
-// ==================== Step 2: 组件配置 ====================
+// ==================== 可拖拽排序组件项 ====================
+
+function SortableComponentItem({
+  id,
+  comp,
+  children,
+  onRemove,
+}: {
+  id: string;
+  comp: TemplateComponent;
+  children: React.ReactNode;
+  onRemove?: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const [collapsed, setCollapsed] = useState(false);
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : 'auto' as never,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="border-[var(--color-meiyou-border)]">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {/* 拖拽手柄 */}
+              <button
+                type="button"
+                className="cursor-grab active:cursor-grabbing p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                {...attributes}
+                {...listeners}
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
+              <CardTitle className="text-sm flex items-center gap-2">
+                {comp.name}
+              </CardTitle>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                comp.required
+                  ? 'bg-[var(--color-meiyou)]/10 text-[var(--color-meiyou)]'
+                  : 'bg-gray-100 text-gray-500'
+              }`}>
+                {comp.required ? '必选' : '非必选'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              {/* 折叠/展开 */}
+              <button
+                type="button"
+                className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                onClick={() => setCollapsed(!collapsed)}
+              >
+                {collapsed
+                  ? <ChevronDown className="h-4 w-4" />
+                  : <ChevronUp className="h-4 w-4" />
+                }
+              </button>
+              {/* 删除按钮（非必选组件才显示） */}
+              {!comp.required && onRemove && (
+                <button
+                  type="button"
+                  className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
+                  onClick={onRemove}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+          <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 ml-7">{comp.description}</p>
+        </CardHeader>
+        {!collapsed && <CardContent>{children}</CardContent>}
+      </Card>
+    </div>
+  );
+}
+
+// ==================== 组件配置区域（单页面，支持添加+拖拽排序） ====================
 
 function StepComponentConfig({
   data,
   onChange,
   components,
+  onComponentsChange,
 }: {
   data: Step2Data;
   onChange: (data: Step2Data) => void;
   components: TemplateComponent[];
+  onComponentsChange: (components: TemplateComponent[]) => void;
 }) {
   const configs = data.componentConfigs;
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
 
   const updateConfig = (key: keyof ComponentConfigs, value: ComponentConfigs[keyof ComponentConfigs]) => {
     onChange({
@@ -678,197 +699,252 @@ function StepComponentConfig({
     });
   };
 
-  // 判断组件是否启用
-  const isComponentEnabled = (key: string) => components.some((c) => c.key === key && c.enabled);
+  // 已添加的组件（enabled 的）
+  const enabledComponents = components.filter((c) => c.enabled);
+  // 可添加的组件（非必选且未启用的）
+  const availableComponents = components.filter((c) => !c.required && !c.enabled);
 
-  return (
-    <div className="space-y-6">
-      <p className="text-sm text-[var(--color-meiyou-text-secondary)]">
-        对已启用的组件进行详细配置，关闭的组件无需配置
-      </p>
+  // 添加组件
+  const handleAddComponent = (comp: TemplateComponent) => {
+    const updated = components.map((c) =>
+      c.key === comp.key ? { ...c, enabled: true } : c
+    );
+    onComponentsChange(updated);
+    setAddMenuOpen(false);
+  };
 
-      {/* 全局配置 */}
-      <GlobalConfigCard
-        config={configs.global_config || { ...defaultGlobalConfig }}
-        onChange={(val) => updateConfig('global_config', val)}
-      />
+  // 移除组件
+  const handleRemoveComponent = (compKey: string) => {
+    const updated = components.map((c) =>
+      c.key === compKey ? { ...c, enabled: false } : c
+    );
+    onComponentsChange(updated);
+  };
 
-      {/* 氛围头图 */}
-      {isComponentEnabled('header_banner') && (
-        <Card className="border-[var(--color-meiyou-border)]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-              氛围头图
-            </CardTitle>
-            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">顶部活动氛围图片</p>
-          </CardHeader>
-          <CardContent>
-            {(() => {
-              const cfg = configs.header_banner || { imageUrl: '' };
-              return (
-                <ImageUploadField
-                  label="氛围头图"
-                  value={cfg.imageUrl}
-                  onChange={(val) => updateConfig('header_banner', { ...cfg, imageUrl: val })}
+  // 拖拽排序
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = enabledComponents.findIndex((c) => c.key === active.id);
+    const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
+
+    // 重建 components 数组：必选组件保持原序，enabled 组件按新序
+    const requiredComps = components.filter((c) => c.required);
+    const updated = [...requiredComps, ...newEnabled];
+    onComponentsChange(updated);
+  };
+
+  // 渲染单个组件的配置内容
+  const renderComponentContent = (compKey: string) => {
+    switch (compKey) {
+      case 'global_config':
+        return (
+          <GlobalConfigCard
+            config={configs.global_config || { ...defaultGlobalConfig }}
+            onChange={(val) => updateConfig('global_config', val)}
+          />
+        );
+      case 'header_banner':
+        return (() => {
+          const cfg = configs.header_banner || { imageUrl: '' };
+          return (
+            <ImageUploadField
+              label="氛围头图"
+              value={cfg.imageUrl}
+              onChange={(val) => updateConfig('header_banner', { ...cfg, imageUrl: val })}
+            />
+          );
+        })();
+      case 'rule_popup':
+        return (() => {
+          const cfg: RulePopupConfig = configs.rule_popup || { iconImage: '', ruleRichText: '' };
+          return (
+            <div className="space-y-4">
+              <ImageUploadField
+                label="规则Icon图片"
+                value={cfg.iconImage}
+                onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
+              />
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文案</Label>
+                <RichTextEditor
+                  value={cfg.ruleRichText}
+                  onChange={(val) => updateConfig('rule_popup', { ...cfg, ruleRichText: val })}
+                  placeholder="请输入活动规则文案，支持富文本编辑..."
                 />
-              );
-            })()}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 规则弹窗 */}
-      {isComponentEnabled('rule_popup') && (
-        <Card className="border-[var(--color-meiyou-border)]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-              规则弹窗
-            </CardTitle>
-            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">活动规则说明弹窗</p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {(() => {
-              const cfg: RulePopupConfig = configs.rule_popup || { iconImage: '', ruleRichText: '' };
-              return (
-                <>
-                  <ImageUploadField
-                    label="规则Icon图片"
-                    value={cfg.iconImage}
-                    onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
-                  />
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文案</Label>
-                    <RichTextEditor
-                      value={cfg.ruleRichText}
-                      onChange={(val) => updateConfig('rule_popup', { ...cfg, ruleRichText: val })}
-                      placeholder="请输入活动规则文案，支持富文本编辑..."
-                    />
+              </div>
+            </div>
+          );
+        })();
+      case 'flash_sale':
+        return (
+          <FlashSaleConfigCard
+            config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
+            onChange={(val) => updateConfig('flash_sale', val)}
+          />
+        );
+      case 'exclusive_gift':
+        return (
+          <BenefitConfigCard
+            title="会员专属礼"
+            description="配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）"
+            config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            onChange={(val) => updateConfig('exclusive_gift', val)}
+          />
+        );
+      case 'free_purchase':
+        return (
+          <FreePurchaseConfigCard
+            config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            onChange={(val) => updateConfig('free_purchase', val)}
+          />
+        );
+      case 'free_benefit':
+        return (
+          <BenefitConfigCard
+            title="会员专属生活券包"
+            description="配置会员专属生活券包（如：美团外卖红包、古茗88折券）"
+            config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            onChange={(val) => updateConfig('free_benefit', val)}
+          />
+        );
+      case 'cta_button':
+        return (() => {
+          const cfg: ActionButtonConfig = configs.cta_button || {
+            nonMember: { buttonText: '', buttonColor: '', jumpLink: '' },
+            memberBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
+            memberNotBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
+          };
+          const updateStatus = (status: 'nonMember' | 'memberBooked' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
+            updateConfig('cta_button', {
+              ...cfg,
+              [status]: { ...cfg[status], [field]: value },
+            });
+          };
+          const statuses: { key: 'nonMember' | 'memberBooked' | 'memberNotBooked'; label: string; desc: string }[] = [
+            { key: 'nonMember', label: '非会员', desc: '未开通会员的用户看到的按钮' },
+            { key: 'memberNotBooked', label: '会员未预约', desc: '已开通会员但未预约的用户看到的按钮' },
+            { key: 'memberBooked', label: '会员已预约', desc: '已预约成功的会员看到的按钮' },
+          ];
+          return (
+            <div className="space-y-4">
+              {statuses.map(({ key, label, desc }) => (
+                <div key={key} className="border border-[var(--color-meiyou-divider)] rounded-lg p-3 space-y-3">
+                  <div>
+                    <p className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{label}</p>
+                    <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">{desc}</p>
                   </div>
-                </>
-              );
-            })()}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 会员限时福利 */}
-      {isComponentEnabled('flash_sale') && (
-        <FlashSaleConfigCard
-          config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
-          onChange={(val) => updateConfig('flash_sale', val)}
-        />
-      )}
-
-      {/* 会员专属礼 */}
-      {isComponentEnabled('exclusive_gift') && (
-        <BenefitConfigCard
-          title="会员专属礼"
-          description="配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）"
-          config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('exclusive_gift', val)}
-        />
-      )}
-
-      {/* 会员专属0元购 */}
-      {isComponentEnabled('free_purchase') && (
-        <FreePurchaseConfigCard
-          config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('free_purchase', val)}
-        />
-      )}
-
-      {/* 会员专属生活券包 */}
-      {isComponentEnabled('free_benefit') && (
-        <BenefitConfigCard
-          title="会员专属生活券包"
-          description="配置会员专属生活券包（如：美团外卖红包、古茗88折券）"
-          config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
-          onChange={(val) => updateConfig('free_benefit', val)}
-        />
-      )}
-
-      {/* 吸底按钮 */}
-      {isComponentEnabled('cta_button') && (
-        <Card className="border-[var(--color-meiyou-border)]">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <MousePointerClick className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-              吸底按钮
-            </CardTitle>
-            <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">对会员与非会员配置按钮与跳转链接</p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {(() => {
-              const cfg: ActionButtonConfig = configs.cta_button || {
-                nonMember: { buttonText: '', buttonColor: '', jumpLink: '' },
-                memberBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
-                memberNotBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
-              };
-              const updateStatus = (status: 'nonMember' | 'memberBooked' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
-                updateConfig('cta_button', {
-                  ...cfg,
-                  [status]: { ...cfg[status], [field]: value },
-                });
-              };
-              const statuses: { key: 'nonMember' | 'memberBooked' | 'memberNotBooked'; label: string; desc: string }[] = [
-                { key: 'nonMember', label: '非会员', desc: '未开通会员的用户看到的按钮' },
-                { key: 'memberNotBooked', label: '会员未预约', desc: '已开通会员但未预约的用户看到的按钮' },
-                { key: 'memberBooked', label: '会员已预约', desc: '已预约成功的会员看到的按钮' },
-              ];
-              return (
-                <div className="space-y-4">
-                  {statuses.map(({ key, label, desc }) => (
-                    <div key={key} className="border border-[var(--color-meiyou-divider)] rounded-lg p-3 space-y-3">
-                      <div>
-                        <p className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{label}</p>
-                        <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">{desc}</p>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="space-y-1">
-                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
-                          <Input
-                            placeholder="如：立即开通"
-                            value={cfg[key].buttonText}
-                            onChange={(e) => updateStatus(key, 'buttonText', e.target.value)}
-                            className="h-8 text-xs"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</Label>
-                          <div className="flex gap-2 items-center">
-                            <input
-                              type="color"
-                              value={cfg[key].buttonColor || '#ff4d88'}
-                              onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
-                              className="h-8 w-8 rounded border border-[var(--color-meiyou-border)] cursor-pointer"
-                            />
-                            <Input
-                              value={cfg[key].buttonColor || '#ff4d88'}
-                              onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
-                              className="h-8 text-xs flex-1"
-                              placeholder="#ff4d88"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
-                          <Input
-                            placeholder="https://"
-                            value={cfg[key].jumpLink}
-                            onChange={(e) => updateStatus(key, 'jumpLink', e.target.value)}
-                            className="h-8 text-xs"
-                          />
-                        </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
+                      <Input
+                        placeholder="如：立即开通"
+                        value={cfg[key].buttonText}
+                        onChange={(e) => updateStatus(key, 'buttonText', e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</Label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="color"
+                          value={cfg[key].buttonColor || '#ff4d88'}
+                          onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
+                          className="h-8 w-8 rounded border border-[var(--color-meiyou-border)] cursor-pointer"
+                        />
+                        <Input
+                          value={cfg[key].buttonColor || '#ff4d88'}
+                          onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
+                          className="h-8 text-xs flex-1"
+                          placeholder="#ff4d88"
+                        />
                       </div>
                     </div>
-                  ))}
+                    <div className="space-y-1">
+                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
+                      <Input
+                        placeholder="https://"
+                        value={cfg[key].jumpLink}
+                        onChange={(e) => updateStatus(key, 'jumpLink', e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  </div>
                 </div>
-              );
-            })()}
-          </CardContent>
-        </Card>
+              ))}
+            </div>
+          );
+        })();
+      default:
+        return <p className="text-xs text-gray-400">暂无配置项</p>;
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 已添加组件列表（可拖拽排序） */}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-4">
+            {enabledComponents.map((comp) => (
+              <SortableComponentItem
+                key={comp.key}
+                id={comp.key}
+                comp={comp}
+                onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+              >
+                {renderComponentContent(comp.key)}
+              </SortableComponentItem>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      {/* 添加组件按钮 */}
+      {availableComponents.length > 0 && (
+        <div className="relative">
+          <button
+            type="button"
+            className="w-full flex items-center justify-center gap-2 h-10 border-2 border-dashed border-[var(--color-meiyou-border)] rounded-lg text-sm text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
+            onClick={() => setAddMenuOpen(!addMenuOpen)}
+          >
+            <Plus className="h-4 w-4" />
+            添加组件
+          </button>
+          {addMenuOpen && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-lg z-50 overflow-hidden">
+              {availableComponents.map((comp) => (
+                <button
+                  key={comp.key}
+                  type="button"
+                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
+                  onClick={() => handleAddComponent(comp)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
+                    <Plus className="h-3.5 w-3.5 text-[var(--color-meiyou)]" />
+                  </div>
+                  <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">{comp.description}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 点击外部关闭添加菜单 */}
+      {addMenuOpen && (
+        <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
       )}
     </div>
   );
@@ -1693,7 +1769,10 @@ interface ActivityFormWizardProps {
 export default function ActivityFormWizard({ editId, initialData }: ActivityFormWizardProps) {
   const router = useRouter();
   const isEdit = !!editId;
-  const [currentStep, setCurrentStep] = useState(1);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const [step1Data, setStep1Data] = useState<Step1Data>(() => {
     if (initialData) {
@@ -1777,17 +1856,53 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     return { componentConfigs: {} };
   });
 
-  const canProceed = () => {
-    if (currentStep === 1) {
-      return (
-        step1Data.templateId !== '' &&
-        step1Data.name !== '' &&
-        step1Data.category !== '' &&
-        step1Data.sellStartTime !== '' &&
-        step1Data.bufferEndTime !== ''
-      );
+  const isFormValid = () => {
+    return (
+      step1Data.templateId !== '' &&
+      step1Data.name !== '' &&
+      step1Data.category !== '' &&
+      step1Data.sellStartTime !== '' &&
+      step1Data.bufferEndTime !== ''
+    );
+  };
+
+  const enabledComponents = step1Data.components.filter((c) => c.enabled);
+
+  const addComponent = (comp: TemplateComponent) => {
+    setStep1Data((prev) => ({
+      ...prev,
+      components: [...prev.components, { ...comp, enabled: true }],
+    }));
+  };
+
+  const removeComponent = (compKey: string) => {
+    setStep1Data((prev) => ({
+      ...prev,
+      components: prev.components.filter((c) => c.key !== compKey),
+    }));
+  };
+
+  const moveComponent = (oldIndex: number, newIndex: number) => {
+    setStep1Data((prev) => {
+      const newComps = [...prev.components];
+      const [moved] = newComps.splice(oldIndex, 1);
+      newComps.splice(newIndex, 0, moved);
+      return { ...prev, components: newComps };
+    });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = enabledComponents.findIndex((c) => c.key === active.id);
+      const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        // Map enabled index back to full components array
+        const fullOldIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[oldIndex].key);
+        const fullNewIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[newIndex].key);
+        moveComponent(fullOldIndex, fullNewIndex);
+      }
     }
-    return true;
   };
 
   const handlePublish = async () => {
@@ -1865,54 +1980,25 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
 
       </div>
 
-      {/* 步骤条 */}
-      <div className="flex items-center justify-center gap-0">
-        {stepConfig.map((step, index) => {
-          const StepIcon = step.icon;
-          const isCompleted = currentStep > step.num;
-          const isCurrent = currentStep === step.num;
-          return (
-            <div key={step.num} className="flex items-center">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                    isCompleted
-                      ? 'bg-meiyou text-white'
-                      : isCurrent
-                        ? 'bg-meiyou text-white'
-                        : 'bg-meiyou-bg text-[var(--color-meiyou-text-secondary)]'
-                  }`}
-                >
-                  {isCompleted ? <Check className="h-4 w-4" /> : step.num}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <StepIcon className={`h-4 w-4 ${isCurrent ? 'text-meiyou' : isCompleted ? 'text-meiyou' : 'text-[var(--color-meiyou-text-placeholder)]'}`} />
-                  <span className={`text-sm ${isCurrent ? 'text-[var(--color-meiyou-text-primary)] font-medium' : isCompleted ? 'text-meiyou' : 'text-[var(--color-meiyou-text-placeholder)]'}`}>
-                    {step.label}
-                  </span>
-                </div>
-              </div>
-              {index < stepConfig.length - 1 && (
-                <div className={`w-16 h-0.5 mx-3 ${isCompleted ? 'bg-meiyou' : 'bg-meiyou-bg'}`} />
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* 步骤内容 */}
+      {/* 单页配置：基础信息 + 活动组件 */}
       <Card>
-        <CardContent className="pt-6">
-          {currentStep === 1 && (
-            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} />
-          )}
-          {currentStep === 2 && (
+        <CardContent className="pt-6 space-y-6">
+          {/* 基础信息 */}
+          <div>
+            <h3 className="text-base font-semibold text-[var(--color-meiyou-text-primary)] mb-4 pb-2 border-b border-[var(--color-meiyou-divider)]">基础信息</h3>
+            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} hideComponentsSection />
+          </div>
+
+          {/* 活动组件 */}
+          <div>
+            <h3 className="text-base font-semibold text-[var(--color-meiyou-text-primary)] mb-4 pb-2 border-b border-[var(--color-meiyou-divider)]">活动组件</h3>
             <StepComponentConfig
               data={step2Data}
               onChange={setStep2Data}
               components={step1Data.components}
+              onComponentsChange={(comps) => setStep1Data((prev) => ({ ...prev, components: comps }))}
             />
-          )}
+          </div>
         </CardContent>
       </Card>
 
@@ -1921,39 +2007,22 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         <Button
           variant="outline"
           className="border-[var(--color-meiyou-divider)]"
-          onClick={() => {
-            if (currentStep === 1) {
-              router.push('/activities');
-            } else {
-              setCurrentStep((prev) => prev - 1);
-            }
-          }}
+          onClick={() => router.push('/activities')}
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          {currentStep === 1 ? '返回列表' : '上一步'}
+          返回列表
         </Button>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="border-[var(--color-meiyou-divider)]">
             保存草稿
           </Button>
-          {currentStep < 2 ? (
-            <Button
-              className="bg-meiyou hover:bg-meiyou-hover text-white"
-              disabled={!canProceed()}
-              onClick={() => setCurrentStep((prev) => prev + 1)}
-            >
-              下一步
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button
-              className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
-              onClick={handlePublish}
-            >
-              <Check className="mr-1 h-4 w-4" />
-              {isEdit ? '保存修改' : '发布活动'}
-            </Button>
-          )}
+          <Button
+            className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
+            onClick={handlePublish}
+          >
+            <Check className="mr-1 h-4 w-4" />
+            {isEdit ? '保存修改' : '发布活动'}
+          </Button>
         </div>
       </div>
     </div>
