@@ -62,7 +62,6 @@ import type {
   GlobalConfig,
   HeaderBannerConfig,
   WelfareProductConfig,
-  WelfareProductInstance,
   WelfareProductItem,
   FreePurchaseConfig,
   ActionButtonConfig,
@@ -685,7 +684,7 @@ function DraggableNavItem({
       }`}
       draggable
       onDragStart={(e) => {
-        e.dataTransfer.setData('text/plain', comp.key);
+        e.dataTransfer.setData('text/plain', comp.id);
         e.dataTransfer.effectAllowed = 'move';
       }}
       onDragOver={(e) => {
@@ -697,9 +696,9 @@ function DraggableNavItem({
       onDrop={(e) => {
         e.preventDefault();
         setIsDragOver(false);
-        const dragKey = e.dataTransfer.getData('text/plain');
-        if (dragKey && dragKey !== comp.key) {
-          onReorder(dragKey, comp.key);
+        const dragId = e.dataTransfer.getData('text/plain');
+        if (dragId && dragId !== comp.id) {
+          onReorder(dragId, comp.id);
         }
       }}
     >
@@ -710,7 +709,7 @@ function DraggableNavItem({
         type="button"
         className="flex-1 text-left truncate"
         onClick={() => {
-          const el = document.getElementById(`comp-section-${comp.key}`);
+          const el = document.getElementById(`comp-section-${comp.id}`);
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }}
       >
@@ -738,7 +737,7 @@ function StepComponentConfig({
   const [pendingAddKeys, setPendingAddKeys] = useState<Set<string>>(new Set());
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
 
-  const updateConfig = (key: keyof ComponentConfigs, value: ComponentConfigs[keyof ComponentConfigs]) => {
+  const updateConfig = (key: string, value: unknown) => {
     onChange({
       ...data,
       componentConfigs: { ...configs, [key]: value },
@@ -747,41 +746,76 @@ function StepComponentConfig({
 
   // 已添加的组件（enabled 的）
   const enabledComponents = components.filter((c) => c.enabled);
-  // 可添加的组件（非必选且未启用的）
-  const availableComponents = components.filter((c) => !c.required && !c.enabled);
+  // 可添加的组件（非必选且未启用的，welfare_product 去重只显示一个）
+  const availableComponents = (() => {
+    const seen = new Set<string>();
+    return components.filter((c) => {
+      if (c.required || c.enabled) return false;
+      if (c.key === 'welfare_product') {
+        // 检查是否已达上限
+        const wpCount = components.filter((x) => x.key === 'welfare_product' && x.enabled).length;
+        const maxCount = c.maxCount || 5;
+        if (wpCount >= maxCount) return false;
+        if (seen.has('welfare_product')) return false;
+        seen.add('welfare_product');
+      }
+      return true;
+    });
+  })();
 
-  // 添加组件（单个）
+  // 添加组件
   const handleAddComponent = (comp: TemplateComponent) => {
-    const updated = components.map((c) =>
-      c.key === comp.key ? { ...c, enabled: true } : c
-    );
-    onComponentsChange(updated);
-    // Initialize default config for welfare_product
     if (comp.key === 'welfare_product') {
-      updateConfig('welfare_product', {
-        instances: [
-          { instanceId: `wp_${Date.now()}_1`, instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
-          { instanceId: `wp_${Date.now()}_2`, instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
-        ],
-      } as unknown as ComponentConfigs['welfare_product']);
+      const wpCount = components.filter((x) => x.key === 'welfare_product' && x.enabled).length;
+      const maxCount = comp.maxCount || 5;
+      if (wpCount >= maxCount) return;
+      const newId = `comp_wp_${Date.now()}`;
+      const defaultName = wpCount === 0 ? '会员专属礼' : wpCount === 1 ? '会员专属生活券包' : `福利分组${wpCount + 1}`;
+      const newComp: TemplateComponent = { ...comp, id: newId, name: defaultName, enabled: true };
+      const updated = [...components, newComp];
+      onComponentsChange(updated);
+      updateConfig(newId, {
+        instanceName: defaultName,
+        products: [],
+        displayMode: 'single',
+        buttonTheme: 'pink',
+      });
+    } else {
+      const updated = components.map((c) =>
+        c.key === comp.key ? { ...c, enabled: true } : c
+      );
+      onComponentsChange(updated);
     }
   };
 
   // 批量添加组件
   const handleBatchAddComponents = () => {
     if (pendingAddKeys.size === 0) return;
-    const updated = components.map((c) =>
-      pendingAddKeys.has(c.key) ? { ...c, enabled: true } : c
-    );
+    let updated = [...components];
+    const newConfigs: Record<string, unknown> = {};
+    for (const key of pendingAddKeys) {
+      if (key === 'welfare_product') {
+        const wpCount = updated.filter((x) => x.key === 'welfare_product' && x.enabled).length;
+        const maxCount = 5;
+        if (wpCount < maxCount) {
+          const comp = components.find((c) => c.key === 'welfare_product');
+          if (comp) {
+            const newId = `comp_wp_${Date.now()}_${wpCount}`;
+            const defaultName = wpCount === 0 ? '会员专属礼' : wpCount === 1 ? '会员专属生活券包' : `福利分组${wpCount + 1}`;
+            const newComp: TemplateComponent = { ...comp, id: newId, name: defaultName, enabled: true };
+            updated = [...updated, newComp];
+            newConfigs[newId] = { instanceName: defaultName, products: [], displayMode: 'single', buttonTheme: 'pink' };
+          }
+        }
+      } else {
+        updated = updated.map((c) =>
+          c.key === key ? { ...c, enabled: true } : c
+        );
+      }
+    }
     onComponentsChange(updated);
-    // Initialize default config for welfare_product if being added
-    if (pendingAddKeys.has('welfare_product')) {
-      updateConfig('welfare_product', {
-        instances: [
-          { instanceId: `wp_${Date.now()}_1`, instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
-          { instanceId: `wp_${Date.now()}_2`, instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
-        ],
-      } as unknown as ComponentConfigs['welfare_product']);
+    if (Object.keys(newConfigs).length > 0) {
+      onChange({ ...data, componentConfigs: { ...configs, ...newConfigs } });
     }
     setPendingAddKeys(new Set());
     setAddMenuOpen(false);
@@ -801,11 +835,19 @@ function StepComponentConfig({
   };
 
   // 移除组件
-  const handleRemoveComponent = (compKey: string) => {
-    const updated = components.map((c) =>
-      c.key === compKey ? { ...c, enabled: false } : c
-    );
-    onComponentsChange(updated);
+  const handleRemoveComponent = (compId: string) => {
+    const comp = components.find((c) => c.id === compId);
+    if (!comp) return;
+    if (comp.key === 'welfare_product') {
+      // 删除整个 welfare_product 实例
+      const updated = components.filter((c) => c.id !== compId);
+      onComponentsChange(updated);
+    } else {
+      const updated = components.map((c) =>
+        c.id === compId ? { ...c, enabled: false } : c
+      );
+      onComponentsChange(updated);
+    }
   };
 
   // 拖拽排序
@@ -816,10 +858,10 @@ function StepComponentConfig({
 
   // 将排序后的 enabled 列表合并回完整的 components 数组（保留 disabled 组件的原始位置）
   const mergeReorderedEnabled = (newEnabled: TemplateComponent[]) => {
-    const enabledSet = new Set(newEnabled.map((c) => c.key));
+    const enabledIdSet = new Set(newEnabled.map((c) => c.id));
     let enabledIdx = 0;
     return components.map((c) => {
-      if (enabledSet.has(c.key)) {
+      if (enabledIdSet.has(c.id)) {
         return newEnabled[enabledIdx++];
       }
       return c;
@@ -830,8 +872,8 @@ function StepComponentConfig({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = enabledComponents.findIndex((c) => c.key === active.id);
-    const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
+    const oldIndex = enabledComponents.findIndex((c) => c.id === active.id);
+    const newIndex = enabledComponents.findIndex((c) => c.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
@@ -839,16 +881,19 @@ function StepComponentConfig({
   };
 
   // 导航栏拖拽排序回调
-  const handleNavReorder = (dragKey: string, overKey: string) => {
-    const oldIndex = enabledComponents.findIndex((c) => c.key === dragKey);
-    const newIndex = enabledComponents.findIndex((c) => c.key === overKey);
+  const handleNavReorder = (dragId: string, overId: string) => {
+    const oldIndex = enabledComponents.findIndex((c) => c.id === dragId);
+    const newIndex = enabledComponents.findIndex((c) => c.id === overId);
     if (oldIndex === -1 || newIndex === -1) return;
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(mergeReorderedEnabled(newEnabled));
   };
 
   // 渲染单个组件的配置内容
-  const renderComponentContent = (compKey: string) => {
+  const renderComponentContent = (comp: { id: string; key: string; name: string; enabled: boolean; required: boolean; description?: string; maxCount?: number }) => {
+    const compKey = comp.key;
+    // For welfare_product, use component id as config key
+    const configKey = compKey === 'welfare_product' ? comp.id : compKey;
     switch (compKey) {
       case 'global_config':
         return (
@@ -892,8 +937,15 @@ function StepComponentConfig({
       case 'welfare_product':
         return (
           <WelfareProductCard
-            config={configs.welfare_product || { instances: [] }}
-            onChange={(val) => updateConfig('welfare_product', val)}
+            componentName={comp.name}
+            onNameChange={(newName) => {
+              const updatedComps = enabledComponents.map(c =>
+                c.id === comp.id ? { ...c, name: newName } : c
+              );
+              onComponentsChange(updatedComps);
+            }}
+            config={(configs as Record<string, WelfareProductConfig>)[configKey] || { products: [] }}
+            onChange={(val) => updateConfig(configKey, val)}
           />
         );
       case 'free_purchase':
@@ -985,7 +1037,7 @@ function StepComponentConfig({
           <nav className="space-y-0.5">
             {enabledComponents.map((comp) => (
               <DraggableNavItem
-                key={comp.key}
+                key={comp.id}
                 comp={comp}
                 onReorder={handleNavReorder}
               />
@@ -1013,17 +1065,17 @@ function StepComponentConfig({
       {/* 组件列表（dnd-kit 拖拽排序） */}
       <div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={enabledComponents.map((c) => c.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
               {enabledComponents.map((comp) => (
                   <SortableComponentItem
-                    key={comp.key}
-                    id={comp.key}
-                    sectionId={`comp-section-${comp.key}`}
+                    key={comp.id}
+                    id={comp.id}
+                    sectionId={`comp-section-${comp.id}`}
                     comp={comp}
-                    onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+                    onRemove={!comp.required ? () => handleRemoveComponent(comp.id) : undefined}
                   >
-                    {renderComponentContent(comp.key)}
+                    {renderComponentContent(comp)}
                   </SortableComponentItem>
                 ))}
             </div>
@@ -1452,37 +1504,19 @@ function GlobalConfigCard({
 const MAX_WELFARE_INSTANCES = 5;
 
 function WelfareProductCard({
+  componentName,
+  onNameChange,
   config,
   onChange,
 }: {
+  componentName: string;
+  onNameChange: (name: string) => void;
   config: WelfareProductConfig;
   onChange: (config: WelfareProductConfig) => void;
 }) {
-  const instances = config.instances || [];
+  const products = config.products || [];
 
-  const addInstance = () => {
-    if (instances.length >= MAX_WELFARE_INSTANCES) return;
-    const newInstance: WelfareProductInstance = {
-      instanceId: `wpi_${Date.now()}`,
-      instanceName: `福利分组${instances.length + 1}`,
-      moduleBgImage: '',
-      products: [],
-    };
-    onChange({ ...config, instances: [...instances, newInstance] });
-  };
-
-  const removeInstance = (instanceId: string) => {
-    onChange({ ...config, instances: instances.filter((i) => i.instanceId !== instanceId) });
-  };
-
-  const updateInstance = (instanceId: string, updates: Partial<WelfareProductInstance>) => {
-    onChange({
-      ...config,
-      instances: instances.map((i) => (i.instanceId === instanceId ? { ...i, ...updates } : i)),
-    });
-  };
-
-  const addProduct = (instanceId: string) => {
+  const addProduct = () => {
     const newProduct: WelfareProductItem = {
       id: `wp_${Date.now()}`,
       productId: '',
@@ -1491,195 +1525,150 @@ function WelfareProductCard({
       sortOrder: 0,
       audienceRules: [],
     };
-    updateInstance(instanceId, {
-      products: [...(instances.find((i) => i.instanceId === instanceId)?.products || []), newProduct],
+    onChange({ ...config, products: [...products, newProduct] });
+  };
+
+  const removeProduct = (productId: string) => {
+    onChange({ ...config, products: products.filter((p) => p.id !== productId) });
+  };
+
+  const updateProduct = (productId: string, updates: Partial<WelfareProductItem>) => {
+    onChange({
+      ...config,
+      products: products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
     });
   };
 
-  const removeProduct = (instanceId: string, productId: string) => {
-    const inst = instances.find((i) => i.instanceId === instanceId);
-    if (!inst) return;
-    updateInstance(instanceId, {
-      products: inst.products.filter((p) => p.id !== productId),
-    });
-  };
-
-  const updateProduct = (instanceId: string, productId: string, updates: Partial<WelfareProductItem>) => {
-    const inst = instances.find((i) => i.instanceId === instanceId);
-    if (!inst) return;
-    updateInstance(instanceId, {
-      products: inst.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
-    });
-  };
-
-  const moveProduct = (instanceId: string, productId: string, direction: 'up' | 'down') => {
-    const inst = instances.find((i) => i.instanceId === instanceId);
-    if (!inst) return;
-    const idx = inst.products.findIndex((p) => p.id === productId);
+  const moveProduct = (productId: string, direction: 'up' | 'down') => {
+    const idx = products.findIndex((p) => p.id === productId);
     if (idx < 0) return;
-    const newProducts = [...inst.products];
+    const newProducts = [...products];
     if (direction === 'up' && idx > 0) {
       [newProducts[idx - 1], newProducts[idx]] = [newProducts[idx], newProducts[idx - 1]];
     } else if (direction === 'down' && idx < newProducts.length - 1) {
       [newProducts[idx], newProducts[idx + 1]] = [newProducts[idx + 1], newProducts[idx]];
     }
-    updateInstance(instanceId, { products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
+    onChange({ ...config, products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
   };
 
   return (
-    <div className="space-y-6">
-      {instances.map((inst, instIdx) => (
-        <div key={inst.instanceId} className="border border-[var(--color-meiyou-border)] rounded-lg p-4 space-y-4 bg-white">
-          {/* 组件名称 */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-[var(--color-meiyou-text-secondary)] shrink-0">组件名称</span>
-            <Input
-              className="h-8 text-sm flex-1"
-              value={inst.instanceName}
-              onChange={(e) => updateInstance(inst.instanceId, { instanceName: e.target.value })}
-              placeholder="输入组件名称"
-            />
-            {instances.length > 1 && (
+    <div className="space-y-4">
+      {/* 组件名称 */}
+      <div>
+        <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">组件名称</Label>
+        <Input
+          value={componentName}
+          onChange={(e) => onNameChange(e.target.value)}
+          placeholder="输入组件名称"
+          className="mt-1 bg-white border-[var(--color-meiyou-border)] rounded-lg h-9 text-sm focus:ring-meiyou/30 focus:border-meiyou"
+        />
+      </div>
+      {/* 商品列表 */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
+            商品列表
+            <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({products.length}个)</span>
+          </span>
+          <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
+            <Plus className="h-3 w-3 mr-1" />
+            添加商品
+          </Button>
+        </div>
+
+        {products.length === 0 && (
+          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
+            暂无商品，点击"添加商品"开始配置
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {products.map((product, idx) => (
+            <div
+              key={product.id}
+              className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-meiyou-bg/50"
+            >
+              {/* 排序控制 */}
+              <div className="flex flex-col gap-0.5 pt-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-5 w-5 p-0"
+                  disabled={idx === 0}
+                  onClick={() => moveProduct(product.id, 'up')}
+                >
+                  <ChevronLeft className="h-3 w-3 rotate-90" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-5 w-5 p-0"
+                  disabled={idx === products.length - 1}
+                  onClick={() => moveProduct(product.id, 'down')}
+                >
+                  <ChevronLeft className="h-3 w-3 -rotate-90" />
+                </Button>
+              </div>
+
+              {/* 商品字段 */}
+              <div className="flex-1 space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
+                    <WelfareSelect
+                      value={product.productId}
+                      onChange={(val) => updateProduct(product.id, { productId: val })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      placeholder="输入图片URL"
+                      value={product.benefitImage}
+                      onChange={(e) => updateProduct(product.id, { benefitImage: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
+                    <Select
+                      value={product.displayMode}
+                      onValueChange={(val) =>
+                        updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' })
+                      }
+                    >
+                      <SelectTrigger className="mt-1 h-8 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="horizontal">横图</SelectItem>
+                        <SelectItem value="double-column">双列</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {/* 受众规则 */}
+                <div className="pl-0">
+                  <AudienceRuleEditor
+                    rules={product.audienceRules}
+                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
+                  />
+                </div>
+              </div>
+
+              {/* 删除按钮 */}
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 shrink-0"
-                onClick={() => removeInstance(inst.instanceId)}
+                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1 shrink-0"
+                onClick={() => removeProduct(product.id)}
               >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
-
-          {/* 模块背景图 */}
-          <ImageUploadField
-            label="模块背景图"
-            value={inst.moduleBgImage}
-            onChange={(val) => updateInstance(inst.instanceId, { moduleBgImage: val })}
-          />
-
-          <Separator />
-
-          {/* 商品列表 */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
-                商品列表
-                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({inst.products.length}个)</span>
-              </span>
-              <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={() => addProduct(inst.instanceId)}>
-                <Plus className="h-3 w-3 mr-1" />
-                添加商品
+                <X className="h-3.5 w-3.5" />
               </Button>
             </div>
-
-            {inst.products.length === 0 && (
-              <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-                暂无商品，点击"添加商品"开始配置
-              </div>
-            )}
-
-            <div className="space-y-3">
-              {inst.products.map((product, idx) => (
-                <div
-                  key={product.id}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-meiyou-bg/50"
-                >
-                  {/* 排序控制 */}
-                  <div className="flex flex-col gap-0.5 pt-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === 0}
-                      onClick={() => moveProduct(inst.instanceId, product.id, 'up')}
-                    >
-                      <ChevronLeft className="h-3 w-3 rotate-90" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === inst.products.length - 1}
-                      onClick={() => moveProduct(inst.instanceId, product.id, 'down')}
-                    >
-                      <ChevronLeft className="h-3 w-3 -rotate-90" />
-                    </Button>
-                  </div>
-
-                  {/* 商品字段 */}
-                  <div className="flex-1 space-y-3">
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
-                        <WelfareSelect
-                          value={product.productId}
-                          onChange={(val) => updateProduct(inst.instanceId, product.id, { productId: val })}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
-                        <Input
-                          className="mt-1 h-8 text-sm"
-                          placeholder="输入图片URL"
-                          value={product.benefitImage}
-                          onChange={(e) => updateProduct(inst.instanceId, product.id, { benefitImage: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
-                        <Select
-                          value={product.displayMode}
-                          onValueChange={(val) =>
-                            updateProduct(inst.instanceId, product.id, { displayMode: val as 'horizontal' | 'double-column' })
-                          }
-                        >
-                          <SelectTrigger className="mt-1 h-8 text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="horizontal">横图</SelectItem>
-                            <SelectItem value="double-column">双列</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    {/* 受众规则 */}
-                    <div className="pl-0">
-                      <AudienceRuleEditor
-                        rules={product.audienceRules}
-                        onRulesChange={(rules) => updateProduct(inst.instanceId, product.id, { audienceRules: rules })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 删除按钮 */}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1 shrink-0"
-                    onClick={() => removeProduct(inst.instanceId, product.id)}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
-      ))}
-
-      {/* 添加福利分组按钮 */}
-      {instances.length < MAX_WELFARE_INSTANCES && (
-        <Button
-          variant="outline"
-          className="w-full border-dashed border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:text-meiyou hover:border-meiyou h-10"
-          onClick={addInstance}
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          添加福利分组（还可添加{MAX_WELFARE_INSTANCES - instances.length}组）
-        </Button>
-      )}
+      </div>
     </div>
   );
 }

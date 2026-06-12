@@ -114,18 +114,19 @@ export default function ActivityPreviewPage() {
 
   /** 渲染通用福利商品组件 */
   const renderWelfareProduct = () => {
-    const cfg = configs.welfare_product as WelfareProductConfig | undefined;
-    if (!cfg || !cfg.instances?.length) return null;
+    const wpConfigs = Object.entries(configs)
+      .filter(([key]) => key.startsWith('wp_'))
+      .map(([, val]) => val as WelfareProductConfig);
+    if (!wpConfigs.length) return null;
     return (
       <>
-        {cfg.instances.map((inst) => {
-          const isDouble = inst.products?.some(p => p.displayMode === 'double-column');
+        {wpConfigs.map((cfg, idx) => {
+          const isDouble = cfg.products?.some(p => p.displayMode === 'double-column');
           return (
-            <div key={inst.instanceId} className="w-full">
+            <div key={idx} className="w-full">
               <div className="px-3 py-2">
-                <div className="text-center text-xs font-semibold text-orange-500 mb-2">{inst.instanceName}</div>
                 <div className={isDouble ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
-                  {inst.products?.map((product) => (
+                  {cfg.products?.map((product) => (
                     <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm">
                       {product.benefitImage && (
                         <img src={product.benefitImage} alt="" className="w-full h-24 object-cover" />

@@ -13,6 +13,7 @@ export interface TemplateComponent {
   description: string;
   enabled: boolean;
   required: boolean; // 是否必选组件（不可关闭）
+  maxCount?: number; // 可重复添加的最大数量（如通用福利商品最多5组）
 }
 
 export interface Template {
@@ -186,17 +187,10 @@ export interface WelfareProductItem {
   audienceRules: ComponentAudienceRule[];
 }
 
-/** 通用福利商品 - 单个分组实例 */
-export interface WelfareProductInstance {
-  instanceId: string;
-  instanceName: string;
-  moduleBgImage: string;
-  products: WelfareProductItem[];
-}
-
-/** 通用福利商品配置 */
+/** 通用福利商品配置（单个组件实例） */
 export interface WelfareProductConfig {
-  instances: WelfareProductInstance[];
+  componentName: string;
+  products: WelfareProductItem[];
 }
 
 /** 会员专属0元购配置 */
@@ -231,10 +225,10 @@ export interface ComponentConfigs {
   global_config?: GlobalConfig;
   header_banner?: HeaderBannerConfig;
   flash_sale?: FlashSaleConfig;
-  welfare_product?: WelfareProductConfig;
   free_purchase?: FreePurchaseConfig;
   rule_popup?: RulePopupConfig;
   cta_button?: ActionButtonConfig;
+  [key: `wp_${string}`]: WelfareProductConfig; // 动态福利商品实例键，如 wp_001
 }
 
 export interface Activity {
