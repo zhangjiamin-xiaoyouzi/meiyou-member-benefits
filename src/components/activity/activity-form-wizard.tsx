@@ -736,6 +736,7 @@ function StepComponentConfig({
 }) {
   const configs = data.componentConfigs;
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [pendingAddKeys, setPendingAddKeys] = useState<Set<string>>(new Set());
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
 
   const updateConfig = (key: keyof ComponentConfigs, value: ComponentConfigs[keyof ComponentConfigs]) => {
@@ -750,13 +751,36 @@ function StepComponentConfig({
   // 可添加的组件（非必选且未启用的）
   const availableComponents = components.filter((c) => !c.required && !c.enabled);
 
-  // 添加组件
+  // 添加组件（单个）
   const handleAddComponent = (comp: TemplateComponent) => {
     const updated = components.map((c) =>
       c.key === comp.key ? { ...c, enabled: true } : c
     );
     onComponentsChange(updated);
+  };
+
+  // 批量添加组件
+  const handleBatchAddComponents = () => {
+    if (pendingAddKeys.size === 0) return;
+    const updated = components.map((c) =>
+      pendingAddKeys.has(c.key) ? { ...c, enabled: true } : c
+    );
+    onComponentsChange(updated);
+    setPendingAddKeys(new Set());
     setAddMenuOpen(false);
+  };
+
+  // 切换待添加选中态
+  const togglePendingAdd = (key: string) => {
+    setPendingAddKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
   };
 
   // 移除组件
@@ -1009,7 +1033,7 @@ function StepComponentConfig({
       {/* 添加组件下拉菜单（在悬浮目录左侧弹出） */}
       {addMenuOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={() => { setAddMenuOpen(false); setPendingAddKeys(new Set()); }} />
           <div
             className="fixed z-50 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-xl overflow-hidden"
             style={{
@@ -1021,19 +1045,37 @@ function StepComponentConfig({
             <div className="px-3 py-2 border-b border-[var(--color-meiyou-divider)] bg-gray-50">
               <span className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">选择要添加的组件</span>
             </div>
-            {availableComponents.map((comp) => (
-              <button
-                key={comp.key}
-                type="button"
-                className="w-full px-3 py-2.5 text-left hover:bg-[rgba(255,77,136,0.04)] transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
-                onClick={() => handleAddComponent(comp)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
-                  <Plus className="h-3 w-3 text-[var(--color-meiyou)]" />
-                </div>
-              </button>
-            ))}
+            <div className="max-h-60 overflow-y-auto">
+              {availableComponents.map((comp) => {
+                const checked = pendingAddKeys.has(comp.key);
+                return (
+                  <button
+                    key={comp.key}
+                    type="button"
+                    className={`w-full px-3 py-2.5 text-left transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0 ${checked ? 'bg-[rgba(255,77,136,0.08)]' : 'hover:bg-[rgba(255,77,136,0.04)]'}`}
+                    onClick={() => togglePendingAdd(comp.key)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`h-4 w-4 rounded border flex items-center justify-center shrink-0 ${checked ? 'bg-[var(--color-meiyou)] border-[var(--color-meiyou)]' : 'border-gray-300'}`}>
+                        {checked && <Check className="h-3 w-3 text-white" />}
+                      </div>
+                      <span className={`text-xs font-medium ${checked ? 'text-[var(--color-meiyou)]' : 'text-[var(--color-meiyou-text-primary)]'}`}>{comp.name}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {pendingAddKeys.size > 0 && (
+              <div className="px-3 py-2 border-t border-[var(--color-meiyou-divider)] bg-gray-50">
+                <button
+                  type="button"
+                  className="w-full h-8 bg-[var(--color-meiyou)] hover:bg-[var(--color-meiyou-hover)] text-white text-xs font-medium rounded-md transition-colors"
+                  onClick={handleBatchAddComponents}
+                >
+                  确认添加（{pendingAddKeys.size}）
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
