@@ -504,11 +504,6 @@ function StepBasicInfo({
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="py-0.5 px-2.5 pb-1.5">
-                    <div className="text-[11px] text-[var(--color-meiyou-text-placeholder)]">
-                      {template.components.length} 个组件
-                    </div>
-                  </CardContent>
                 </Card>
               );
             })}
