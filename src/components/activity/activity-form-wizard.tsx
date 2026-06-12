@@ -64,6 +64,9 @@ import type {
   WelfareProductConfig,
   WelfareProductItem,
   FreePurchaseConfig,
+  FlashSaleConfig,
+  FlashSaleProduct,
+  TimeSession,
   ActionButtonConfig,
   StatusButtonConfig,
   RulePopupConfig,
@@ -948,6 +951,13 @@ function StepComponentConfig({
             onChange={(val) => updateConfig(configKey, val)}
           />
         );
+      case 'flash_sale':
+        return (
+          <FlashSaleConfigCard
+            config={configs.flash_sale || { moduleBgImage: '', products: [] }}
+            onConfigChange={(val) => updateConfig('flash_sale', val)}
+          />
+        );
       case 'free_purchase':
         return (
           <FreePurchaseConfigCard
@@ -1203,9 +1213,11 @@ interface WelfareItem {
 function WelfareSelect({
   value,
   onChange,
+  placeholder = '选择福利',
 }: {
   value: string;
   onChange: (val: string) => void;
+  placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -1244,7 +1256,7 @@ function WelfareSelect({
         ) : value ? (
           <span className="flex-1 truncate">{value}</span>
         ) : (
-          <span className="flex-1 text-[var(--color-meiyou-text-placeholder)]">选择福利</span>
+          <span className="flex-1 text-[var(--color-meiyou-text-placeholder)]">{placeholder}</span>
         )}
         <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
       </div>
@@ -1669,6 +1681,247 @@ function WelfareProductCard({
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** 会员限时福利配置卡片 */
+function FlashSaleConfigCard({
+  config,
+  onConfigChange,
+}: {
+  config: FlashSaleConfig;
+  onConfigChange: (config: FlashSaleConfig) => void;
+}) {
+  const products = config.products || [];
+
+  const addProduct = () => {
+    onConfigChange({
+      ...config,
+      products: [
+        ...products,
+        {
+          id: `p_${Date.now()}`,
+          productId: '',
+          stock: '',
+          rushImage: '',
+          benefitImage: '',
+          popupImage: '',
+          jumpLink: '',
+          timeSessions: [],
+          audienceRules: [],
+        } as FlashSaleProduct,
+      ],
+    });
+  };
+
+  const removeProduct = (index: number) => {
+    onConfigChange({
+      ...config,
+      products: products.filter((_: FlashSaleProduct, i: number) => i !== index),
+    });
+  };
+
+  const updateProduct = (index: number, field: string, value: string | TimeSession[] | ComponentAudienceRule[]) => {
+    const updated = [...products];
+    updated[index] = { ...updated[index], [field]: value };
+    onConfigChange({ ...config, products: updated });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 模块背景图 */}
+      <div>
+        <Label className="text-sm text-foreground/80">模块背景图</Label>
+        <div className="mt-1.5">
+          <Input
+            value={config.moduleBgImage || ''}
+            onChange={(e) => onConfigChange({ ...config, moduleBgImage: e.target.value })}
+            placeholder="输入模块背景图URL"
+            className="w-full"
+          />
+        </div>
+      </div>
+
+      {/* 商品列表 */}
+      <div className="flex items-center justify-between">
+        <Label className="text-sm text-foreground/80">限时福利商品</Label>
+        <Button type="button" variant="outline" size="sm" onClick={addProduct}>
+          <Plus className="h-3 w-3 mr-1" /> 添加商品
+        </Button>
+      </div>
+
+      {products.map((product: FlashSaleProduct, index: number) => (
+        <Card key={product.id} className="border border-dashed border-border/60">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground/80">商品 {index + 1}</span>
+              <Button type="button" variant="ghost" size="sm" onClick={() => removeProduct(index)} className="text-destructive hover:text-destructive h-6 px-2">
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+
+            <div>
+              <Label className="text-xs text-foreground/60">商品ID</Label>
+              <div className="mt-1">
+                <WelfareSelect
+                  value={product.productId}
+                  onChange={(val: string) => updateProduct(index, 'productId', val)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-foreground/60">库存</Label>
+                <Input
+                  value={product.stock}
+                  onChange={(e) => updateProduct(index, 'stock', e.target.value)}
+                  placeholder="库存数量"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-foreground/60">跳转链接</Label>
+                <Input
+                  value={product.jumpLink}
+                  onChange={(e) => updateProduct(index, 'jumpLink', e.target.value)}
+                  placeholder="跳转链接"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-foreground/60">抢购图</Label>
+                <Input
+                  value={product.rushImage}
+                  onChange={(e) => updateProduct(index, 'rushImage', e.target.value)}
+                  placeholder="抢购图URL"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-foreground/60">权益图</Label>
+                <Input
+                  value={product.benefitImage}
+                  onChange={(e) => updateProduct(index, 'benefitImage', e.target.value)}
+                  placeholder="权益图URL"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs text-foreground/60">弹窗图</Label>
+              <Input
+                value={product.popupImage}
+                onChange={(e) => updateProduct(index, 'popupImage', e.target.value)}
+                placeholder="弹窗图URL"
+                className="mt-1"
+              />
+            </div>
+
+            {/* 时段配置 */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <Label className="text-xs text-foreground/60">抢购时段</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const sessions = [...(product.timeSessions || [])];
+                    sessions.push({ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' });
+                    updateProduct(index, 'timeSessions', sessions);
+                  }}
+                  className="h-5 px-1.5 text-xs text-primary"
+                >
+                  <Plus className="h-3 w-3 mr-0.5" /> 添加时段
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {(product.timeSessions || []).map((session: TimeSession, si: number) => (
+                  <div key={session.id || si} className="space-y-1.5 rounded-md border border-border/40 p-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-foreground/50">时段 {si + 1}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const sessions = (product.timeSessions || []).filter((_: TimeSession, i: number) => i !== si);
+                          updateProduct(index, 'timeSessions', sessions);
+                        }}
+                        className="h-5 w-5 p-0 text-destructive hover:text-destructive shrink-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs text-foreground/40">预约开始</Label>
+                        <Input
+                          type="time"
+                          value={session.bookingStartTime}
+                          onChange={(e) => {
+                            const sessions = [...(product.timeSessions || [])];
+                            sessions[si] = { ...sessions[si], bookingStartTime: e.target.value };
+                            updateProduct(index, 'timeSessions', sessions);
+                          }}
+                          className="mt-0.5"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-foreground/40">预约结束</Label>
+                        <Input
+                          type="time"
+                          value={session.bookingEndTime}
+                          onChange={(e) => {
+                            const sessions = [...(product.timeSessions || [])];
+                            sessions[si] = { ...sessions[si], bookingEndTime: e.target.value };
+                            updateProduct(index, 'timeSessions', sessions);
+                          }}
+                          className="mt-0.5"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs text-foreground/40">抢购开始</Label>
+                        <Input
+                          type="time"
+                          value={session.rushStartTime}
+                          onChange={(e) => {
+                            const sessions = [...(product.timeSessions || [])];
+                            sessions[si] = { ...sessions[si], rushStartTime: e.target.value };
+                            updateProduct(index, 'timeSessions', sessions);
+                          }}
+                          className="mt-0.5"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-foreground/40">抢购结束</Label>
+                        <Input
+                          type="time"
+                          value={session.rushEndTime}
+                          onChange={(e) => {
+                            const sessions = [...(product.timeSessions || [])];
+                            sessions[si] = { ...sessions[si], rushEndTime: e.target.value };
+                            updateProduct(index, 'timeSessions', sessions);
+                          }}
+                          className="mt-0.5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
