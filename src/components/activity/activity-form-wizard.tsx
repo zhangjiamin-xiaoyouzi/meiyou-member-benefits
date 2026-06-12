@@ -51,6 +51,7 @@ import {
   ChevronUp,
   ChevronDown,
   MousePointerClick,
+  Search,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
@@ -1102,6 +1103,110 @@ function RichTextEditor({
   );
 }
 
+/** 福利项下拉选择组件（支持关键词检索） */
+interface WelfareItem {
+  id: string;
+  name: string;
+}
+
+function WelfareSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const [items, setItems] = useState<WelfareItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setLoading(true);
+    const params = keyword ? `?keyword=${encodeURIComponent(keyword)}` : '';
+    fetch(`/api/welfare-items${params}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.success) {
+          setItems(data.data);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [open, keyword]);
+
+  // 根据 value 查找当前选中项的展示文本
+  const selectedItem = items.find((item) => item.id === value);
+
+  return (
+    <div className="relative mt-1">
+      <div
+        className="flex items-center h-8 w-full rounded-md border border-[var(--color-meiyou-border)] bg-white px-3 text-sm cursor-pointer hover:border-[var(--color-meiyou-primary)]"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedItem ? (
+          <span className="flex-1 truncate">{selectedItem.id}-{selectedItem.name}</span>
+        ) : value ? (
+          <span className="flex-1 truncate">{value}</span>
+        ) : (
+          <span className="flex-1 text-[var(--color-meiyou-text-placeholder)]">选择福利</span>
+        )}
+        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+      </div>
+      {open && (
+        <>
+          {/* 背景遮罩 */}
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full z-50 mt-1 w-full min-w-[280px] rounded-md border border-[var(--color-meiyou-border)] bg-white shadow-lg">
+            {/* 搜索框 */}
+            <div className="p-2 border-b border-[var(--color-meiyou-border)]">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" />
+                <Input
+                  className="h-7 pl-7 text-sm"
+                  placeholder="搜索福利名称..."
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  autoFocus
+                />
+              </div>
+            </div>
+            {/* 列表 */}
+            <div className="max-h-48 overflow-y-auto">
+              {loading ? (
+                <div className="py-4 text-center text-xs text-[var(--color-meiyou-text-placeholder)]">加载中...</div>
+              ) : items.length === 0 ? (
+                <div className="py-4 text-center text-xs text-[var(--color-meiyou-text-placeholder)]">无匹配结果</div>
+              ) : (
+                items.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`px-3 py-2 text-sm cursor-pointer hover:bg-[rgba(255,77,136,0.06)] flex items-center gap-2 ${
+                      value === item.id ? 'bg-[rgba(255,77,136,0.06)] text-[var(--color-meiyou-primary)]' : ''
+                    }`}
+                    onClick={() => {
+                      onChange(item.id);
+                      setOpen(false);
+                      setKeyword('');
+                    }}
+                  >
+                    <span className="flex-1 truncate">{item.id}-{item.name}</span>
+                    {value === item.id && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--color-meiyou-primary)]" />}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function GlobalConfigCard({
   config,
   onChange,
@@ -1391,11 +1496,9 @@ function FlashSaleConfigCard({
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="输入商品ID"
+                      <WelfareSelect
                         value={product.productId}
-                        onChange={(e) => updateProduct(product.id, { productId: e.target.value })}
+                        onChange={(val) => updateProduct(product.id, { productId: val })}
                       />
                     </div>
                     <div>
@@ -1732,11 +1835,9 @@ function BenefitConfigCard({
                 <div className="grid grid-cols-4 gap-3">
                   <div>
                     <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      placeholder="输入商品ID"
+                    <WelfareSelect
                       value={product.productId}
-                      onChange={(e) => updateProduct(product.id, { productId: e.target.value })}
+                      onChange={(val) => updateProduct(product.id, { productId: val })}
                     />
                   </div>
                   <div>
