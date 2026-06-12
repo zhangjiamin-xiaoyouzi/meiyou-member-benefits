@@ -1058,19 +1058,8 @@ function GlobalConfigCard({
   };
 
   return (
-    <Card className="border-[var(--color-meiyou-border)] shadow-meiyou-card">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded bg-meiyou/10 flex items-center justify-center">
-            <Settings2 className="h-4 w-4 text-meiyou" />
-          </div>
-          <CardTitle className="text-base font-medium">全局配置</CardTitle>
-        </div>
-        <CardDescription className="text-xs text-[var(--color-meiyou-text-secondary)]">
-          配置页面全局背景配置
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
+      <div className="space-y-4">
         {/* 背景类型选择 */}
         <div className="space-y-1.5">
           <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">背景类型</Label>
@@ -1251,8 +1240,8 @@ function GlobalConfigCard({
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -1292,15 +1281,7 @@ function FlashSaleConfigCard({
   };
 
   return (
-    <Card className="border-[var(--color-meiyou-border)]">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-          会员限时福利
-        </CardTitle>
-        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">配置商品多轮预约与限量抢购（如沪上阿姨奶茶）</p>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
         {/* 模块图片 */}
         <div className="grid grid-cols-2 gap-4">
           <ImageUploadField
@@ -1489,8 +1470,7 @@ function FlashSaleConfigCard({
             ))}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
   );
 }
 
@@ -1526,16 +1506,8 @@ function FreePurchaseConfigCard({
   };
 
   return (
-    <Card className="border-[var(--color-meiyou-border)]">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Tag className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-          会员专属0元购
-        </CardTitle>
-        <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">配置返现商品，会员下单后返现</p>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
           <ImageUploadField
               label="模块头图"
               value={config.moduleHeaderImage}
@@ -1599,8 +1571,7 @@ function FreePurchaseConfigCard({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
   );
 }
 
@@ -1655,16 +1626,8 @@ function BenefitConfigCard({
   };
 
   return (
-    <Card className="border-[var(--color-meiyou-border)]">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Image className="h-4 w-4 text-[var(--color-meiyou-text-secondary)]" />
-          {title}
-        </CardTitle>
-        {description && <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">{description}</p>}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
           <ImageUploadField
               label="模块头图"
               value={config.moduleHeaderImage}
@@ -1790,8 +1753,7 @@ function BenefitConfigCard({
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
   );
 }
 
