@@ -2111,11 +2111,6 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           <h1 className="text-2xl font-semibold text-[var(--color-meiyou-text-primary)]">
             {isEdit ? '编辑活动' : '新建活动'}
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-meiyou-text-secondary)]">
-            {isEdit
-              ? '修改活动配置信息'
-              : '选定模板与基础信息 → 填充组件素材，两步完成活动配置'}
-          </p>
         </div>
 
       </div>
