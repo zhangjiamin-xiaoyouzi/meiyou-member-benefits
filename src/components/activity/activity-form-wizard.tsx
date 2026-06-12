@@ -1669,15 +1669,15 @@ function WelfareProductCard({
         </div>
       ))}
 
-      {/* 添加组件按钮 */}
+      {/* 添加福利分组按钮 */}
       {instances.length < MAX_WELFARE_INSTANCES && (
         <Button
           variant="outline"
-          className="w-full border-dashed border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou hover:border-meiyou"
+          className="w-full border-dashed border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:text-meiyou hover:border-meiyou h-10"
           onClick={addInstance}
         >
           <Plus className="h-4 w-4 mr-1" />
-          添加组件（{instances.length}/{MAX_WELFARE_INSTANCES}）
+          添加福利分组（还可添加{MAX_WELFARE_INSTANCES - instances.length}组）
         </Button>
       )}
     </div>
