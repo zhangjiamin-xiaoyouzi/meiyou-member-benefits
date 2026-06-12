@@ -2167,15 +2167,14 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           返回列表
         </Button>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="border-[var(--color-meiyou-divider)]">
-            保存草稿
+          <Button variant="outline" className="border-[var(--color-meiyou-divider)]" onClick={() => window.close()}>
+            取消
           </Button>
           <Button
             className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
             onClick={handlePublish}
           >
-            <Check className="mr-1 h-4 w-4" />
-            {isEdit ? '保存修改' : '发布活动'}
+            提交
           </Button>
         </div>
       </div>
