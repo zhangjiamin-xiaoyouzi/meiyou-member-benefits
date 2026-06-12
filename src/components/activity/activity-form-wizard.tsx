@@ -786,6 +786,18 @@ function StepComponentConfig({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  // 将排序后的 enabled 列表合并回完整的 components 数组（保留 disabled 组件的原始位置）
+  const mergeReorderedEnabled = (newEnabled: TemplateComponent[]) => {
+    const enabledSet = new Set(newEnabled.map((c) => c.key));
+    let enabledIdx = 0;
+    return components.map((c) => {
+      if (enabledSet.has(c.key)) {
+        return newEnabled[enabledIdx++];
+      }
+      return c;
+    });
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -795,7 +807,7 @@ function StepComponentConfig({
     if (oldIndex === -1 || newIndex === -1) return;
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
-    onComponentsChange(newEnabled);
+    onComponentsChange(mergeReorderedEnabled(newEnabled));
   };
 
   // 导航栏拖拽排序回调
@@ -804,7 +816,7 @@ function StepComponentConfig({
     const newIndex = enabledComponents.findIndex((c) => c.key === overKey);
     if (oldIndex === -1 || newIndex === -1) return;
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
-    onComponentsChange(newEnabled);
+    onComponentsChange(mergeReorderedEnabled(newEnabled));
   };
 
   // 渲染单个组件的配置内容
