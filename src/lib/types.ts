@@ -176,8 +176,8 @@ export interface FlashSaleConfig {
   products: FlashSaleProduct[];
 }
 
-/** 会员专属生活券包/会员专属礼商品 */
-export interface BenefitProduct {
+/** 通用福利商品 - 单个商品 */
+export interface WelfareProductItem {
   id: string;
   productId: string;
   benefitImage: string;
@@ -186,10 +186,17 @@ export interface BenefitProduct {
   audienceRules: ComponentAudienceRule[];
 }
 
-/** 会员专属生活券包/会员专属礼配置 */
-export interface BenefitConfig {
+/** 通用福利商品 - 单个分组实例 */
+export interface WelfareProductInstance {
+  instanceId: string;
+  instanceName: string;
   moduleBgImage: string;
-  products: BenefitProduct[];
+  products: WelfareProductItem[];
+}
+
+/** 通用福利商品配置 */
+export interface WelfareProductConfig {
+  instances: WelfareProductInstance[];
 }
 
 /** 会员专属0元购配置 */
@@ -224,8 +231,7 @@ export interface ComponentConfigs {
   global_config?: GlobalConfig;
   header_banner?: HeaderBannerConfig;
   flash_sale?: FlashSaleConfig;
-  free_benefit?: BenefitConfig;
-  exclusive_gift?: BenefitConfig;
+  welfare_product?: WelfareProductConfig;
   free_purchase?: FreePurchaseConfig;
   rule_popup?: RulePopupConfig;
   cta_button?: ActionButtonConfig;

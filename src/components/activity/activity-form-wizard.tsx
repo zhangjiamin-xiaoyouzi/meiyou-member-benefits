@@ -61,10 +61,9 @@ import type {
   ComponentConfigs,
   GlobalConfig,
   HeaderBannerConfig,
-  FlashSaleConfig,
-  FlashSaleProduct,
-  BenefitConfig,
-  BenefitProduct,
+  WelfareProductConfig,
+  WelfareProductInstance,
+  WelfareProductItem,
   FreePurchaseConfig,
   ActionButtonConfig,
   StatusButtonConfig,
@@ -757,6 +756,15 @@ function StepComponentConfig({
       c.key === comp.key ? { ...c, enabled: true } : c
     );
     onComponentsChange(updated);
+    // Initialize default config for welfare_product
+    if (comp.key === 'welfare_product') {
+      updateConfig('welfare_product', {
+        instances: [
+          { instanceId: `wp_${Date.now()}_1`, instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
+          { instanceId: `wp_${Date.now()}_2`, instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
+        ],
+      } as unknown as ComponentConfigs['welfare_product']);
+    }
   };
 
   // 批量添加组件
@@ -766,6 +774,15 @@ function StepComponentConfig({
       pendingAddKeys.has(c.key) ? { ...c, enabled: true } : c
     );
     onComponentsChange(updated);
+    // Initialize default config for welfare_product if being added
+    if (pendingAddKeys.has('welfare_product')) {
+      updateConfig('welfare_product', {
+        instances: [
+          { instanceId: `wp_${Date.now()}_1`, instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
+          { instanceId: `wp_${Date.now()}_2`, instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
+        ],
+      } as unknown as ComponentConfigs['welfare_product']);
+    }
     setPendingAddKeys(new Set());
     setAddMenuOpen(false);
   };
@@ -872,19 +889,11 @@ function StepComponentConfig({
             </div>
           );
         })();
-      case 'flash_sale':
+      case 'welfare_product':
         return (
-          <FlashSaleConfigCard
-            config={configs.flash_sale || { moduleBgImage: '', products: [] }}
-            onChange={(val) => updateConfig('flash_sale', val)}
-          />
-        );
-      case 'exclusive_gift':
-        return (
-          <BenefitConfigCard
-            title="会员专属礼"
-            config={configs.exclusive_gift || { products: [], moduleBgImage: '' }}
-            onChange={(val) => updateConfig('exclusive_gift', val)}
+          <WelfareProductCard
+            config={configs.welfare_product || { instances: [] }}
+            onChange={(val) => updateConfig('welfare_product', val)}
           />
         );
       case 'free_purchase':
@@ -892,14 +901,6 @@ function StepComponentConfig({
           <FreePurchaseConfigCard
             config={configs.free_purchase || { categoryIds: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_purchase', val)}
-          />
-        );
-      case 'free_benefit':
-        return (
-          <BenefitConfigCard
-            title="会员专属生活券包"
-            config={configs.free_benefit || { products: [], moduleBgImage: '' }}
-            onChange={(val) => updateConfig('free_benefit', val)}
           />
         );
       case 'cta_button':
@@ -1446,229 +1447,242 @@ function GlobalConfigCard({
   );
 }
 
-// ==================== 会员限时福利配置卡片 ====================
+// ==================== 通用福利商品配置卡片 ====================
 
-function FlashSaleConfigCard({
+const MAX_WELFARE_INSTANCES = 5;
+
+function WelfareProductCard({
   config,
   onChange,
 }: {
-  config: FlashSaleConfig;
-  onChange: (config: FlashSaleConfig) => void;
+  config: WelfareProductConfig;
+  onChange: (config: WelfareProductConfig) => void;
 }) {
-  const addProduct = () => {
-    const newProduct: FlashSaleProduct = {
-      id: `fsp_${Date.now()}`,
-      productId: '',
-      stock: '',
-      rushImage: '',
-      benefitImage: '',
-      popupImage: '',
-      jumpLink: '',
-      timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
-      audienceRules: [],
+  const instances = config.instances || [];
+
+  const addInstance = () => {
+    if (instances.length >= MAX_WELFARE_INSTANCES) return;
+    const newInstance: WelfareProductInstance = {
+      instanceId: `wpi_${Date.now()}`,
+      instanceName: `福利分组${instances.length + 1}`,
+      moduleBgImage: '',
+      products: [],
     };
-    onChange({ ...config, products: [...config.products, newProduct] });
+    onChange({ ...config, instances: [...instances, newInstance] });
   };
 
-  const removeProduct = (productId: string) => {
-    onChange({ ...config, products: config.products.filter((p) => p.id !== productId) });
+  const removeInstance = (instanceId: string) => {
+    onChange({ ...config, instances: instances.filter((i) => i.instanceId !== instanceId) });
   };
 
-  const updateProduct = (productId: string, updates: Partial<FlashSaleProduct>) => {
+  const updateInstance = (instanceId: string, updates: Partial<WelfareProductInstance>) => {
     onChange({
       ...config,
-      products: config.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
+      instances: instances.map((i) => (i.instanceId === instanceId ? { ...i, ...updates } : i)),
     });
   };
 
+  const addProduct = (instanceId: string) => {
+    const newProduct: WelfareProductItem = {
+      id: `wp_${Date.now()}`,
+      productId: '',
+      benefitImage: '',
+      displayMode: 'horizontal',
+      sortOrder: 0,
+      audienceRules: [],
+    };
+    updateInstance(instanceId, {
+      products: [...(instances.find((i) => i.instanceId === instanceId)?.products || []), newProduct],
+    });
+  };
+
+  const removeProduct = (instanceId: string, productId: string) => {
+    const inst = instances.find((i) => i.instanceId === instanceId);
+    if (!inst) return;
+    updateInstance(instanceId, {
+      products: inst.products.filter((p) => p.id !== productId),
+    });
+  };
+
+  const updateProduct = (instanceId: string, productId: string, updates: Partial<WelfareProductItem>) => {
+    const inst = instances.find((i) => i.instanceId === instanceId);
+    if (!inst) return;
+    updateInstance(instanceId, {
+      products: inst.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
+    });
+  };
+
+  const moveProduct = (instanceId: string, productId: string, direction: 'up' | 'down') => {
+    const inst = instances.find((i) => i.instanceId === instanceId);
+    if (!inst) return;
+    const idx = inst.products.findIndex((p) => p.id === productId);
+    if (idx < 0) return;
+    const newProducts = [...inst.products];
+    if (direction === 'up' && idx > 0) {
+      [newProducts[idx - 1], newProducts[idx]] = [newProducts[idx], newProducts[idx - 1]];
+    } else if (direction === 'down' && idx < newProducts.length - 1) {
+      [newProducts[idx], newProducts[idx + 1]] = [newProducts[idx + 1], newProducts[idx]];
+    }
+    updateInstance(instanceId, { products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
+  };
+
   return (
-    <div className="space-y-4">
-        {/* 模块图片 */}
-        <div>
-          <ImageUploadField
-            label="模块背景图"
-            value={config.moduleBgImage}
-            onChange={(val) => onChange({ ...config, moduleBgImage: val })}
-          />
-        </div>
-
-        <Separator />
-
-        {/* 福利商品列表 */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-              福利商品
-              <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
-            </span>
-            <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
-              <Plus className="h-3 w-3 mr-1" />
-              添加商品
-            </Button>
+    <div className="space-y-6">
+      {instances.map((inst, instIdx) => (
+        <div key={inst.instanceId} className="border border-[var(--color-meiyou-border)] rounded-lg p-4 space-y-4 bg-white">
+          {/* 分组标题行 */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-[var(--color-meiyou-text-secondary)] shrink-0">分组名称</span>
+            <Input
+              className="h-8 text-sm flex-1"
+              value={inst.instanceName}
+              onChange={(e) => updateInstance(inst.instanceId, { instanceName: e.target.value })}
+              placeholder="输入分组名称"
+            />
+            {instances.length > 1 && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 shrink-0"
+                onClick={() => removeInstance(inst.instanceId)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
 
-          {config.products.length === 0 && (
-            <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-              暂无商品，点击"添加商品"开始配置
-            </div>
-          )}
+          {/* 模块背景图 */}
+          <ImageUploadField
+            label="模块背景图"
+            value={inst.moduleBgImage}
+            onChange={(val) => updateInstance(inst.instanceId, { moduleBgImage: val })}
+          />
 
-          <div className="space-y-4">
-            {config.products.map((product, idx) => (
-              <Card key={product.id} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50">
-                <CardHeader className="py-3 px-4 pb-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">商品 {idx + 1}</span>
+          <Separator />
+
+          {/* 商品列表 */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
+                商品列表
+                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({inst.products.length}个)</span>
+              </span>
+              <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={() => addProduct(inst.instanceId)}>
+                <Plus className="h-3 w-3 mr-1" />
+                添加商品
+              </Button>
+            </div>
+
+            {inst.products.length === 0 && (
+              <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
+                暂无商品，点击"添加商品"开始配置
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {inst.products.map((product, idx) => (
+                <div
+                  key={product.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-meiyou-bg/50"
+                >
+                  {/* 排序控制 */}
+                  <div className="flex flex-col gap-0.5 pt-1">
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0"
-                      onClick={() => removeProduct(product.id)}
+                      className="h-5 w-5 p-0"
+                      disabled={idx === 0}
+                      onClick={() => moveProduct(inst.instanceId, product.id, 'up')}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <ChevronLeft className="h-3 w-3 rotate-90" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0"
+                      disabled={idx === inst.products.length - 1}
+                      onClick={() => moveProduct(inst.instanceId, product.id, 'down')}
+                    >
+                      <ChevronLeft className="h-3 w-3 -rotate-90" />
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 space-y-4">
-                  {/* 商品基础信息 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
-                      <WelfareSelect
-                        value={product.productId}
-                        onChange={(val) => updateProduct(product.id, { productId: val })}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">库存 <span className="text-meiyou">*</span></Label>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="输入库存数量"
-                        value={product.stock}
-                        onChange={(e) => updateProduct(product.id, { stock: e.target.value })}
-                      />
-                    </div>
-                  </div>
 
-                  {/* 商品图片 */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <ImageUploadField
-                      label="抢购图片"
-                      value={product.rushImage}
-                      onChange={(val) => updateProduct(product.id, { rushImage: val })}
-                    />
-                    <ImageUploadField
-                      label="权益图片"
-                      value={product.benefitImage}
-                      onChange={(val) => updateProduct(product.id, { benefitImage: val })}
-                    />
-                    <ImageUploadField
-                      label="弹窗图片"
-                      value={product.popupImage}
-                      onChange={(val) => updateProduct(product.id, { popupImage: val })}
-                    />
-                  </div>
-
-                  {/* 链接与文案 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="输入跳转链接URL"
-                        value={product.jumpLink}
-                        onChange={(e) => updateProduct(product.id, { jumpLink: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 场次配置 */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">场次配置</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-6 text-xs"
-                        onClick={() => {
-                          const newSession = { id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' };
-                          updateProduct(product.id, { timeSessions: [...product.timeSessions, newSession] });
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" /> 添加场次
-                      </Button>
-                    </div>
-                    {(product.timeSessions || []).map((session, sessionIdx) => (
-                      <div key={session.id} className="bg-meiyou-bg/80 rounded-lg p-3 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-[var(--color-meiyou-text-placeholder)]">第 {sessionIdx + 1} 场</span>
-                          {(product.timeSessions || []).length > 1 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-5 text-xs text-meiyou hover:text-meiyou-hover"
-                              onClick={() => {
-                                updateProduct(product.id, { timeSessions: product.timeSessions.filter((s) => s.id !== session.id) });
-                              }}
-                            >
-                              <Trash2 className="h-3 w-3 mr-1" /> 删除场次
-                            </Button>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">预约时间</Label>
-                            <TimeRangeField
-                              startValue={session.bookingStartTime}
-                              endValue={session.bookingEndTime}
-                              onStartChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingStartTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                              onEndChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingEndTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">抢购时间</Label>
-                            <TimeRangeField
-                              startValue={session.rushStartTime}
-                              endValue={session.rushEndTime}
-                              onStartChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushStartTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                              onEndChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushEndTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                            />
-                          </div>
-                        </div>
+                  {/* 商品字段 */}
+                  <div className="flex-1 space-y-3">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
+                        <WelfareSelect
+                          value={product.productId}
+                          onChange={(val) => updateProduct(inst.instanceId, product.id, { productId: val })}
+                        />
                       </div>
-                    ))}
+                      <div>
+                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
+                        <Input
+                          className="mt-1 h-8 text-sm"
+                          placeholder="输入图片URL"
+                          value={product.benefitImage}
+                          onChange={(e) => updateProduct(inst.instanceId, product.id, { benefitImage: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
+                        <Select
+                          value={product.displayMode}
+                          onValueChange={(val) =>
+                            updateProduct(inst.instanceId, product.id, { displayMode: val as 'horizontal' | 'double-column' })
+                          }
+                        >
+                          <SelectTrigger className="mt-1 h-8 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="horizontal">横图</SelectItem>
+                            <SelectItem value="double-column">双列</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    {/* 受众规则 */}
+                    <div className="pl-0">
+                      <AudienceRuleEditor
+                        rules={product.audienceRules}
+                        onRulesChange={(rules) => updateProduct(inst.instanceId, product.id, { audienceRules: rules })}
+                      />
+                    </div>
                   </div>
 
-                  {/* 受众规则 */}
-                  <Separator />
-                  <AudienceRuleEditor
-                    rules={product.audienceRules}
-                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
-                  />
-                </CardContent>
-              </Card>
-            ))}
+                  {/* 删除按钮 */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1 shrink-0"
+                    onClick={() => removeProduct(inst.instanceId, product.id)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      ))}
+
+      {/* 添加分组按钮 */}
+      {instances.length < MAX_WELFARE_INSTANCES && (
+        <Button
+          variant="outline"
+          className="w-full border-dashed border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou hover:border-meiyou"
+          onClick={addInstance}
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          添加分组（{instances.length}/{MAX_WELFARE_INSTANCES}）
+        </Button>
+      )}
+    </div>
   );
 }
-
-// ==================== 会员专属生活券包/会员专属礼配置卡片 ====================
 
 function FreePurchaseConfigCard({
   config,
@@ -1764,179 +1778,6 @@ function FreePurchaseConfigCard({
   );
 }
 
-function BenefitConfigCard({
-  title,
-  config,
-  onChange,
-}: {
-  title: string;
-  config: BenefitConfig;
-  onChange: (config: BenefitConfig) => void;
-}) {
-  const addProduct = () => {
-    const newProduct: BenefitProduct = {
-      id: `bp_${Date.now()}`,
-      productId: '',
-      benefitImage: '',
-      displayMode: 'horizontal',
-      sortOrder: config.products.length + 1,
-      audienceRules: [],
-    };
-    onChange({ ...config, products: [...config.products, newProduct] });
-  };
-
-  const removeProduct = (productId: string) => {
-    onChange({ ...config, products: config.products.filter((p) => p.id !== productId) });
-  };
-
-  const updateProduct = (productId: string, updates: Partial<BenefitProduct>) => {
-    onChange({
-      ...config,
-      products: config.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
-    });
-  };
-
-  const moveProduct = (productId: string, direction: 'up' | 'down') => {
-    const idx = config.products.findIndex((p) => p.id === productId);
-    if (idx < 0) return;
-    const newProducts = [...config.products];
-    if (direction === 'up' && idx > 0) {
-      [newProducts[idx - 1], newProducts[idx]] = [newProducts[idx], newProducts[idx - 1]];
-    } else if (direction === 'down' && idx < newProducts.length - 1) {
-      [newProducts[idx], newProducts[idx + 1]] = [newProducts[idx + 1], newProducts[idx]];
-    }
-    // 更新排序号
-    onChange({
-      ...config,
-      products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })),
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-          <ImageUploadField
-              label="模块背景图"
-              value={config.moduleBgImage}
-              onChange={(v) => onChange({ ...config, moduleBgImage: v })}
-            />
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
-            商品列表
-            <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
-          </span>
-          <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
-            <Plus className="h-3 w-3 mr-1" />
-            添加商品
-          </Button>
-        </div>
-
-        {config.products.length === 0 && (
-          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-            暂无商品，点击"添加商品"开始配置
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {config.products.map((product, idx) => (
-            <div
-              key={product.id}
-              className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
-            >
-              {/* 排序控制 */}
-              <div className="flex flex-col gap-0.5 pt-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-5 w-5 p-0"
-                  disabled={idx === 0}
-                  onClick={() => moveProduct(product.id, 'up')}
-                >
-                  <ChevronLeft className="h-3 w-3 rotate-90" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-5 w-5 p-0"
-                  disabled={idx === config.products.length - 1}
-                  onClick={() => moveProduct(product.id, 'down')}
-                >
-                  <ChevronLeft className="h-3 w-3 -rotate-90" />
-                </Button>
-              </div>
-
-              {/* 商品字段 */}
-              <div className="flex-1 space-y-3">
-                <div className="grid grid-cols-4 gap-3">
-                  <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
-                    <WelfareSelect
-                      value={product.productId}
-                      onChange={(val) => updateProduct(product.id, { productId: val })}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      placeholder="输入图片URL"
-                      value={product.benefitImage}
-                      onChange={(e) => updateProduct(product.id, { benefitImage: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
-                    <Select
-                      value={product.displayMode}
-                      onValueChange={(val) =>
-                        updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' })
-                      }
-                    >
-                      <SelectTrigger className="mt-1 h-8 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="horizontal">横图</SelectItem>
-                        <SelectItem value="double-column">双列</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      type="number"
-                      value={product.sortOrder}
-                      onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
-                </div>
-                {/* 受众规则 */}
-                <div className="pl-0">
-                  <AudienceRuleEditor
-                    rules={product.audienceRules}
-                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
-                  />
-                </div>
-              </div>
-
-              {/* 删除按钮 */}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
-                onClick={() => removeProduct(product.id)}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      </div>
-  );
-}
-
 // ==================== Main Wizard Component ====================
 
 interface ActivityFormWizardProps {
@@ -2006,32 +1847,48 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
 
   const [step2Data, setStep2Data] = useState<Step2Data>(() => {
     if (initialData) {
-      const raw = initialData as unknown as Record<string, unknown>;
-      const rawConfigs = raw.component_configs || raw.componentConfigs || {};
-      const parsed = (typeof rawConfigs === 'string' ? JSON.parse(rawConfigs as string) : rawConfigs) as ComponentConfigs;
-      // Deep clone to avoid mutating props, and migrate old flash_sale products
-      const componentConfigs: ComponentConfigs = JSON.parse(JSON.stringify(parsed));
-      const fsConfig = componentConfigs.flash_sale;
-      if (fsConfig && Array.isArray(fsConfig.products)) {
-        fsConfig.products = fsConfig.products.map((p: FlashSaleProduct) => {
-          if (!p.timeSessions || p.timeSessions.length === 0) {
-            return {
-              ...p,
-              timeSessions: [{
-                id: `ts_${Date.now()}_${String(p.id).slice(-4)}`,
-                bookingStartTime: (p as unknown as Record<string, string>).bookingStartTime || '',
-                bookingEndTime: (p as unknown as Record<string, string>).bookingEndTime || '',
-                rushStartTime: (p as unknown as Record<string, string>).rushStartTime || '',
-                rushEndTime: (p as unknown as Record<string, string>).rushEndTime || '',
-              }],
-            };
-          }
-          return p;
-        });
+      const rawInitial = initialData as unknown as Record<string, unknown>;
+      const rawConfigs = rawInitial.component_configs || rawInitial.componentConfigs || {};
+      const parsed = (typeof rawConfigs === 'string' ? JSON.parse(rawConfigs as string) : rawConfigs) as Record<string, unknown>;
+      // Deep clone to avoid mutating props
+      const componentConfigs: Record<string, unknown> = JSON.parse(JSON.stringify(parsed));
+      // Migrate old exclusive_gift and free_benefit to welfare_product instances
+      const egConfig = componentConfigs.exclusive_gift as Record<string, unknown> | undefined;
+      const fbConfig = componentConfigs.free_benefit as Record<string, unknown> | undefined;
+      if (egConfig || fbConfig) {
+        const instances: Array<{ instanceId: string; instanceName: string; products: WelfareProductItem[]; displayMode: string; buttonTheme: string }> = [];
+        if (egConfig) {
+          instances.push({
+            instanceId: `wp_${Date.now()}_1`,
+            instanceName: '会员专属礼',
+            products: Array.isArray((egConfig as Record<string, unknown>).products) ? ((egConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
+            displayMode: 'single',
+            buttonTheme: 'pink',
+          });
+        }
+        if (fbConfig) {
+          instances.push({
+            instanceId: `wp_${Date.now()}_2`,
+            instanceName: '会员专属生活券包',
+            products: Array.isArray((fbConfig as Record<string, unknown>).products) ? ((fbConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
+            displayMode: 'single',
+            buttonTheme: 'pink',
+          });
+        }
+        componentConfigs.welfare_product = { instances };
+        delete componentConfigs.exclusive_gift;
+        delete componentConfigs.free_benefit;
       }
-      return { componentConfigs };
+      return { componentConfigs: componentConfigs as unknown as ComponentConfigs };
     }
-    return { componentConfigs: {} };
+    return { componentConfigs: {
+      welfare_product: {
+        instances: [
+          { instanceId: 'wp_default_1', instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
+          { instanceId: 'wp_default_2', instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
+        ],
+      },
+    } as unknown as ComponentConfigs };
   });
 
   const isFormValid = () => {
