@@ -557,10 +557,10 @@ function StepBasicInfo({
                 }}
               />
             </div>
-            {/* 活动福利领取时间（非必填） */}
+            {/* 活动福利领取时间（必填） */}
             <div>
               <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
-                {isMemberDay ? '活动福利领取时间' : '抽奖时间'}
+                {isMemberDay ? '活动福利领取时间' : '抽奖时间'}<span className="text-[#ff4d88] ml-0.5">*</span>
               </Label>
               <TimeRangeField
                 startValue={data.lotteryStartTime}
@@ -2060,6 +2060,10 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
   };
 
   const handlePublish = async () => {
+    if (!step1Data.lotteryStartTime || !step1Data.lotteryEndTime) {
+      alert('请填写活动福利领取时间');
+      return;
+    }
     const payload = {
       name: step1Data.name,
       category: step1Data.category,
