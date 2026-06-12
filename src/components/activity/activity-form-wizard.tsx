@@ -989,7 +989,7 @@ function StepComponentConfig({
       </div>
 
       {/* 组件列表（dnd-kit 拖拽排序） */}
-      <div className="mr-52">
+      <div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
@@ -2123,7 +2123,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       </div>
 
       {/* 单页配置：基础信息 + 活动组件 */}
-      <Card>
+      <Card className="mr-52">
         <CardContent className="pt-6 space-y-6">
           {/* 基础信息 */}
           <div>
