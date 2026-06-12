@@ -398,20 +398,20 @@ function StepBasicInfo({
 
   return (
     <div className="space-y-6">
-      {/* 活动名称 + 活动分类 同行 */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-            活动名称 <span className="text-meiyou">*</span>
-          </Label>
-          <Input
-            className="mt-1.5"
-            placeholder="请输入活动名称"
-            value={data.name}
-            onChange={(e) => onChange({ ...data, name: e.target.value })}
-          />
-        </div>
-        <div>
+      {/* 活动名称 */}
+      <div>
+        <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+          活动名称 <span className="text-meiyou">*</span>
+        </Label>
+        <Input
+          className="mt-1.5"
+          placeholder="请输入活动名称"
+          value={data.name}
+          onChange={(e) => onChange({ ...data, name: e.target.value })}
+        />
+      </div>
+      {/* 活动分类 独占一行 */}
+      <div>
           <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
             活动分类 <span className="text-meiyou">*</span>
           </Label>
@@ -460,7 +460,6 @@ function StepBasicInfo({
             )}
           </div>
         </div>
-      </div>
 
       {/* 选择模板 */}
       <div>
@@ -537,28 +536,27 @@ function StepBasicInfo({
               onEndChange={(val) => onChange({ ...data, bufferEndTime: val })}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {/* 活动预约时间（非必填） */}
-            <div>
-              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
-                {isMemberDay ? '活动预约时间' : '售卖时间'}
-              </Label>
-              <TimeRangeField
-                startValue={data.sellStartTime}
-                endValue={data.sellEndTime}
-                onStartChange={(val) => {
-                  if (data.sellStartTime && val < data.sellStartTime) return;
-                  if (data.bufferEndTime && val > data.bufferEndTime) return;
-                  onChange({ ...data, sellStartTime: val });
-                }}
-                onEndChange={(val) => {
-                  if (data.bufferEndTime && val > data.bufferEndTime) return;
-                  onChange({ ...data, sellEndTime: val });
-                }}
-              />
-            </div>
-            {/* 活动福利领取时间（必填） */}
-            <div>
+          {/* 活动预约时间（非必填） */}
+          <div>
+            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
+              {isMemberDay ? '活动预约时间' : '售卖时间'}
+            </Label>
+            <TimeRangeField
+              startValue={data.sellStartTime}
+              endValue={data.sellEndTime}
+              onStartChange={(val) => {
+                if (data.sellStartTime && val < data.sellStartTime) return;
+                if (data.bufferEndTime && val > data.bufferEndTime) return;
+                onChange({ ...data, sellStartTime: val });
+              }}
+              onEndChange={(val) => {
+                if (data.bufferEndTime && val > data.bufferEndTime) return;
+                onChange({ ...data, sellEndTime: val });
+              }}
+            />
+          </div>
+          {/* 活动福利领取时间（必填）独占一行 */}
+          <div>
               <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
                 {isMemberDay ? '活动福利领取时间' : '抽奖时间'}<span className="text-[#ff4d88] ml-0.5">*</span>
               </Label>
@@ -576,7 +574,6 @@ function StepBasicInfo({
                 }}
               />
             </div>
-          </div>
           {!isMemberDay && (
             <div className="grid grid-cols-2 gap-4">
               <div>
