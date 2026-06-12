@@ -891,56 +891,79 @@ function StepComponentConfig({
   };
 
   return (
-    <div className="space-y-4">
-      {/* 已添加组件列表（可拖拽排序） */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-4">
+    <div className="flex gap-6">
+      {/* 左侧快捷目录 */}
+      <div className="w-48 shrink-0">
+        <div className="sticky top-4">
+          <h4 className="text-xs font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-2">组件目录</h4>
+          <nav className="space-y-0.5">
             {enabledComponents.map((comp) => (
-              <SortableComponentItem
+              <button
                 key={comp.key}
-                id={comp.key}
-                comp={comp}
-                onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+                type="button"
+                className="w-full text-left px-2 py-1.5 rounded text-xs text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate"
+                onClick={() => {
+                  const el = document.getElementById(`comp-section-${comp.key}`);
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
               >
-                {renderComponentContent(comp.key)}
-              </SortableComponentItem>
+                {comp.name}
+              </button>
             ))}
-          </div>
-        </SortableContext>
-      </DndContext>
-
-      {/* 添加组件按钮 */}
-      {availableComponents.length > 0 && (
-        <div className="relative">
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-2 h-10 border-2 border-dashed border-[var(--color-meiyou-border)] rounded-lg text-sm text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
-            onClick={() => setAddMenuOpen(!addMenuOpen)}
-          >
-            <Plus className="h-4 w-4" />
-            添加组件
-          </button>
-          {addMenuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-lg z-50 overflow-hidden">
-              {availableComponents.map((comp) => (
-                <button
-                  key={comp.key}
-                  type="button"
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
-                  onClick={() => handleAddComponent(comp)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
-                    <Plus className="h-3.5 w-3.5 text-[var(--color-meiyou)]" />
-                  </div>
-                  <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5">{comp.description}</p>
-                </button>
-              ))}
+          </nav>
+          {availableComponents.length > 0 && (
+            <div className="mt-3 px-2">
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
+                onClick={() => setAddMenuOpen(!addMenuOpen)}
+              >
+                <Plus className="h-3 w-3" />
+                添加组件
+              </button>
+              {addMenuOpen && (
+                <div className="mt-1 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-lg z-50 overflow-hidden">
+                  {availableComponents.map((comp) => (
+                    <button
+                      key={comp.key}
+                      type="button"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
+                      onClick={() => handleAddComponent(comp)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
+                        <Plus className="h-3 w-3 text-[var(--color-meiyou)]" />
+                      </div>
+                      <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 line-clamp-2">{comp.description}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
+
+      {/* 右侧组件列表（可拖拽排序） */}
+      <div className="flex-1 min-w-0">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-4">
+              {enabledComponents.map((comp) => (
+                <div key={comp.key} id={`comp-section-${comp.key}`}>
+                  <SortableComponentItem
+                    id={comp.key}
+                    comp={comp}
+                    onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+                  >
+                    {renderComponentContent(comp.key)}
+                  </SortableComponentItem>
+                </div>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
 
       {/* 点击外部关闭添加菜单 */}
       {addMenuOpen && (
