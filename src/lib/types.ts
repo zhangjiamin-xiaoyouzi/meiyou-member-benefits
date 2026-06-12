@@ -172,7 +172,6 @@ export interface FlashSaleProduct {
 
 /** 会员限时福利配置 */
 export interface FlashSaleConfig {
-  moduleHeaderImage: string;
   moduleBgImage: string;
   products: FlashSaleProduct[];
 }
@@ -189,14 +188,12 @@ export interface BenefitProduct {
 
 /** 会员专属生活券包/会员专属礼配置 */
 export interface BenefitConfig {
-  moduleHeaderImage: string;
   moduleBgImage: string;
   products: BenefitProduct[];
 }
 
 /** 会员专属0元购配置 */
 export interface FreePurchaseConfig {
-  moduleHeaderImage: string;
   moduleBgImage: string;
   categoryIds: string[];
 }

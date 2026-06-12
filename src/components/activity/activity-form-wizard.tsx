@@ -851,7 +851,7 @@ function StepComponentConfig({
       case 'flash_sale':
         return (
           <FlashSaleConfigCard
-            config={configs.flash_sale || { moduleHeaderImage: '', moduleBgImage: '', products: [] }}
+            config={configs.flash_sale || { moduleBgImage: '', products: [] }}
             onChange={(val) => updateConfig('flash_sale', val)}
           />
         );
@@ -860,14 +860,14 @@ function StepComponentConfig({
           <BenefitConfigCard
             title="会员专属礼"
             description="配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）"
-            config={configs.exclusive_gift || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            config={configs.exclusive_gift || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('exclusive_gift', val)}
           />
         );
       case 'free_purchase':
         return (
           <FreePurchaseConfigCard
-            config={configs.free_purchase || { categoryIds: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            config={configs.free_purchase || { categoryIds: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_purchase', val)}
           />
         );
@@ -876,7 +876,7 @@ function StepComponentConfig({
           <BenefitConfigCard
             title="会员专属生活券包"
             description="配置会员专属生活券包（如：美团外卖红包、古茗88折券）"
-            config={configs.free_benefit || { products: [], moduleHeaderImage: '', moduleBgImage: '' }}
+            config={configs.free_benefit || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_benefit', val)}
           />
         );
@@ -1341,12 +1341,7 @@ function FlashSaleConfigCard({
   return (
     <div className="space-y-4">
         {/* 模块图片 */}
-        <div className="grid grid-cols-2 gap-4">
-          <ImageUploadField
-            label="模块头图"
-            value={config.moduleHeaderImage}
-            onChange={(val) => onChange({ ...config, moduleHeaderImage: val })}
-          />
+        <div>
           <ImageUploadField
             label="模块背景图"
             value={config.moduleBgImage}
@@ -1565,12 +1560,7 @@ function FreePurchaseConfigCard({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-          <ImageUploadField
-              label="模块头图"
-              value={config.moduleHeaderImage}
-              onChange={(v) => onChange({ ...config, moduleHeaderImage: v })}
-            />
+      <div>
           <ImageUploadField
               label="模块背景图"
               value={config.moduleBgImage}
@@ -1685,12 +1675,7 @@ function BenefitConfigCard({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-          <ImageUploadField
-              label="模块头图"
-              value={config.moduleHeaderImage}
-              onChange={(v) => onChange({ ...config, moduleHeaderImage: v })}
-            />
+      <div>
           <ImageUploadField
               label="模块背景图"
               value={config.moduleBgImage}

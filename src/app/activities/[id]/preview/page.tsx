@@ -88,9 +88,6 @@ export default function ActivityPreviewPage() {
     if (!cfg) return null;
     return (
       <div key="flash_sale" className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
-        {cfg.moduleHeaderImage && (
-          <img src={cfg.moduleHeaderImage} alt="会员限时福利头图" className="w-full block" />
-        )}
         <div className="px-3 py-2">
           <div className="text-center text-xs font-semibold text-meiyou mb-2">会员限时福利</div>
           {cfg.products?.map((product) => (
@@ -122,9 +119,6 @@ export default function ActivityPreviewPage() {
     const isDouble = cfg.products?.some(p => p.displayMode === 'double-column');
     return (
       <div key={key} className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
-        {cfg.moduleHeaderImage && (
-          <img src={cfg.moduleHeaderImage} alt={`${title}头图`} className="w-full block" />
-        )}
         <div className="px-3 py-2">
           <div className="text-center text-xs font-semibold text-orange-500 mb-2">{title}</div>
           <div className={isDouble ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
@@ -148,9 +142,6 @@ export default function ActivityPreviewPage() {
     if (!cfg) return null;
     return (
       <div key="free_purchase" className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
-        {cfg.moduleHeaderImage && (
-          <img src={cfg.moduleHeaderImage} alt="会员专属0元购头图" className="w-full block" />
-        )}
         <div className="px-3 py-2">
           <div className="text-center text-xs font-semibold text-green-600 mb-2">会员专属0元购</div>
           <div className="bg-white rounded-lg p-3 text-xs text-gray-600">
