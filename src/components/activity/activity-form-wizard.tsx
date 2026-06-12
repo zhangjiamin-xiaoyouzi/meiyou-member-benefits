@@ -464,12 +464,9 @@ function StepBasicInfo({
       {/* 选择模板 */}
       <div>
         <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-          选择活动分模版 <span className="text-meiyou">*</span>
+          选择活动模版 <span className="text-meiyou">*</span>
         </Label>
-        <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mt-1 mb-3">
-          {isEdit ? '切换模板将重置组件配置' : '选择模板后将自动加载模板预设组件'}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="mt-2 grid grid-cols-3 gap-2">
           {mockTemplates
             .slice()
             .sort((a, b) => {
@@ -508,8 +505,7 @@ function StepBasicInfo({
                     </div>
                   </CardHeader>
                   <CardContent className="py-0.5 px-2.5 pb-1.5">
-                    <CardDescription className="text-[10px] line-clamp-1">{template.description}</CardDescription>
-                    <div className="mt-1 text-[11px] text-[var(--color-meiyou-text-placeholder)]">
+                    <div className="text-[11px] text-[var(--color-meiyou-text-placeholder)]">
                       {template.components.length} 个组件
                     </div>
                   </CardContent>
@@ -668,7 +664,6 @@ function SortableComponentItem({
               )}
             </div>
           </div>
-          <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 ml-7">{comp.description}</p>
         </CardHeader>
         {!collapsed && <CardContent>{children}</CardContent>}
       </Card>
@@ -869,7 +864,6 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属礼"
-            description="配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）"
             config={configs.exclusive_gift || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('exclusive_gift', val)}
           />
@@ -885,7 +879,6 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属生活券包"
-            description="配置会员专属生活券包（如：美团外卖红包、古茗88折券）"
             config={configs.free_benefit || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_benefit', val)}
           />
@@ -1044,7 +1037,6 @@ function StepComponentConfig({
                   <span className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
                   <Plus className="h-3 w-3 text-[var(--color-meiyou)]" />
                 </div>
-                <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 line-clamp-2">{comp.description}</p>
               </button>
             ))}
           </div>
@@ -1737,12 +1729,10 @@ function FreePurchaseConfigCard({
 
 function BenefitConfigCard({
   title,
-  description,
   config,
   onChange,
 }: {
   title: string;
-  description?: string;
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
