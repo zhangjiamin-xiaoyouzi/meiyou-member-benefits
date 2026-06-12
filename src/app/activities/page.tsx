@@ -214,9 +214,6 @@ export default function ActivitiesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-[var(--color-meiyou-text-primary)]">活动列表</h1>
-          <p className="mt-1 text-sm text-[var(--color-meiyou-text-secondary)]">
-            运营日常使用的组合拳，选定模板即可一键发布大促
-          </p>
         </div>
         <Link href="/activities/new">
           <Button className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg">
