@@ -1530,14 +1530,14 @@ function WelfareProductCard({
     <div className="space-y-6">
       {instances.map((inst, instIdx) => (
         <div key={inst.instanceId} className="border border-[var(--color-meiyou-border)] rounded-lg p-4 space-y-4 bg-white">
-          {/* 分组标题行 */}
+          {/* 组件名称 */}
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-[var(--color-meiyou-text-secondary)] shrink-0">分组名称</span>
+            <span className="text-sm font-medium text-[var(--color-meiyou-text-secondary)] shrink-0">组件名称</span>
             <Input
               className="h-8 text-sm flex-1"
               value={inst.instanceName}
               onChange={(e) => updateInstance(inst.instanceId, { instanceName: e.target.value })}
-              placeholder="输入分组名称"
+              placeholder="输入组件名称"
             />
             {instances.length > 1 && (
               <Button
@@ -1669,7 +1669,7 @@ function WelfareProductCard({
         </div>
       ))}
 
-      {/* 添加分组按钮 */}
+      {/* 添加组件按钮 */}
       {instances.length < MAX_WELFARE_INSTANCES && (
         <Button
           variant="outline"
@@ -1677,7 +1677,7 @@ function WelfareProductCard({
           onClick={addInstance}
         >
           <Plus className="h-4 w-4 mr-1" />
-          添加分组（{instances.length}/{MAX_WELFARE_INSTANCES}）
+          添加组件（{instances.length}/{MAX_WELFARE_INSTANCES}）
         </Button>
       )}
     </div>
