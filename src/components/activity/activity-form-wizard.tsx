@@ -678,50 +678,57 @@ function SortableComponentItem({
   );
 }
 
-// ==================== 可拖拽导航项 ====================
+// ==================== 可拖拽导航项（HTML5 Drag） ====================
 
-function SortableNavItem({
-  id,
+function DraggableNavItem({
   comp,
+  onReorder,
 }: {
-  id: string;
   comp: TemplateComponent;
+  onReorder: (dragKey: string, overKey: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : 'auto' as never,
-  };
+  const [isDragOver, setIsDragOver] = useState(false);
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <div
-        className="flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate group"
+    <div
+      className={`flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-colors truncate group ${
+        isDragOver
+          ? 'border-t-2 border-[var(--color-meiyou)] bg-[rgba(255,77,136,0.06)]'
+          : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
+      }`}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', comp.key);
+        e.dataTransfer.effectAllowed = 'move';
+      }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        setIsDragOver(true);
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        const dragKey = e.dataTransfer.getData('text/plain');
+        if (dragKey && dragKey !== comp.key) {
+          onReorder(dragKey, comp.key);
+        }
+      }}
+    >
+      {/* 拖拽手柄 */}
+      <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab" />
+      {/* 点击滚动到对应区域 */}
+      <button
+        type="button"
+        className="flex-1 text-left truncate"
+        onClick={() => {
+          const el = document.getElementById(`comp-section-${comp.key}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }}
       >
-        {/* 拖拽手柄 */}
-        <button
-          type="button"
-          className="cursor-grab active:cursor-grabbing p-0 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 text-gray-400 hover:text-gray-600 shrink-0"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical className="h-3 w-3" />
-        </button>
-        {/* 点击滚动到对应区域 */}
-        <button
-          type="button"
-          className="flex-1 text-left truncate"
-          onClick={() => {
-            const el = document.getElementById(`comp-section-${comp.key}`);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
-        >
-          {comp.name}
-        </button>
-      </div>
+        {comp.name}
+      </button>
     </div>
   );
 }
@@ -786,6 +793,15 @@ function StepComponentConfig({
     const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
+    const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
+    onComponentsChange(newEnabled);
+  };
+
+  // 导航栏拖拽排序回调
+  const handleNavReorder = (dragKey: string, overKey: string) => {
+    const oldIndex = enabledComponents.findIndex((c) => c.key === dragKey);
+    const newIndex = enabledComponents.findIndex((c) => c.key === overKey);
+    if (oldIndex === -1 || newIndex === -1) return;
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(newEnabled);
   };
@@ -939,44 +955,41 @@ function StepComponentConfig({
 
   return (
     <div className="flex gap-6">
-      {/* 拖拽上下文覆盖左侧目录 + 右侧列表 */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        {/* 左侧快捷目录 */}
-        <div className="w-48 shrink-0">
-          <div className="sticky top-4">
-            <h4 className="text-xs font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-2">组件目录</h4>
-            <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
-              <nav className="space-y-0.5">
-                {enabledComponents.map((comp) => (
-                  <SortableNavItem
-                    key={comp.key}
-                    id={comp.key}
-                    comp={comp}
-                  />
-                ))}
-              </nav>
-            </SortableContext>
-            {availableComponents.length > 0 && (
-              <div className="mt-3 px-2 relative">
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setAddMenuPosition({ x: rect.right, y: rect.bottom, left: rect.left });
-                    setAddMenuOpen(!addMenuOpen);
-                  }}
-                >
-                  <Plus className="h-3 w-3" />
-                  添加组件
-                </button>
-              </div>
-            )}
-          </div>
+      {/* 左侧快捷目录（HTML5 Drag 排序） */}
+      <div className="w-48 shrink-0">
+        <div className="sticky top-4">
+          <h4 className="text-xs font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-2">组件目录</h4>
+          <nav className="space-y-0.5">
+            {enabledComponents.map((comp) => (
+              <DraggableNavItem
+                key={comp.key}
+                comp={comp}
+                onReorder={handleNavReorder}
+              />
+            ))}
+          </nav>
+          {availableComponents.length > 0 && (
+            <div className="mt-3 px-2 relative">
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setAddMenuPosition({ x: rect.right, y: rect.bottom, left: rect.left });
+                  setAddMenuOpen(!addMenuOpen);
+                }}
+              >
+                <Plus className="h-3 w-3" />
+                添加组件
+              </button>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* 右侧组件列表（可拖拽排序） */}
-        <div className="flex-1 min-w-0">
+      {/* 右侧组件列表（dnd-kit 拖拽排序） */}
+      <div className="flex-1 min-w-0">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
               {enabledComponents.map((comp) => (
@@ -992,8 +1005,8 @@ function StepComponentConfig({
                 ))}
             </div>
           </SortableContext>
-        </div>
-      </DndContext>
+        </DndContext>
+      </div>
 
       {/* 添加组件下拉菜单（fixed定位，避免被侧边栏裁切） */}
       {addMenuOpen && (
