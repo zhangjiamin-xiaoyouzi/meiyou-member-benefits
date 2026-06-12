@@ -599,11 +599,13 @@ function StepBasicInfo({
 
 function SortableComponentItem({
   id,
+  sectionId,
   comp,
   children,
   onRemove,
 }: {
   id: string;
+  sectionId: string;
   comp: TemplateComponent;
   children: React.ReactNode;
   onRemove?: () => void;
@@ -619,7 +621,7 @@ function SortableComponentItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} id={sectionId}>
       <Card className="border-[var(--color-meiyou-border)]">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -691,6 +693,7 @@ function StepComponentConfig({
 }) {
   const configs = data.componentConfigs;
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
 
   const updateConfig = (key: keyof ComponentConfigs, value: ComponentConfigs[keyof ComponentConfigs]) => {
     onChange({
@@ -723,7 +726,7 @@ function StepComponentConfig({
 
   // 拖拽排序
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -736,11 +739,7 @@ function StepComponentConfig({
     if (oldIndex === -1 || newIndex === -1) return;
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
-
-    // 重建 components 数组：必选组件保持原序，enabled 组件按新序
-    const requiredComps = components.filter((c) => c.required);
-    const updated = [...requiredComps, ...newEnabled];
-    onComponentsChange(updated);
+    onComponentsChange(newEnabled);
   };
 
   // 渲染单个组件的配置内容
@@ -912,33 +911,19 @@ function StepComponentConfig({
             ))}
           </nav>
           {availableComponents.length > 0 && (
-            <div className="mt-3 px-2">
+            <div className="mt-3 px-2 relative">
               <button
                 type="button"
                 className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
-                onClick={() => setAddMenuOpen(!addMenuOpen)}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setAddMenuPosition({ x: rect.right, y: rect.bottom, left: rect.left });
+                  setAddMenuOpen(!addMenuOpen);
+                }}
               >
                 <Plus className="h-3 w-3" />
                 添加组件
               </button>
-              {addMenuOpen && (
-                <div className="mt-1 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-lg z-50 overflow-hidden">
-                  {availableComponents.map((comp) => (
-                    <button
-                      key={comp.key}
-                      type="button"
-                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
-                      onClick={() => handleAddComponent(comp)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
-                        <Plus className="h-3 w-3 text-[var(--color-meiyou)]" />
-                      </div>
-                      <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 line-clamp-2">{comp.description}</p>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -950,24 +935,52 @@ function StepComponentConfig({
           <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
               {enabledComponents.map((comp) => (
-                <div key={comp.key} id={`comp-section-${comp.key}`}>
                   <SortableComponentItem
+                    key={comp.key}
                     id={comp.key}
+                    sectionId={`comp-section-${comp.key}`}
                     comp={comp}
                     onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
                   >
                     {renderComponentContent(comp.key)}
                   </SortableComponentItem>
-                </div>
-              ))}
+                ))}
             </div>
           </SortableContext>
         </DndContext>
       </div>
 
-      {/* 点击外部关闭添加菜单 */}
+      {/* 添加组件下拉菜单（fixed定位，避免被侧边栏裁切） */}
       {addMenuOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
+          <div
+            className="fixed z-50 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-xl overflow-hidden"
+            style={{
+              top: addMenuPosition.y + 4,
+              left: addMenuPosition.left,
+              width: 240,
+            }}
+          >
+            <div className="px-3 py-2 border-b border-[var(--color-meiyou-divider)] bg-gray-50">
+              <span className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">选择要添加的组件</span>
+            </div>
+            {availableComponents.map((comp) => (
+              <button
+                key={comp.key}
+                type="button"
+                className="w-full px-3 py-2.5 text-left hover:bg-[rgba(255,77,136,0.04)] transition-colors border-b border-[var(--color-meiyou-divider)] last:border-b-0"
+                onClick={() => handleAddComponent(comp)}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-[var(--color-meiyou-text-primary)]">{comp.name}</span>
+                  <Plus className="h-3 w-3 text-[var(--color-meiyou)]" />
+                </div>
+                <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)] mt-0.5 line-clamp-2">{comp.description}</p>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
