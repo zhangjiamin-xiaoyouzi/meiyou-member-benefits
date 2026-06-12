@@ -2097,40 +2097,29 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       // Migrate old exclusive_gift and free_benefit to welfare_product instances
       const egConfig = componentConfigs.exclusive_gift as Record<string, unknown> | undefined;
       const fbConfig = componentConfigs.free_benefit as Record<string, unknown> | undefined;
-      if (egConfig || fbConfig) {
-        const instances: Array<{ instanceId: string; instanceName: string; products: WelfareProductItem[]; displayMode: string; buttonTheme: string }> = [];
-        if (egConfig) {
-          instances.push({
-            instanceId: `wp_${Date.now()}_1`,
-            instanceName: '会员专属礼',
-            products: Array.isArray((egConfig as Record<string, unknown>).products) ? ((egConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
-            displayMode: 'single',
-            buttonTheme: 'pink',
-          });
-        }
-        if (fbConfig) {
-          instances.push({
-            instanceId: `wp_${Date.now()}_2`,
-            instanceName: '会员专属生活券包',
-            products: Array.isArray((fbConfig as Record<string, unknown>).products) ? ((fbConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
-            displayMode: 'single',
-            buttonTheme: 'pink',
-          });
-        }
-        componentConfigs.welfare_product = { instances };
+      if (egConfig) {
+        const wpId = `wp_${Date.now()}_1`;
+        componentConfigs[wpId] = {
+          instanceName: '会员专属礼',
+          products: Array.isArray((egConfig as Record<string, unknown>).products) ? ((egConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
+          displayMode: 'single',
+          buttonTheme: 'pink',
+        };
         delete componentConfigs.exclusive_gift;
+      }
+      if (fbConfig) {
+        const wpId = `wp_${Date.now()}_2`;
+        componentConfigs[wpId] = {
+          instanceName: '会员专属生活券包',
+          products: Array.isArray((fbConfig as Record<string, unknown>).products) ? ((fbConfig as Record<string, unknown>).products as WelfareProductItem[]) : [],
+          displayMode: 'single',
+          buttonTheme: 'pink',
+        };
         delete componentConfigs.free_benefit;
       }
       return { componentConfigs: componentConfigs as unknown as ComponentConfigs };
     }
-    return { componentConfigs: {
-      welfare_product: {
-        instances: [
-          { instanceId: 'wp_default_1', instanceName: '会员专属礼', products: [], displayMode: 'single', buttonTheme: 'pink' },
-          { instanceId: 'wp_default_2', instanceName: '会员专属生活券包', products: [], displayMode: 'single', buttonTheme: 'pink' },
-        ],
-      },
-    } as unknown as ComponentConfigs };
+    return { componentConfigs: {} as unknown as ComponentConfigs };
   });
 
   const isFormValid = () => {
