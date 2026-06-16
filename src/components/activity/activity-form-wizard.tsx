@@ -55,6 +55,7 @@ import {
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
+  Template,
   TemplateComponent,
   AudienceRule,
   Activity,
@@ -71,7 +72,7 @@ import type {
   RulePopupConfig,
   ComponentAudienceRule,
 } from '@/lib/types';
-import { mockTemplates } from '@/lib/mock-data';
+import { mapTemplateFromDb } from '@/lib/types';
 
 // ==================== Step Data Types ====================
 
@@ -349,13 +350,15 @@ function StepBasicInfo({
   onChange,
   isEdit,
   hideComponentsSection,
+  templates,
 }: {
   data: Step1Data;
   onChange: (data: Step1Data) => void;
   isEdit: boolean;
   hideComponentsSection?: boolean;
+  templates: Template[];
 }) {
-  const selectedTemplate = mockTemplates.find((t) => t.id === data.templateId);
+  const selectedTemplate = templates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
   // 活动分类已改为 促活/转化/拉新，模板分类仍保留原值
 
@@ -378,7 +381,7 @@ function StepBasicInfo({
   }, [data.category]);
 
   const handleTemplateSelect = (templateId: string) => {
-    const template = mockTemplates.find((t) => t.id === templateId);
+    const template = templates.find((t) => t.id === templateId);
     onChange({
       ...data,
       templateId,
@@ -467,7 +470,7 @@ function StepBasicInfo({
           选择活动模版 <span className="text-meiyou">*</span>
         </Label>
         <div className="mt-2 grid grid-cols-3 gap-2">
-          {mockTemplates
+          {templates
             .slice()
             .sort((a, b) => {
               const order: Record<string, number> = { '会员日': 0, '固定节日': 1, '年度大促': 2 };
@@ -1952,6 +1955,19 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  // 从 API 获取模板列表
+  const [templates, setTemplates] = useState<Template[]>([]);
+  useEffect(() => {
+    fetch('/api/templates')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          setTemplates(json.data.map(mapTemplateFromDb));
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const [step1Data, setStep1Data] = useState<Step1Data>(() => {
     if (initialData) {
       const raw = initialData as unknown as Record<string, unknown>;
@@ -1963,16 +1979,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       let components: TemplateComponent[] = [];
       if (Array.isArray(rawComponents)) {
         components = rawComponents.map((c: TemplateComponent) => ({ ...c }));
-      } else if (typeof rawComponents === 'object') {
-        const compMap = rawComponents as Record<string, boolean>;
-        const tplId = (raw.template_id || raw.templateId || '') as string;
-        const tpl = mockTemplates.find((t: { id: string }) => t.id === tplId);
-        if (tpl && Array.isArray(tpl.components)) {
-          components = tpl.components.map((c: TemplateComponent) => ({
-            ...c,
-            enabled: compMap[c.key] !== undefined ? compMap[c.key] : c.enabled,
-          }));
-        }
+      // 如果 components 是对象（键值对），需要模板数据来还原，延迟到 templates 加载后处理
       }
       return {
         templateId: (raw.template_id || raw.templateId || '') as string,
@@ -1988,12 +1995,12 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         components,
       };
     }
-    const defaultTemplate = mockTemplates.find((t) => t.id === 'tpl_002');
+    const defaultTemplate = templates.find((t) => t.id === 'tpl_002');
     return {
       templateId: 'tpl_002',
       category: '',
       name: '',
-      components: defaultTemplate ? defaultTemplate.components.map((c) => ({ ...c })) : [],
+      components: [],
 
       sellStartTime: '',
       sellEndTime: '',
@@ -2003,6 +2010,40 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       refundCutoffTime: '',
     };
   });
+
+  // 模板加载完成后，初始化组件（新建模式）或还原组件（编辑模式的键值对格式）
+  useEffect(() => {
+    if (templates.length === 0) return;
+
+    if (!initialData) {
+      // 新建模式：用默认模板的组件初始化
+      const defaultTemplate = templates.find((t) => t.id === 'tpl_002');
+      if (defaultTemplate && step1Data.components.length === 0) {
+        setStep1Data(prev => ({
+          ...prev,
+          components: defaultTemplate.components.map((c: TemplateComponent) => ({ ...c })),
+        }));
+      }
+    } else {
+      // 编辑模式：如果 components 是键值对格式，需要从模板还原
+      const raw = initialData as unknown as Record<string, unknown>;
+      const rawComponents = raw.components
+        ? (typeof raw.components === 'string' ? JSON.parse(raw.components as string) : raw.components)
+        : null;
+      if (rawComponents && !Array.isArray(rawComponents) && typeof rawComponents === 'object') {
+        const compMap = rawComponents as Record<string, boolean>;
+        const tplId = (raw.template_id || raw.templateId || '') as string;
+        const tpl = templates.find((t) => t.id === tplId);
+        if (tpl && Array.isArray(tpl.components)) {
+          const components = tpl.components.map((c: TemplateComponent) => ({
+            ...c,
+            enabled: compMap[c.key] !== undefined ? compMap[c.key] : c.enabled,
+          }));
+          setStep1Data(prev => ({ ...prev, components }));
+        }
+      }
+    }
+  }, [templates]);
 
   const [step2Data, setStep2Data] = useState<Step2Data>(() => {
     if (initialData) {
@@ -2092,7 +2133,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       name: step1Data.name,
       category: step1Data.category,
       template_id: step1Data.templateId,
-      template_name: mockTemplates.find((t) => t.id === step1Data.templateId)?.name || '',
+      template_name: templates.find((t) => t.id === step1Data.templateId)?.name || '',
       status: 'active' as const,
       time_config: {
         sellStartTime: step1Data.sellStartTime,
@@ -2163,7 +2204,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           {/* 基础信息 */}
           <div>
             <h3 className="text-base font-semibold text-[var(--color-meiyou-text-primary)] mb-4 pb-2 border-b border-[var(--color-meiyou-divider)]">基础信息</h3>
-            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} hideComponentsSection />
+            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} hideComponentsSection templates={templates} />
           </div>
 
           {/* 活动组件 */}

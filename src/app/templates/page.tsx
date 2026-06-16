@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,7 @@ import {
 } from '@/components/ui/table';
 import { Pencil, Search } from 'lucide-react';
 import type { Template } from '@/lib/types';
-import { mockTemplates } from '@/lib/mock-data';
-import { TEMPLATE_CATEGORIES } from '@/lib/types';
+import { TEMPLATE_CATEGORIES, mapTemplateFromDb } from '@/lib/types';
 
 const categoryColorMap: Record<string, string> = {
   '年度大促': 'bg-pink-50 text-pink-700 border-pink-200',
@@ -45,11 +44,25 @@ export default function TemplatesPage() {
   const router = useRouter();
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/templates')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          setTemplates(json.data.map(mapTemplateFromDb));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
   // 动态收集所有已有分类
   const allCategories = [...TEMPLATE_CATEGORIES];
 
-  const filteredTemplates = mockTemplates.filter((t) => {
+  const filteredTemplates = templates.filter((t) => {
     const matchCategory = filterCategory === 'all' || t.category === filterCategory;
     const matchSearch = !searchText || t.name.includes(searchText) || t.description.includes(searchText);
     return matchCategory && matchSearch;
@@ -109,7 +122,13 @@ export default function TemplatesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTemplates.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center text-gray-400">
+                  加载中...
+                </TableCell>
+              </TableRow>
+            ) : filteredTemplates.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center text-gray-400">
                   暂无匹配的模板

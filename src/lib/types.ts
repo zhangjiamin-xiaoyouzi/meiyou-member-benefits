@@ -250,6 +250,39 @@ export interface Activity {
   updatedBy?: string;
 }
 
+// ==================== 数据库 → 前端映射 ====================
+
+/** 数据库模板行 → 前端 Template */
+export function mapTemplateFromDb(row: Record<string, unknown>): Template {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    category: row.category as string,
+    description: row.description as string,
+    preview: row.preview as string,
+    components: (row.components as TemplateComponent[]) || [],
+    createdAt: (row.created_at as string) || '',
+    createdBy: (row.created_by as string) || '',
+    updatedAt: (row.updated_at as string) || '',
+    updatedBy: (row.updated_by as string) || '',
+  };
+}
+
+/** 数据库策略行 → 前端 PromoPatch */
+export function mapPromoPatchFromDb(row: Record<string, unknown>): PromoPatch {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    type: row.type as PromoPatchType,
+    config: row.config as PriceDiscountConfig | BonusDurationConfig | GiftConfig,
+    status: (row.status as 'active' | 'inactive') || 'inactive',
+    createdAt: (row.created_at as string) || '',
+    updatedAt: (row.updated_at as string) || '',
+    createdBy: row.created_by as string | undefined,
+    updatedBy: row.updated_by as string | undefined,
+  };
+}
+
 // ==================== 通用类型 ====================
 
 export interface Plan {

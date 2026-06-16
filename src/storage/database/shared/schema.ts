@@ -1,76 +1,57 @@
-import { sql } from "drizzle-orm";
-import { pgTable, varchar, text, timestamp, boolean, integer, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, timestamp, index, varchar, jsonb, text, boolean } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
 
-// ==================== 系统表（禁止删除） ====================
+
+
 export const healthCheck = pgTable("health_check", {
-  id: integer().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	id: serial().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
 });
 
-// ==================== 模板管理 ====================
-export const templates = pgTable(
-  "templates",
-  {
-    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-    name: varchar("name", { length: 128 }).notNull(),
-    category: varchar("category", { length: 64 }).notNull(), // 模板分类（会员日/固定节日/年度大促）
-    description: text("description"),
-    preview: varchar("preview", { length: 512 }),
-    components: jsonb("components").notNull().default(sql`'[]'::jsonb`), // TemplateComponent[]
-    is_active: boolean("is_active").default(true).notNull(),
-    created_by: varchar("created_by", { length: 64 }),
-    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updated_by: varchar("updated_by", { length: 64 }),
-    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-  },
-  (table) => [
-    index("templates_category_idx").on(table.category),
-    index("templates_is_active_idx").on(table.is_active),
-  ]
-);
+export const activities = pgTable("activities", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	name: varchar({ length: 128 }).notNull(),
+	sceneKey: varchar("scene_key", { length: 128 }).notNull(),
+	templateId: varchar("template_id", { length: 36 }).notNull(),
+	templateName: varchar("template_name", { length: 128 }),
+	status: varchar({ length: 16 }).default('draft').notNull(),
+	timeConfig: jsonb("time_config").default({}).notNull(),
+	lotteryConfig: jsonb("lottery_config").default({}).notNull(),
+	materialConfig: jsonb("material_config").default({}).notNull(),
+	components: jsonb().default({}).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	audienceGroups: jsonb("audience_groups").default([]),
+	category: varchar({ length: 64 }),
+	componentConfigs: jsonb("component_configs").default({}),
+	createdBy: text("created_by"),
+	updatedBy: text("updated_by"),
+}, (table) => [
+	index("activities_category_idx").using("btree", table.category.asc().nullsLast().op("text_ops")),
+]);
 
-// ==================== 营销策略库 ====================
-export const promoPatches = pgTable(
-  "promo_patches",
-  {
-    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-    name: varchar("name", { length: 128 }).notNull(),
-    type: varchar("type", { length: 32 }).notNull(), // price_discount / bonus_duration / gift
-    config: jsonb("config").notNull().default(sql`'{}'::jsonb`), // PriceDiscountConfig | BonusDurationConfig | GiftConfig
-    status: varchar("status", { length: 16 }).notNull().default("active"), // active / inactive
-    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-  },
-  (table) => [
-    index("promo_patches_type_idx").on(table.type),
-    index("promo_patches_status_idx").on(table.status),
-  ]
-);
+export const promoPatches = pgTable("promo_patches", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	name: varchar({ length: 128 }).notNull(),
+	type: varchar({ length: 32 }).notNull(),
+	config: jsonb().default({}).notNull(),
+	status: varchar({ length: 16 }).default('active').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+});
 
-// ==================== 活动管理 ====================
-export const activities = pgTable(
-  "activities",
-  {
-    id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-    name: varchar("name", { length: 128 }).notNull(),
-    category: varchar("category", { length: 64 }),
-    scene_key: varchar("scene_key", { length: 128 }),
-    template_id: varchar("template_id", { length: 36 }).notNull().references(() => templates.id),
-    template_name: varchar("template_name", { length: 128 }),
-    status: varchar("status", { length: 16 }).notNull().default("draft"), // draft / scheduled / active / expired
-    time_config: jsonb("time_config").notNull().default(sql`'{}'::jsonb`), // TimeConfig
-    audience_groups: jsonb("audience_groups").notNull().default(sql`'[]'::jsonb`), // AudienceGroup[]
-    lottery_config: jsonb("lottery_config").notNull().default(sql`'{}'::jsonb`), // LotteryConfig
-    material_config: jsonb("material_config").notNull().default(sql`'{}'::jsonb`), // MaterialConfig
-    components: jsonb("components").notNull().default(sql`'{}'::jsonb`), // Record<string, boolean>
-    component_configs: jsonb("component_configs").default(sql`'{}'::jsonb`), // ComponentConfigs
-    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-  },
-  (table) => [
-    index("activities_template_id_idx").on(table.template_id),
-    index("activities_status_idx").on(table.status),
-    index("activities_category_idx").on(table.category),
-    index("activities_created_at_idx").on(table.created_at),
-  ]
-);
+export const templates = pgTable("templates", {
+	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
+	name: varchar({ length: 128 }).notNull(),
+	category: varchar({ length: 64 }).notNull(),
+	description: text(),
+	preview: varchar({ length: 512 }),
+	components: jsonb().default([]).notNull(),
+	isActive: boolean("is_active").default(true).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow(),
+	createdBy: varchar("created_by", { length: 64 }),
+	updatedBy: varchar("updated_by", { length: 64 }),
+}, (table) => [
+	index("templates_category_idx").using("btree", table.category.asc().nullsLast().op("text_ops")),
+]);

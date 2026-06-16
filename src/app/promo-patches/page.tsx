@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,7 +48,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { PromoPatch, PromoPatchType } from '@/lib/types';
-import { mockPromoPatches, mockPlans, mockLotteryPools } from '@/lib/mock-data';
+import { mapPromoPatchFromDb } from '@/lib/types';
+import { mockPlans, mockLotteryPools } from '@/lib/mock-data';
 
 const typeConfig: Record<PromoPatchType, { label: string; color: string; icon: React.ElementType; desc: string }> = {
   price_discount: {
@@ -346,14 +347,39 @@ function PatchDetailContent({ patch }: { patch: PromoPatch }) {
 }
 
 export default function PromoPatchesPage() {
-  const [patches, setPatches] = useState(mockPromoPatches);
+  const [patches, setPatches] = useState<PromoPatch[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleToggleStatus = (patchId: string) => {
-    setPatches((prev) =>
-      prev.map((p) =>
-        p.id === patchId ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' } : p
-      )
-    );
+  useEffect(() => {
+    fetch('/api/promo-patches')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          setPatches(json.data.map(mapPromoPatchFromDb));
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleToggleStatus = async (patchId: string) => {
+    const patch = patches.find((p) => p.id === patchId);
+    if (!patch) return;
+    const newStatus = patch.status === 'active' ? 'inactive' : 'active';
+    try {
+      const res = await fetch(`/api/promo-patches/${patchId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        setPatches((prev) =>
+          prev.map((p) => (p.id === patchId ? { ...p, status: newStatus } : p))
+        );
+      }
+    } catch {
+      // ignore
+    }
   };
 
   return (
