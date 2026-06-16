@@ -24,12 +24,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .gallery{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:1500px}
 .sw{display:flex;flex-direction:column;align-items:center;gap:14px}
 .sl{font-size:var(--fxs);color:var(--t2);font-weight:600;letter-spacing:1px;background:rgba(0,0,0,.04);padding:4px 12px;border-radius:var(--rf)}
-.phone{width:375px;background:var(--bg);border-radius:40px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.15),0 0 0 3px #1a1a1a,0 0 0 5px #333;position:relative}
+.phone{width:408px;background:var(--bg);border-radius:40px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.15),0 0 0 3px #1a1a1a,0 0 0 5px #333;position:relative}
 .pna{height:50px;background:#1a1a1a;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;z-index:10}
 .di{width:100px;height:28px;background:#000;border-radius:20px}
-.ps{background:var(--bg);min-height:660px;position:relative;overflow:hidden}
-.sb{height:40px;background:#FFF;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:11px;font-weight:600;color:var(--t1)}
-.sbr{display:flex;align-items:center;gap:6px;font-size:11px}
+.ps{background:var(--bg);min-height:780px;position:relative;overflow:hidden}
+.sb{height:46px;background:transparent;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;font-size:11px;font-weight:700;color:#111;position:relative;z-index:3}
+.sbr{display:flex;align-items:center;gap:8px;font-size:11px}
+.sig{display:flex;align-items:flex-end;gap:3px;height:14px}
+.sig span{display:block;width:4px;background:#111;border-radius:2px}
+.sig span:nth-child(1){height:6px}
+.sig span:nth-child(2){height:9px}
+.sig span:nth-child(3){height:12px}
+.sig span:nth-child(4){height:14px}
+.wifi{font-size:13px;line-height:1}
+.battery{width:25px;height:14px;border:1.6px solid #7c8793;border-radius:7px;position:relative}
+.battery::before{content:'';position:absolute;right:-3px;top:4px;width:2px;height:6px;border-radius:0 2px 2px 0;background:#7c8793}
+.battery::after{content:'';position:absolute;left:2px;top:2px;bottom:2px;right:7px;background:#111;border-radius:4px}
 .nb{height:44px;display:flex;align-items:center;padding:0 12px;background:#FFF;position:sticky;top:0;z-index:10}
 .nbk{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t1);cursor:pointer;border-radius:50%}
 .nbk:active{background:var(--b2)}
@@ -63,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .btn-o:active{background:#F7F8FA}
 .btn-p{background:var(--pink-grad);color:#FFF;box-shadow:0 4px 12px rgba(255,77,136,.35)}
 .btn-p:active{transform:scale(.97)}
-.btn-p.dis{background:#F2B0C8;box-shadow:none;cursor:not-allowed;pointer-events:none}
+.btn-p.dis{background:#F2B0C8;box-shadow:none;cursor:not-allowed}
 .btn-f{width:100%;flex:none}
 .spage{background:linear-gradient(180deg,#FFF,#FFFBFD);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:520px;padding:40px 24px;text-align:center}
 .succ{min-height:660px;display:flex;flex-direction:column;background:linear-gradient(180deg,#FFF,#FFFBFD)}
@@ -80,21 +90,98 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .sc{background:#FFF;border-radius:var(--rl);padding:16px 20px;width:100%;max-width:300px;box-shadow:var(--sm);text-align:left;margin-bottom:24px}
 .scl{font-size:var(--fc);color:var(--t3);letter-spacing:.5px;margin-bottom:6px}
 .scv{font-size:var(--flg);font-weight:600;color:var(--t1)}
-.pg{display:flex;flex-direction:column;min-height:660px;background:var(--bg)}
-.bh{background:linear-gradient(180deg,#FFF5F8,#FFF);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
-.bh::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:#FFE0EB;border-radius:50%;opacity:.5}
-.bh::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:#FFF0F5;border-radius:50%;opacity:.4}
-.btag{display:inline-flex;align-items:center;gap:4px;background:var(--pink-grad);color:#FFF;font-size:var(--fc);font-weight:600;padding:4px 12px;border-radius:var(--rf);margin-bottom:14px;position:relative;z-index:1}
-.bhi{font-size:48px;margin-bottom:10px;position:relative;z-index:1}
-.bhn{font-size:var(--ft);font-weight:800;color:var(--t1);margin-bottom:4px;position:relative;z-index:1}
-.bhs{font-size:var(--fsm);color:var(--t2);position:relative;z-index:1}
-.bhe{font-size:var(--fxs);color:var(--t3);margin-top:4px;position:relative;z-index:1}
-.scd{background:#FFF;margin:10px 16px;border-radius:var(--rl);padding:16px;box-shadow:var(--xs)}
-.sdt{font-size:var(--fsm);font-weight:700;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.sdot{width:4px;height:16px;background:var(--pink-grad);border-radius:2px}
-.stl{list-style:none;padding:0}
-.stl li{font-size:var(--fsm);color:var(--t2);line-height:2.2;padding-left:20px;position:relative}
-.stl li::before{content:'';position:absolute;left:0;top:10px;width:6px;height:6px;border:2px solid var(--pink2);border-radius:50%}
+.pg{display:flex;flex-direction:column;min-height:780px;background:linear-gradient(180deg,#dff2ff 0,#eef0f5 46%,#f3f3f6 100%)}
+.nb.hero-nav{background:transparent;position:relative;padding:6px 16px 0;height:56px;align-items:flex-start;z-index:2}
+.nb.hero-nav .nt{font-size:15px;font-weight:700;color:#2f3238;padding-top:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+.nb.hero-nav .nbk{width:36px;height:36px;font-size:34px;color:#5e626b}
+.brand-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:9px;background:linear-gradient(135deg,#ff5a93,#ff88b1);color:#fff;font-size:11px;line-height:1}
+.brand-divider{font-weight:500;color:#7b7f88}
+.brand-name{font-size:13px;font-weight:800;letter-spacing:.2px}
+.brand-sub{font-size:10px;font-weight:800;display:inline-block;border-bottom:2px solid #1a1c20;line-height:1.1;padding-bottom:1px}
+.hero-card{margin:6px 16px 0;border-radius:24px;overflow:hidden;position:relative;background:linear-gradient(135deg,#55c4ff 0,#42b2fb 58%,#58c0ff 100%);padding:20px 20px 20px;min-height:192px;box-shadow:0 10px 26px rgba(65,156,222,.18)}
+.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 38% 54%,rgba(255,255,255,.2),transparent 34%),radial-gradient(circle at 66% 52%,rgba(255,255,255,.12),transparent 28%);opacity:.9}
+.hero-card::after{content:'';position:absolute;left:50%;top:14px;bottom:14px;border-left:2px dashed rgba(255,255,255,.56)}
+.ticket-notch{position:absolute;left:50%;transform:translateX(-50%);width:22px;height:11px;background:#dff2ff;border-radius:0 0 12px 12px;z-index:2}
+.ticket-notch.top{top:0}
+.ticket-notch.bottom{bottom:0;border-radius:12px 12px 0 0}
+.hero-copy,.hero-side{position:relative;z-index:1;width:50%}
+.hero-copy{padding-top:20px;color:#fff}
+.hero-brand{font-size:12px;opacity:.92;letter-spacing:.2px;margin-bottom:12px}
+.hero-title{font-size:25px;line-height:1.06;font-weight:800;margin-bottom:10px}
+.hero-sub{font-size:12px;font-weight:600;opacity:.95}
+.hero-side{position:absolute;right:18px;top:24px;bottom:16px;display:flex;align-items:center;justify-content:center}
+.mini-card{width:122px;height:74px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(236,247,255,.9));box-shadow:0 10px 24px rgba(35,118,196,.2);transform:rotate(-14deg);display:flex;align-items:center;justify-content:center;position:relative}
+.mini-card::before{content:'洁牙包';position:absolute;left:15px;top:18px;font-size:15px;font-weight:800;color:#2568d0;transform:rotate(-6deg)}
+.mini-card::after{content:'';position:absolute;right:-6px;top:27px;width:12px;height:18px;background:rgba(255,255,255,.58);border-radius:0 8px 8px 0}
+.mini-tooth{font-size:31px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.08));margin-left:46px}
+.benefit-wrap{background:#f4f4f5;border-radius:20px 20px 0 0;margin-top:-2px;padding:12px 16px 26px}
+.benefit-card{background:#fff;border-radius:20px;padding:14px 14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+.benefit-title{display:flex;align-items:center;gap:8px;color:#8e8e93;font-size:14px;font-weight:600;margin-bottom:12px}
+.benefit-check{width:24px;height:24px;border-radius:50%;background:#ffe6ef;color:#ff72a3;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.code-card{background:#faf3f6;border-radius:18px;padding:16px 16px 14px;margin-bottom:16px;border:1px solid #f6e8ee}
+.code-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.code-main{font-size:15px;line-height:1.35;color:#2e2f33;font-weight:700;letter-spacing:.1px;max-width:226px}
+.code-main .light{font-weight:600}
+.copy-btn{min-width:68px;height:34px;border-radius:999px;border:1.5px solid #f2a6be;background:#fff8fb;color:#ef7fa7;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.copy-btn:active{transform:scale(.98)}
+.code-expire{margin-top:8px;font-size:13px;color:#adadb3}
+.claim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.claim-panel{border:1.5px solid #f2bfd1;border-radius:16px;background:#fff;overflow:hidden}
+.claim-top{height:32px;background:linear-gradient(180deg,#ffd7e6,#ffd5e3);color:#ff6497;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;position:relative}
+.claim-top::after{content:'';position:absolute;right:-18px;top:0;width:36px;height:100%;background:#fff;border-radius:18px 0 0 18px;opacity:.8}
+.claim-body{padding:10px}
+.qr-box{height:184px;border:1px solid #f3bfd1;border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.qr-code{width:128px;height:128px;background:conic-gradient(#000 0 25%,#fff 0 50%,#000 0 75%,#fff 0) 0 0/18px 18px;border:8px solid #fff;box-shadow:inset 0 0 0 1px #000}
+.qr-brand{font-size:14px;font-weight:800;color:#16181d;letter-spacing:.4px}
+.qr-sub{font-size:11px;color:#484b52}
+.form-box{height:184px;border:1px solid #f3bfd1;border-radius:14px;overflow:hidden;background:#fff}
+.form-banner{height:60px;background:linear-gradient(90deg,rgba(103,188,207,.55),rgba(210,210,210,.18)),linear-gradient(180deg,#eff1f4,#d7d8dc);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;color:#1f2127;font-size:11px;font-weight:700}
+.form-banner::before{content:'牙科门诊预约系统';display:block;font-size:12px;font-weight:700}
+.form-fields{padding:8px 9px 9px}
+.field-label{font-size:10px;color:#8a8e98;font-weight:700;margin-bottom:3px}
+.field{height:26px;border:1px solid #f0c4d1;border-radius:2px;padding:0 9px;font-size:10px;color:#b0b2b8;display:flex;align-items:center;margin-bottom:4px}
+.field-tip{font-size:10px;color:#ff8aa8;margin-bottom:6px}
+.submit-btn{height:24px;border-radius:2px;background:#4b96ea;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.detail-text{font-size:13px;line-height:1.6;color:#6b6d74;font-weight:500}
+.detail-text strong{display:block;color:#5b5d64;font-size:14px;margin-bottom:4px}
+.detail-text .em{font-size:14px;font-weight:800;color:#5b5d64}
+.detail-text .block{display:block;margin-top:4px}
+.simple-card{background:#fff;border-radius:20px;padding:16px 16px 14px;box-shadow:0 2px 6px rgba(0,0,0,.03);margin-bottom:14px}
+.status-panel{background:#f2fcf7;border:1px solid #bfe9d0;border-radius:16px;padding:14px}
+.status-panel.redeemed{background:#f3fbf7}
+.status-panel.pending{background:#fff7fa;border:1px solid #f5ccd9}
+.status-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.status-left{display:flex;align-items:center;gap:8px;min-width:0}
+.status-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;background:#00b578}
+.status-icon.pending{background:#ff7aa8}
+.status-copy{font-size:13px;font-weight:700;color:#00a96b;line-height:1.5}
+.status-copy.muted{color:#4f8f73}
+.status-copy.pending{color:#e14d84}
+.status-link{font-size:12px;color:#9aa1ab;cursor:pointer;white-space:nowrap}
+.status-desc{padding-left:32px;margin-top:8px;font-size:12px;line-height:1.7;color:#7f8792}
+.status-tag{display:inline-flex;align-items:center;gap:5px;background:#f0fff6;color:#00b578;border-radius:999px;font-size:12px;font-weight:700;padding:4px 10px;margin-bottom:8px}
+.status-tag .bdot{width:6px;height:6px;border-radius:50%;background:#00b578}
+.coupon-card{background:#fff;border-radius:18px;display:flex;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+.coupon-side{width:94px;flex-shrink:0;background:linear-gradient(180deg,#ff77a8,#ff5f97);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;padding:18px 10px}
+.coupon-side::after{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:#f4f4f5;border-radius:50%}
+.coupon-side.used{background:#c8ccd3}
+.coupon-label{font-size:10px;opacity:.86;letter-spacing:.8px}
+.coupon-icon{font-size:20px;font-weight:800}
+.coupon-main{flex:1;padding:16px 18px 16px 24px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.coupon-code{font-size:14px;font-weight:700;color:#2e2f33;letter-spacing:.3px;font-family:"SF Mono",Menlo,Consolas,monospace}
+.coupon-action{font-size:13px;color:#ff6a99;font-weight:700;cursor:pointer}
+.coupon-main.used .coupon-code{color:#b9bec7;text-decoration:line-through}
+.success-wrap{padding:10px 16px 24px}
+.success-card{background:#fff;border-radius:22px;padding:26px 20px 20px;box-shadow:0 4px 18px rgba(0,0,0,.04);text-align:center}
+.success-icon{width:70px;height:70px;border-radius:35px;margin:0 auto 18px;background:linear-gradient(135deg,#00b578,#37d99d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:800;box-shadow:0 10px 24px rgba(0,181,120,.22)}
+.success-title{font-size:22px;font-weight:800;color:#30333a;margin-bottom:10px}
+.success-desc{font-size:14px;line-height:1.75;color:#7b828d;margin-bottom:18px}
+.success-desc strong{color:#ff6d9b}
+.success-info{background:#faf3f6;border:1px solid #f6e8ee;border-radius:16px;padding:14px 16px;text-align:left;margin-bottom:18px}
+.success-label{font-size:11px;color:#b1b5bc;margin-bottom:6px}
+.success-value{font-size:15px;font-weight:700;color:#2f3238}
+.success-note{font-size:12px;line-height:1.7;color:#99a0aa;margin-bottom:18px}
+.success-btn{width:100%;height:40px;border:none;border-radius:999px;background:linear-gradient(135deg,#ff6a99,#ff88b1);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(255,106,153,.24)}
 .asc{background:var(--green-bg);border:1px solid #B7E8D0;border-radius:var(--rm);padding:16px}
 .ash{display:flex;align-items:center;justify-content:space-between}
 .asl{display:flex;align-items:center;gap:8px}
@@ -193,59 +280,156 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 <div class="sw">
 <div class="sl">交互原型</div>
 <div class="phone"><div class="pna"><div class="di"></div></div><div class="ps" id="app">
-<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="sb"><span>17:21</span><div class="sbr"><div class="sig"><span></span><span></span><span></span><span></span></div><span class="wifi">◜◝</span><div class="battery"></div></div></div>
 <div class="toast hidden" id="toast"></div>
 
 <section class="screen active" data-screen="detailUnauthorized">
 <div class="pg">
-<div class="nb"><div class="nbk" data-action="back">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
-<div class="bh"><div class="btag">🦷 会员专属福利</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div><div class="bhe">有效期至 2026-07-26</div></div>
-<div class="scd"><div class="sdt"><span class="sdot"></span>使用方式</div><ul class="stl"><li>前往固德口腔小程序预约</li><li>到店出示福利券码</li></ul></div>
-<div class="apc" data-action="open-auth"><div class="apl"><div class="api">💡</div><div class="apt">觉得预约麻烦？<span class="em">授权固德口腔主动联系您</span>，帮您预约，省心又省力。</div></div><div class="apa">›</div></div>
-<div class="cc"><div class="ccl"><span class="cl">福利券码</span><span class="cv">🎫</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div><div class="cca" data-action="toast" data-message="已模拟跳转小程序，自助核销流程不变">去小程序核销 ›</div></div></div>
+<div class="nb hero-nav"><div class="nbk" data-action="back">&#8249;</div><div class="nt"><span class="brand-badge">♥</span><span class="brand-name">美柚会员</span><span class="brand-divider">|</span><span class="brand-sub">MALOCL NIC</span></div><div class="ns"></div></div>
+<div class="hero-card">
+<div class="ticket-notch top"></div>
+<div class="ticket-notch bottom"></div>
+<div class="hero-copy">
+<div class="hero-brand">美柚会员·周年庆</div>
+<div class="hero-title">洁牙包</div>
+<div class="hero-sub">马泷齿科免费洁牙包</div>
 </div>
-</section>
-
-<section class="screen" data-screen="success">
-<div class="succ">
-<div class="nb"><div class="nbk" data-action="back">&#8249;</div><div class="nt">授权成功</div><div class="ns"></div></div>
-<div class="spage">
-<div class="siw"><span class="sck">✓</span></div>
-<div class="st">授权成功</div>
-<div class="sd">固德口腔客服将在<strong>24小时内</strong>联系您，请保持手机畅通。</div>
-<div class="sc"><div class="scl">授权服务商</div><div class="scv">固德口腔</div><div class="scl" style="margin-top:8px;">授权有效期至</div><div class="scv">2026-06-10</div></div>
-<div class="sh">您可在「我的福利」中查看授权状态，<br>也可在福利详情页进入数据授权管理。</div>
+<div class="hero-side"><div class="mini-card"><div class="mini-tooth">🦷</div></div></div>
 </div>
-<div class="footer" style="position:static;padding-top:0;background:transparent;"><div class="btr" style="width:100%;max-width:280px;margin:0 auto;"><button class="btn btn-p" data-action="go-detail">查看福利详情</button></div></div>
+<div class="benefit-wrap">
+<div class="simple-card">
+<div class="benefit-title"><span class="benefit-check">✓</span><span>是否已授权</span></div>
+<div class="status-panel pending">
+<div class="status-head">
+<div class="status-left"><div class="status-icon pending">!</div><div class="status-copy pending">未授权，暂未同步服务商联系信息</div></div>
+<div class="status-link" data-action="open-auth">去授权 ›</div>
+</div>
+<div class="status-desc">授权后，服务商可在有效期内主动联系您，协助预约和使用福利。</div>
+</div>
+</div>
+<div class="benefit-card">
+<div class="benefit-title"><span class="benefit-check">✓</span><span>领取美柚专享福利</span></div>
+<div class="code-card">
+<div class="code-row">
+<div class="code-main"><span class="light">兑换码：卡号：</span>J84616260密码：PNGdYM</div>
+<div class="copy-btn" data-action="toast" data-message="兑换码已复制">复制</div>
+</div>
+<div class="code-expire">有效期至：2027/3/3</div>
+</div>
+<div class="claim-grid">
+<div class="claim-panel">
+<div class="claim-top">扫码进入领取页面</div>
+<div class="claim-body">
+<div class="qr-box">
+<div class="qr-code"></div>
+<div>
+<div class="qr-brand">MALOCL NIC</div>
+<div class="qr-sub">马泷齿科</div>
+</div>
+</div>
+</div>
+</div>
+<div class="claim-panel">
+<div class="claim-top">输入卡号密码领取</div>
+<div class="claim-body">
+<div class="form-box">
+<div class="form-banner"></div>
+<div class="form-fields">
+<div class="field-label">* 卡号</div>
+<div class="field">请输入卡号</div>
+<div class="field-tip">请输入卡号</div>
+<div class="field-label">* 卡密</div>
+<div class="field">请输入卡密</div>
+<div class="field-tip">请输入卡密</div>
+<div class="submit-btn">立即预约</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="detail-text">
+<strong>福利内容：</strong>
+<span class="em">价值900元爱牙护齿家庭服务包：成人洗牙套餐+儿童全口涂氟套餐</span>
+<span class="block">使用规则：</span>
+<span class="block">1、卡号和卡密，线上下单即核销，无需人工二次核销。</span>
+</div>
+</div>
+</div>
 </div>
 </section>
 
 <section class="screen" data-screen="detailAuthorized">
 <div class="pg">
-<div class="nb"><div class="nbk" data-action="back">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
-<div class="bh"><div class="btag">🦷 会员专属福利</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div><div class="bhe">有效期至 2026-07-26</div></div>
-<div class="scd"><div class="sdt"><span class="sdot"></span>授权状态</div>
-<div class="asc"><div class="ash"><div class="asl"><div class="asi">✓</div><span class="ast">已授权，服务商将主动联系您</span></div><a class="asr" data-action="open-revoke">撤回授权 ›</a></div>
-<div class="asd">授权时间：2026-05-26 14:30<br>授权有效期至：2026-06-10</div></div></div>
-<div class="cc"><div class="ccl"><span class="cl">福利券码</span><span class="cv">🎫</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div><div class="cca" data-action="toast" data-message="已模拟跳转小程序，自助核销流程不变">去小程序核销 ›</div></div></div>
+<div class="nb hero-nav"><div class="nbk" data-action="back">&#8249;</div><div class="nt"><span class="brand-badge">♥</span><span class="brand-name">美柚会员</span><span class="brand-divider">|</span><span class="brand-sub">MALOCL NIC</span></div><div class="ns"></div></div>
+<div class="hero-card" style="min-height:176px;">
+<div class="ticket-notch top"></div>
+<div class="ticket-notch bottom" style="background:#f4f4f5"></div>
+<div class="hero-copy" style="padding-top:22px;">
+<div class="hero-brand">美柚会员·周年庆</div>
+<div class="hero-title">洁牙包</div>
+<div class="hero-sub">马泷齿科免费洁牙包</div>
 </div>
-</section>
-
-<section class="screen" data-screen="detailRedeemed">
-<div class="pg">
-<div class="nb"><div class="nbk" data-action="back">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
-<div class="bh" style="background:linear-gradient(180deg,#F5FFF9,#FFF);"><div class="btag" style="background:#00B578;">🦷 已核销</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div></div>
-<div class="scd"><div class="sdt"><span class="sdot"></span>核销信息</div><div class="sbdg ok"><span class="bdot"></span>已核销</div><div class="rdd">核销时间：2026-06-03 10:00<br>核销方式：服务商联系后到店核销<span class="tg">服务商代预约</span></div></div>
-<div class="cc rdm"><div class="ccl"><span class="cl">已使用</span><span class="cv">✓</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div></div></div>
+<div class="hero-side"><div class="mini-card"><div class="mini-tooth">🦷</div></div></div>
 </div>
-</section>
-
-<section class="screen" data-screen="authManagement">
-<div class="dpg">
-<div class="dhd"><div class="nb" style="background:transparent;padding:0;position:relative;"><div class="dbk" data-jump="detailAuthorized">&#8249;</div><div class="dtt">数据授权管理</div><div class="ns"></div></div></div>
-<div class="dcard"><div class="drow" data-action="toast" data-message="此处进入淘宝账号授权流程"><div class="dmain">淘宝账号未授权</div><div class="dstatus"><strong>去授权</strong><span class="dchev">›</span></div></div></div>
-<div class="dsec">共享</div>
-<div class="dcard"><div class="drow" data-action="toast" data-message="Apple 健康当前已连接"><div class="dmain">Apple健康</div><div class="dstatus"><strong>已连接</strong><span class="dchev">›</span></div></div><div class="dsub">共享的健康数据将应用于经期智能预测</div></div>
+<div class="benefit-wrap">
+<div class="simple-card">
+<div class="benefit-title"><span class="benefit-check">✓</span><span>是否已授权</span></div>
+<div class="status-panel">
+<div class="status-head">
+<div class="status-left"><div class="status-icon">✓</div><div class="status-copy">已授权，服务商将主动联系您</div></div>
+<div class="status-link" data-action="open-revoke">撤回授权 ›</div>
+</div>
+<div class="status-desc">授权时间：2026-05-26 14:30<br>授权有效期至：2026-06-10</div>
+</div>
+</div>
+<div class="benefit-card">
+<div class="benefit-title"><span class="benefit-check">✓</span><span>领取美柚专享福利</span></div>
+<div class="code-card">
+<div class="code-row">
+<div class="code-main"><span class="light">兑换码：卡号：</span>J84616260密码：PNGdYM</div>
+<div class="copy-btn" data-action="toast" data-message="兑换码已复制">复制</div>
+</div>
+<div class="code-expire">有效期至：2027/3/3</div>
+</div>
+<div class="claim-grid">
+<div class="claim-panel">
+<div class="claim-top">扫码进入领取页面</div>
+<div class="claim-body">
+<div class="qr-box">
+<div class="qr-code"></div>
+<div>
+<div class="qr-brand">MALOCL NIC</div>
+<div class="qr-sub">马泷齿科</div>
+</div>
+</div>
+</div>
+</div>
+<div class="claim-panel">
+<div class="claim-top">输入卡号密码领取</div>
+<div class="claim-body">
+<div class="form-box">
+<div class="form-banner"></div>
+<div class="form-fields">
+<div class="field-label">* 卡号</div>
+<div class="field">请输入卡号</div>
+<div class="field-tip">请输入卡号</div>
+<div class="field-label">* 卡密</div>
+<div class="field">请输入卡密</div>
+<div class="field-tip">请输入卡密</div>
+<div class="submit-btn">立即预约</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="detail-text">
+<strong>福利内容：</strong>
+<span class="em">价值900元爱牙护齿家庭服务包：成人洗牙套餐+儿童全口涂氟套餐</span>
+<span class="block">使用规则：</span>
+<span class="block">1、卡号和卡密，线上下单即核销，无需人工二次核销。</span>
+</div>
+</div>
+</div>
 </div>
 </section>
 
@@ -263,23 +447,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 <div class="panel">
 <div class="pt">会员福利授权流转</div>
 <div class="pd">现在不再是 7 张静态稿并排展示，而是一台可点击的移动端原型。可按主路径走，也可直接跳到任一状态验证。</div>
-<div class="stg"><span class="dot"></span><div><div class="stv" id="statusTitle">未授权</div><div class="sub" id="statusDesc">用户可在详情页发起授权，也可先自行核销。</div></div></div>
+<div class="stg"><span class="dot"></span><div><div class="stv" id="statusTitle">未授权</div><div class="sub" id="statusDesc">两个详情页结构一致，仅“是否已授权”模块的状态与操作不同。</div></div></div>
 <div class="sec"><div class="sub" style="margin-bottom:12px;">快速跳转</div><div class="chips">
 <button class="chip on" data-jump="detailUnauthorized">未授权详情</button>
 <button class="chip" data-jump="authPopup">授权弹窗</button>
-<button class="chip" data-jump="success">授权成功</button>
 <button class="chip" data-jump="detailAuthorized">已授权详情</button>
-<button class="chip" data-jump="detailRedeemed">已核销详情</button>
-<button class="chip" data-jump="authManagement">授权管理</button>
 </div></div>
-<div class="sec"><div class="sub" style="margin-bottom:12px;">主路径说明</div><div class="tips"><div class="tip">1. 从未授权详情点击“立即授权”或授权提示卡，进入授权弹窗。</div><div class="tip">2. 勾选授权书后可提交，提交后进入授权成功，再跳转回已授权详情。</div><div class="tip">3. 点击“撤回授权”会进入独立的数据授权管理页；点击“模拟已核销”进入已核销详情。</div></div></div>
+<div class="sec"><div class="sub" style="margin-bottom:12px;">主路径说明</div><div class="tips"><div class="tip">1. 未授权详情与已授权详情使用同一套展示结构。</div><div class="tip">2. 未授权页点击“去授权”会弹出授权弹窗，提交后以 toast 提示并直接进入已授权详情。</div><div class="tip">3. 已授权页点击“撤回授权”会直接回到未授权详情，因此两页差异仅在“是否已授权”模块。</div></div></div>
 </div>
 </div>
 <script>
 const ROOT_SCREEN="detailUnauthorized";
 const state={screen:"detailUnauthorized",history:[],authorized:false,redeemed:false,consent:false,authOverlay:false,toastTimer:null};
 
-const screenTitles={detailUnauthorized:["未授权","用户可在详情页发起授权，也可先自行核销。"],success:["授权成功","已完成授权，服务商会在约定时效内联系用户。"],detailAuthorized:["已授权","服务商将主动联系，用户也可继续撤回或核销。"],detailRedeemed:["已核销","福利完成核销，券码进入已使用状态。"],authManagement:["数据授权管理","这是独立页面，和当前福利内容无直接绑定。"]};
+const screenTitles={detailUnauthorized:["未授权","用户可在详情页直接发起授权，也可先自行核销。"],detailAuthorized:["已授权","服务商将主动联系，用户也可直接撤回授权。"]};
 
 function pushHistory(next){
 if(state.screen!==next){state.history.push(state.screen)}
@@ -330,11 +511,6 @@ state.redeemed=false;
 state.screen="detailUnauthorized";
 state.authOverlay=true;
 }
-if(target==="success"){
-state.authorized=true;
-state.redeemed=false;
-state.screen="success";
-}
 if(target==="detailUnauthorized"){
 state.authorized=false;
 state.redeemed=false;
@@ -344,16 +520,6 @@ if(target==="detailAuthorized"){
 state.authorized=true;
 state.redeemed=false;
 state.screen="detailAuthorized";
-}
-if(target==="detailRedeemed"){
-state.authorized=true;
-state.redeemed=true;
-state.screen="detailRedeemed";
-}
-if(target==="authManagement"){
-state.authorized=true;
-state.redeemed=false;
-state.screen="authManagement";
 }
 render();
 }
@@ -388,17 +554,19 @@ if(action==="confirm-auth"){
 if(!state.consent){showToast("请先阅读并同意授权书");return}
 state.authorized=true;
 state.redeemed=false;
-openScreen("success");
+openScreen("detailAuthorized");
 showToast("授权成功，服务商将主动联系您");
 return
 }
-if(action==="go-detail"){openScreen(state.redeemed?"detailRedeemed":state.authorized?"detailAuthorized":"detailUnauthorized");return}
-if(action==="open-revoke"){event.stopPropagation();openScreen("authManagement");return}
-if(action==="redeem"){
-state.authorized=true;
-state.redeemed=true;
-openScreen("detailRedeemed");
-showToast("已模拟完成核销");
+if(action==="go-detail"){openScreen(state.authorized?"detailAuthorized":"detailUnauthorized");return}
+if(action==="open-revoke"){
+event.stopPropagation();
+state.authorized=false;
+state.redeemed=false;
+state.consent=false;
+openScreen("detailUnauthorized");
+showToast("已撤回授权");
+return
 }
 });
 
