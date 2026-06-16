@@ -285,9 +285,7 @@ export default function ActivitiesPage() {
             <Button variant="outline" className="border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:bg-meiyou-bg h-9 rounded-lg" onClick={handleReset}>
               重置
             </Button>
-            <div className="text-sm text-[var(--color-meiyou-text-secondary)] ml-auto mb-1.5">
-              共 {filteredActivities.length} 个活动
-            </div>
+
           </div>
         </CardContent>
       </Card>
