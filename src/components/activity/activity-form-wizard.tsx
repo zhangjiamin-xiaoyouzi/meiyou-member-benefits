@@ -669,12 +669,16 @@ function SortableComponentItem({
   comp,
   children,
   onRemove,
+  isCopied,
+  onNameChange,
 }: {
   id: string;
   sectionId: string;
   comp: TemplateComponent;
   children: React.ReactNode;
   onRemove?: () => void;
+  isCopied?: boolean;
+  onNameChange?: (name: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const [collapsed, setCollapsed] = useState(false);
@@ -702,7 +706,17 @@ function SortableComponentItem({
                 <GripVertical className="h-4 w-4" />
               </button>
               <CardTitle className="text-sm flex items-center gap-2">
-                {comp.name}
+                {isCopied ? (
+                  <input
+                    type="text"
+                    value={comp.name}
+                    onChange={(e) => onNameChange?.(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-[var(--color-meiyou)] focus:outline-none text-sm text-[var(--color-meiyou-text-primary)] py-0 transition-colors"
+                  />
+                ) : (
+                  comp.name
+                )}
               </CardTitle>
               <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                 comp.required
@@ -749,10 +763,14 @@ function DraggableNavItem({
   comp,
   onReorder,
   onCopy,
+  isCopied,
+  onNameChange,
 }: {
   comp: TemplateComponent;
   onReorder: (dragKey: string, overKey: string) => void;
   onCopy?: () => void;
+  isCopied?: boolean;
+  onNameChange?: (key: string, name: string) => void;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -785,17 +803,27 @@ function DraggableNavItem({
     >
       {/* 拖拽手柄 */}
       <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab" />
-      {/* 点击滚动到对应区域 */}
-      <button
-        type="button"
-        className="flex-1 text-left truncate"
-        onClick={() => {
-          const el = document.getElementById(`comp-section-${comp.key}`);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }}
-      >
-        {comp.name}
-      </button>
+      {/* 点击滚动到对应区域 / 复制组件可编辑名称 */}
+      {isCopied ? (
+        <input
+          type="text"
+          value={comp.name}
+          onChange={(e) => onNameChange?.(comp.key, e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+          className="flex-1 text-left truncate bg-transparent border-b border-transparent hover:border-gray-300 focus:border-[var(--color-meiyou)] focus:outline-none text-xs text-[var(--color-meiyou-text-primary)] py-0 transition-colors"
+        />
+      ) : (
+        <button
+          type="button"
+          className="flex-1 text-left truncate"
+          onClick={() => {
+            const el = document.getElementById(`comp-section-${comp.key}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        >
+          {comp.name}
+        </button>
+      )}
       {/* 复制按钮 */}
       {onCopy && (
         <button
@@ -890,11 +918,20 @@ function StepComponentConfig({
   // 支持复制的组件类型
   const COPYABLE_BASES = ['exclusive_gift', 'free_benefit'];
   const isCopyable = (key: string) => COPYABLE_BASES.some((base) => key === base || key.startsWith(base + '_'));
+  const isCopiedComp = (key: string) => COPYABLE_BASES.some((base) => key.startsWith(base + '_'));
   const getBaseKey = (key: string) => {
     for (const base of COPYABLE_BASES) {
       if (key === base || key.startsWith(base + '_')) return base;
     }
     return key;
+  };
+
+  // 修改复制组件的名称
+  const handleCompNameChange = (compKey: string, newName: string) => {
+    const updated = components.map((c) =>
+      c.key === compKey ? { ...c, name: newName } : c
+    );
+    onComponentsChange(updated);
   };
 
   // 复制组件（弹出命名输入）
@@ -1180,6 +1217,8 @@ function StepComponentConfig({
                 comp={comp}
                 onReorder={handleNavReorder}
                 onCopy={isCopyable(comp.key) ? () => handleStartCopy(comp.key) : undefined}
+                isCopied={isCopiedComp(comp.key)}
+                onNameChange={handleCompNameChange}
               />
             ))}
           </nav>
@@ -1258,6 +1297,8 @@ function StepComponentConfig({
                     sectionId={`comp-section-${comp.key}`}
                     comp={comp}
                     onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+                    isCopied={isCopiedComp(comp.key)}
+                    onNameChange={(name) => handleCompNameChange(comp.key, name)}
                   >
                     {renderComponentContent(comp.key)}
                   </SortableComponentItem>
