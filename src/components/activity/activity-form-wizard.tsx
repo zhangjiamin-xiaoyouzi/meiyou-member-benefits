@@ -81,6 +81,8 @@ interface Step1Data {
   templateId: string;
   category: string;
   name: string;
+  activityStartTime: string;
+  activityEndTime: string;
   sellStartTime: string;
   sellEndTime: string;
   lotteryStartTime: string;
@@ -600,10 +602,10 @@ function StepBasicInfo({
           <div>
             <ReqLabel>活动时间</ReqLabel>
             <TimeRangeField
-              startValue={data.sellStartTime}
-              endValue={data.bufferEndTime}
-              onStartChange={(val) => onChange({ ...data, sellStartTime: val })}
-              onEndChange={(val) => onChange({ ...data, bufferEndTime: val })}
+              startValue={data.activityStartTime}
+              endValue={data.activityEndTime}
+              onStartChange={(val) => onChange({ ...data, activityStartTime: val })}
+              onEndChange={(val) => onChange({ ...data, activityEndTime: val })}
             />
           </div>
           {/* 活动预约时间（非必填） */}
@@ -613,12 +615,11 @@ function StepBasicInfo({
               startValue={data.sellStartTime}
               endValue={data.sellEndTime}
               onStartChange={(val) => {
-                if (data.sellStartTime && val < data.sellStartTime) return;
-                if (data.bufferEndTime && val > data.bufferEndTime) return;
+                if (data.activityStartTime && val < data.activityStartTime) return;
                 onChange({ ...data, sellStartTime: val });
               }}
               onEndChange={(val) => {
-                if (data.bufferEndTime && val > data.bufferEndTime) return;
+                if (data.activityEndTime && val > data.activityEndTime) return;
                 onChange({ ...data, sellEndTime: val });
               }}
             />
@@ -2323,7 +2324,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         templateId: (raw.template_id || raw.templateId || '') as string,
         category: (raw.category || '') as string,
         name: initialData.name,
-
+        activityStartTime: timeConfig.activityStartTime || '',
+        activityEndTime: timeConfig.activityEndTime || '',
         sellStartTime: timeConfig.sellStartTime || '',
         sellEndTime: timeConfig.sellEndTime || '',
         lotteryStartTime: timeConfig.lotteryStartTime || '',
@@ -2339,7 +2341,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       category: '',
       name: '',
       components: [],
-
+      activityStartTime: '',
+      activityEndTime: '',
       sellStartTime: '',
       sellEndTime: '',
       lotteryStartTime: '',
@@ -2423,8 +2426,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       step1Data.templateId !== '' &&
       step1Data.name !== '' &&
       step1Data.category !== '' &&
-      step1Data.sellStartTime !== '' &&
-      step1Data.bufferEndTime !== ''
+      step1Data.activityStartTime !== '' &&
+      step1Data.activityEndTime !== ''
     );
   };
 
@@ -2479,6 +2482,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       template_name: templates.find((t) => t.id === step1Data.templateId)?.name || '',
       status: 'active' as const,
       time_config: {
+        activityStartTime: step1Data.activityStartTime,
+        activityEndTime: step1Data.activityEndTime,
         sellStartTime: step1Data.sellStartTime,
         sellEndTime: step1Data.sellEndTime,
         lotteryStartTime: step1Data.lotteryStartTime,
@@ -2525,6 +2530,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       template_name: templates.find((t) => t.id === step1Data.templateId)?.name || '',
       status: 'draft' as const,
       time_config: {
+        activityStartTime: step1Data.activityStartTime,
+        activityEndTime: step1Data.activityEndTime,
         sellStartTime: step1Data.sellStartTime,
         sellEndTime: step1Data.sellEndTime,
         lotteryStartTime: step1Data.lotteryStartTime,
