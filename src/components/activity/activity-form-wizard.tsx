@@ -1093,7 +1093,7 @@ function StepComponentConfig({
                 onChange={(val) => updateConfig('header_banner', { ...cfg, imageUrl: val })}
               />
               <VideoUploadField
-                label="首帧图片"
+                label="头图视频"
                 value={cfg.videoUrl}
                 onChange={(val) => updateConfig('header_banner', { ...cfg, videoUrl: val })}
               />
