@@ -52,6 +52,7 @@ import {
   ChevronDown,
   MousePointerClick,
   Search,
+  Copy,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
@@ -747,9 +748,11 @@ function SortableComponentItem({
 function DraggableNavItem({
   comp,
   onReorder,
+  onCopy,
 }: {
   comp: TemplateComponent;
   onReorder: (dragKey: string, overKey: string) => void;
+  onCopy?: () => void;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -793,6 +796,17 @@ function DraggableNavItem({
       >
         {comp.name}
       </button>
+      {/* 复制按钮 */}
+      {onCopy && (
+        <button
+          type="button"
+          className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-gray-400 hover:text-[var(--color-meiyou)] transition-opacity shrink-0"
+          onClick={(e) => { e.stopPropagation(); onCopy(); }}
+          title="复制组件"
+        >
+          <Copy className="h-3 w-3" />
+        </button>
+      )}
     </div>
   );
 }
@@ -817,7 +831,7 @@ function StepComponentConfig({
   const [pendingAddKeys, setPendingAddKeys] = useState<Set<string>>(new Set());
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
 
-  const updateConfig = (key: keyof ComponentConfigs, value: ComponentConfigs[keyof ComponentConfigs]) => {
+  const updateConfig = (key: string, value: unknown) => {
     onChange({
       ...data,
       componentConfigs: { ...configs, [key]: value },
@@ -867,6 +881,72 @@ function StepComponentConfig({
       c.key === compKey ? { ...c, enabled: false } : c
     );
     onComponentsChange(updated);
+    // 同时清理该组件的配置
+    const newConfigs = { ...configs };
+    delete newConfigs[compKey];
+    onChange({ ...data, componentConfigs: newConfigs });
+  };
+
+  // 支持复制的组件类型
+  const COPYABLE_BASES = ['exclusive_gift', 'free_benefit'];
+  const isCopyable = (key: string) => COPYABLE_BASES.some((base) => key === base || key.startsWith(base + '_'));
+  const getBaseKey = (key: string) => {
+    for (const base of COPYABLE_BASES) {
+      if (key === base || key.startsWith(base + '_')) return base;
+    }
+    return key;
+  };
+
+  // 复制组件（弹出命名输入）
+  const [copyingCompKey, setCopyingCompKey] = useState<string | null>(null);
+  const [copyCompName, setCopyCompName] = useState('');
+
+  const handleStartCopy = (compKey: string) => {
+    const baseKey = getBaseKey(compKey);
+    const sourceName = components.find((c) => c.key === compKey)?.name || '';
+    setCopyCompName(sourceName + '(副本)');
+    setCopyingCompKey(compKey);
+  };
+
+  const handleConfirmCopy = () => {
+    if (!copyingCompKey || !copyCompName.trim()) return;
+    const baseKey = getBaseKey(copyingCompKey);
+    // 找到一个不重复的新 key
+    let idx = 1;
+    let newKey = `${baseKey}_${idx}`;
+    while (components.some((c) => c.key === newKey)) {
+      idx++;
+      newKey = `${baseKey}_${idx}`;
+    }
+    // 复制源组件的配置
+    const sourceConfig = configs[copyingCompKey as keyof ComponentConfigs];
+    const newComp: TemplateComponent = {
+      id: `comp_${newKey}`,
+      key: newKey,
+      name: copyCompName.trim(),
+      description: '',
+      enabled: true,
+      required: false,
+    };
+    // 在源组件后面插入新组件
+    const sourceIdx = components.findIndex((c) => c.key === copyingCompKey);
+    const updated = [...components];
+    updated.splice(sourceIdx + 1, 0, newComp);
+    onComponentsChange(updated);
+    // 复制配置
+    if (sourceConfig) {
+      onChange({
+        ...data,
+        componentConfigs: { ...configs, [newKey]: JSON.parse(JSON.stringify(sourceConfig)) },
+      });
+    }
+    setCopyingCompKey(null);
+    setCopyCompName('');
+  };
+
+  const handleCancelCopy = () => {
+    setCopyingCompKey(null);
+    setCopyCompName('');
   };
 
   // 拖拽排序
@@ -910,6 +990,33 @@ function StepComponentConfig({
 
   // 渲染单个组件的配置内容
   const renderComponentContent = (compKey: string) => {
+    // 处理复制组件（key 如 exclusive_gift_1, free_benefit_2 等）
+    const baseKey = getBaseKey(compKey);
+    if (baseKey !== compKey) {
+      // 这是复制组件
+      const cfg = (configs as Record<string, unknown>)[compKey] as BenefitConfig | undefined;
+      if (baseKey === 'exclusive_gift') {
+        const compName = components.find((c) => c.key === compKey)?.name || '会员专属礼';
+        return (
+          <BenefitConfigCard
+            title={compName}
+            config={cfg || { products: [], moduleBgImage: '' }}
+            onChange={(val) => updateConfig(compKey, val)}
+          />
+        );
+      }
+      if (baseKey === 'free_benefit') {
+        const compName = components.find((c) => c.key === compKey)?.name || '会员专属生活券包';
+        return (
+          <BenefitConfigCard
+            title={compName}
+            config={cfg || { products: [], moduleBgImage: '' }}
+            onChange={(val) => updateConfig(compKey, val)}
+          />
+        );
+      }
+    }
+
     switch (compKey) {
       case 'global_config':
         return (
@@ -1072,6 +1179,7 @@ function StepComponentConfig({
                 key={comp.key}
                 comp={comp}
                 onReorder={handleNavReorder}
+                onCopy={isCopyable(comp.key) ? () => handleStartCopy(comp.key) : undefined}
               />
             ))}
           </nav>
@@ -1093,6 +1201,50 @@ function StepComponentConfig({
           )}
         </div>
       </div>
+
+      {/* 复制组件命名弹窗 */}
+      {copyingCompKey && (
+        <>
+          <div className="fixed inset-0 z-50 bg-black/20" onClick={handleCancelCopy} />
+          <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl w-80">
+            <div className="px-5 py-4 border-b border-[var(--color-meiyou-divider)]">
+              <h3 className="text-sm font-semibold text-[var(--color-meiyou-text-primary)]">复制组件</h3>
+            </div>
+            <div className="px-5 py-4">
+              <label className="block text-xs text-[var(--color-meiyou-text-secondary)] mb-1.5">组件名称</label>
+              <input
+                type="text"
+                className="w-full h-9 px-3 text-sm border border-[var(--color-meiyou-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-meiyou)]/30"
+                value={copyCompName}
+                onChange={(e) => setCopyCompName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleConfirmCopy();
+                  if (e.key === 'Escape') handleCancelCopy();
+                }}
+                autoFocus
+                placeholder="请输入组件名称"
+              />
+            </div>
+            <div className="px-5 py-3 flex justify-end gap-2 border-t border-[var(--color-meiyou-divider)]">
+              <button
+                type="button"
+                className="h-8 px-4 text-xs rounded-lg border border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:bg-gray-50 transition-colors"
+                onClick={handleCancelCopy}
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                className="h-8 px-4 text-xs rounded-lg bg-[var(--color-meiyou)] text-white hover:bg-[var(--color-meiyou-hover)] transition-colors disabled:opacity-50"
+                onClick={handleConfirmCopy}
+                disabled={!copyCompName.trim()}
+              >
+                确认复制
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* 组件列表（dnd-kit 拖拽排序） */}
       <div>

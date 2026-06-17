@@ -242,6 +242,8 @@ export interface ComponentConfigs {
   free_purchase?: FreePurchaseConfig;
   rule_popup?: RulePopupConfig;
   cta_button?: ActionButtonConfig;
+  // 支持复制组件的动态 key（如 exclusive_gift_1, free_benefit_2 等）
+  [key: string]: unknown;
 }
 
 export interface Activity {
