@@ -2076,12 +2076,6 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     };
   });
 
-  const [activeStickyTab, setActiveStickyTab] = useState<number>(0);
-
-  // 当预约时间变化导致tab数量变化时，重置选中tab
-  useEffect(() => {
-    setActiveStickyTab(0);
-  }, [!!step1Data.sellEndTime]);
 
   // 模板加载完成后，初始化组件（新建模式）或还原组件（编辑模式的键值对格式）
   useEffect(() => {
@@ -2345,90 +2339,6 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
 
       {/* 固定底部操作栏 */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
-        {/* 吸底按钮配置 */}
-        {step2Data.componentConfigs?.global_config && (() => {
-          const gc = step2Data.componentConfigs.global_config as GlobalConfig;
-          const hasRes = !!step1Data.sellEndTime;
-          const btns = [
-            { key: 'nonMemberButton' as const, label: '非会员' },
-            { key: 'memberButton' as const, label: '会员', show: !hasRes },
-            { key: 'memberReservedButton' as const, label: '会员已预约', show: hasRes },
-            { key: 'memberUnreservedButton' as const, label: '会员未预约', show: hasRes },
-          ].filter(b => b.show !== false);
-          const activeBtnIdx = activeStickyTab;
-          const activeBtnKey = btns[activeBtnIdx]?.key || 'nonMemberButton';
-          const activeBtnVal = gc[activeBtnKey] || { text: '', color: '#ff4d88', jumpLink: '' };
-
-          return (
-            <div className="border-b border-[var(--color-meiyou-divider)] px-6 py-3">
-              <div className="max-w-5xl mx-auto">
-                {/* 按钮类型切换 */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] mr-2">吸底按钮</span>
-                  {btns.map((b, idx) => (
-                    <button
-                      key={b.key}
-                      onClick={() => setActiveStickyTab(idx)}
-                      className={`px-3 py-1 text-xs rounded-full transition-colors ${activeBtnIdx === idx ? 'bg-meiyou text-white' : 'bg-[var(--color-meiyou-bg-page)] text-[var(--color-meiyou-text-secondary)] hover:bg-gray-200'}`}
-                    >
-                      {b.label}
-                    </button>
-                  ))}
-                </div>
-                {/* 当前选中按钮配置 */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--color-meiyou-text-secondary)]">文案</span>
-                    <input
-                      type="text"
-                      value={activeBtnVal.text}
-                      onChange={(e) => {
-                        const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, text: e.target.value } };
-                        setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
-                      }}
-                      className="h-7 w-28 rounded-md border border-[var(--color-meiyou-divider)] px-2 text-sm focus:outline-none focus:ring-1 focus:ring-meiyou"
-                      placeholder="按钮文案"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--color-meiyou-text-secondary)]">颜色</span>
-                    <input
-                      type="color"
-                      value={activeBtnVal.color || '#ff4d88'}
-                      onChange={(e) => {
-                        const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, color: e.target.value } };
-                        setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
-                      }}
-                      className="h-7 w-7 rounded cursor-pointer border border-[var(--color-meiyou-divider)]"
-                    />
-                    <span className="text-xs text-[var(--color-meiyou-text-tertiary)]">{activeBtnVal.color || '#ff4d88'}</span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</span>
-                    <input
-                      type="text"
-                      value={activeBtnVal.jumpLink}
-                      onChange={(e) => {
-                        const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, jumpLink: e.target.value } };
-                        setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
-                      }}
-                      className="h-7 flex-1 rounded-md border border-[var(--color-meiyou-divider)] px-2 text-sm focus:outline-none focus:ring-1 focus:ring-meiyou"
-                      placeholder="https://"
-                    />
-                  </div>
-                  {/* 预览按钮 */}
-                  <button
-                    className="h-7 px-4 rounded-md text-sm text-white font-medium shrink-0"
-                    style={{ backgroundColor: activeBtnVal.color || '#ff4d88' }}
-                  >
-                    {activeBtnVal.text || '按钮预览'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-        {/* 操作按钮行 */}
         <div className="px-6 py-3">
           <div className="max-w-5xl mx-auto flex items-center justify-end gap-3">
             <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-9 px-6" onClick={() => window.close()}>
