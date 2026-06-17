@@ -2020,21 +2020,12 @@ function BenefitConfigCard({
 
               {/* 商品字段 */}
               <div className="flex-1 space-y-3">
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
                     <ReqLabel>商品ID</ReqLabel>
                     <WelfareSelect
                       value={product.productId}
                       onChange={(val) => updateProduct(product.id, { productId: val })}
-                    />
-                  </div>
-                  <div>
-                    <ReqLabel>福利图片</ReqLabel>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      placeholder="输入图片URL"
-                      value={product.benefitImage}
-                      onChange={(e) => updateProduct(product.id, { benefitImage: e.target.value })}
                     />
                   </div>
                   <div>
@@ -2064,6 +2055,11 @@ function BenefitConfigCard({
                     />
                   </div>
                 </div>
+                <ImageUploadField
+                  label="福利图片"
+                  value={product.benefitImage}
+                  onChange={(val) => updateProduct(product.id, { benefitImage: val })}
+                />
                 {/* 用户条件 */}
                 <div className="pl-0">
                   <AudienceRuleEditor
