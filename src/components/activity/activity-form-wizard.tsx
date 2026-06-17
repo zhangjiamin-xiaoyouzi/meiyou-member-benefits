@@ -1187,7 +1187,7 @@ function StepComponentConfig({
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
+                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</ReqLabel>
                       <Input
                         placeholder={key === 'memberNotBooked' ? '如：立即预约' : '如：立即开通'}
                         value={cfg[key].buttonText}
@@ -1196,7 +1196,7 @@ function StepComponentConfig({
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</Label>
+                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</ReqLabel>
                       <div className="flex gap-2 items-center">
                         <input
                           type="color"
@@ -1213,7 +1213,7 @@ function StepComponentConfig({
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
+                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</ReqLabel>
                       <Input
                         placeholder="请输入meiyou:///开头地址"
                         value={cfg[key].jumpLink}
