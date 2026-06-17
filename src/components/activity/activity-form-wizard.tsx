@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { GripVertical, Plus } from 'lucide-react';
+import { GripVertical, Plus, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -1463,6 +1463,13 @@ function FlashSaleConfigCard({
   config: FlashSaleConfig;
   onChange: (config: FlashSaleConfig) => void;
 }) {
+  const moveProduct = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= config.products.length) return;
+    const updated = [...config.products];
+    [updated[fromIdx], updated[toIdx]] = [updated[toIdx], updated[fromIdx]];
+    onChange({ ...config, products: updated });
+  };
+
   const addProduct = () => {
     const newProduct: FlashSaleProduct = {
       id: `fsp_${Date.now()}`,
@@ -1527,14 +1534,67 @@ function FlashSaleConfigCard({
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">商品 {idx + 1}</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0"
-                      onClick={() => removeProduct(product.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-0.5">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                        disabled={idx === 0}
+                        title="置顶"
+                        onClick={() => {
+                          const updated = [...config.products];
+                          const [item] = updated.splice(idx, 1);
+                          updated.unshift(item);
+                          onChange({ ...config, products: updated });
+                        }}
+                      >
+                        <ArrowUpToLine className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                        disabled={idx === 0}
+                        title="上移"
+                        onClick={() => moveProduct(idx, idx - 1)}
+                      >
+                        <ChevronUp className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                        disabled={idx === config.products.length - 1}
+                        title="下移"
+                        onClick={() => moveProduct(idx, idx + 1)}
+                      >
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                        disabled={idx === config.products.length - 1}
+                        title="置底"
+                        onClick={() => {
+                          const updated = [...config.products];
+                          const [item] = updated.splice(idx, 1);
+                          updated.push(item);
+                          onChange({ ...config, products: updated });
+                        }}
+                      >
+                        <ArrowDownToLine className="h-3.5 w-3.5" />
+                      </Button>
+                      <div className="w-px h-4 bg-[var(--color-meiyou-divider)] mx-1" />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-6 w-6 p-0"
+                        onClick={() => removeProduct(product.id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-4">
