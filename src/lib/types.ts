@@ -193,7 +193,7 @@ export interface BenefitProduct {
   id: string;
   productId: string;
   benefitImage: string;
-  displayMode: 'horizontal' | 'double-column';
+  displayMode: 'horizontal' | 'double-column' | 'triple-column';
   sortOrder: number;
   audienceRules: ComponentAudienceRule[];
 }

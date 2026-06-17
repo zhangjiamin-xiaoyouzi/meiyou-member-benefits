@@ -2242,15 +2242,16 @@ function BenefitConfigCard({
                     <Select
                       value={product.displayMode}
                       onValueChange={(val) =>
-                        updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' })
+                        updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
                       }
                     >
                       <SelectTrigger className="mt-1 h-8 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="horizontal">横图</SelectItem>
+                        <SelectItem value="horizontal">单列</SelectItem>
                         <SelectItem value="double-column">双列</SelectItem>
+                        <SelectItem value="triple-column">三列</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
