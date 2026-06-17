@@ -2013,14 +2013,14 @@ function FreePurchaseConfigCard({
             />
         </div>
         <div className="flex items-center justify-between">
-          <ReqLabel>返现类目ID</ReqLabel>
+          <ReqLabel>类目路径</ReqLabel>
           <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
             <Plus className="h-3 w-3 mr-1" />
             添加类目
           </Button>
         </div>
         {config.categoryIds.length === 0 ? (
-          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-xs">暂无类目ID，请点击添加</div>
+          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-xs">暂无类目路径，请点击添加</div>
         ) : (
           <div className="space-y-2">
             {config.categoryIds.map((catId, index) => (
@@ -2028,7 +2028,7 @@ function FreePurchaseConfigCard({
                 <span className="text-xs text-[var(--color-meiyou-text-placeholder)] w-6 text-right shrink-0">{index + 1}.</span>
                 <Input
                   className="h-8 text-sm flex-1"
-                  placeholder="输入类目ID"
+                  placeholder="请输类目路径，如 644,746,771"
                   value={catId}
                   onChange={(e) => updateCategoryId(index, e.target.value)}
                 />
