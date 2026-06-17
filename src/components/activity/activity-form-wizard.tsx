@@ -164,7 +164,7 @@ function ImageUploadField({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+      <ReqLabel>{label}</ReqLabel>
       {value ? (
         <div className="relative group w-24 h-16 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -408,9 +408,7 @@ function StepBasicInfo({
     <div className="space-y-6">
       {/* 活动名称 */}
       <div>
-        <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-          活动名称 <span className="text-meiyou">*</span>
-        </Label>
+        <ReqLabel className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动名称</ReqLabel>
         <Input
           className="mt-1.5"
           placeholder="请输入活动名称"
@@ -420,9 +418,7 @@ function StepBasicInfo({
       </div>
       {/* 活动分类 独占一行 */}
       <div>
-          <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-            活动分类 <span className="text-meiyou">*</span>
-          </Label>
+          <ReqLabel className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动分类</ReqLabel>
           <div className="mt-1.5 relative">
             <Input
               value={categoryInput}
@@ -471,9 +467,9 @@ function StepBasicInfo({
 
       {/* 选择模板 */}
       <div>
-        <Label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-          选择活动模版 <span className="text-meiyou">*</span>
-        </Label>
+        <ReqLabel className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+          选择活动模版
+        </ReqLabel>
         <div className="mt-2 grid grid-cols-3 gap-2">
           {templates
             .slice()
@@ -525,9 +521,7 @@ function StepBasicInfo({
         <div className="mt-3 space-y-4">
           {/* 活动时间（必填） */}
           <div>
-            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
-              活动时间 <span className="text-meiyou">*</span>
-            </Label>
+            <ReqLabel>活动时间</ReqLabel>
             <TimeRangeField
               startValue={data.sellStartTime}
               endValue={data.bufferEndTime}
@@ -537,9 +531,7 @@ function StepBasicInfo({
           </div>
           {/* 活动预约时间（非必填） */}
           <div>
-            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
-              {isMemberDay ? '活动预约时间' : '售卖时间'}
-            </Label>
+            <ReqLabel>{isMemberDay ? '活动预约时间' : '售卖时间'}</ReqLabel>
             <TimeRangeField
               startValue={data.sellStartTime}
               endValue={data.sellEndTime}
@@ -556,9 +548,9 @@ function StepBasicInfo({
           </div>
           {/* 活动福利领取时间（必填）独占一行 */}
           <div>
-              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">
-                {isMemberDay ? '活动福利领取时间' : '抽奖时间'}<span className="text-[#ff4d88] ml-0.5">*</span>
-              </Label>
+              <ReqLabel>
+                {isMemberDay ? '活动福利领取时间' : '抽奖时间'}
+              </ReqLabel>
               <TimeRangeField
                 startValue={data.lotteryStartTime}
                 endValue={data.lotteryEndTime}
@@ -576,7 +568,7 @@ function StepBasicInfo({
           {!isMemberDay && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">退款熔断截单时间</Label>
+                <ReqLabel>退款熔断截单时间</ReqLabel>
                 <SingleTimeField
                   value={data.refundCutoffTime}
                   onChange={(val) => onChange({ ...data, refundCutoffTime: val })}
@@ -873,7 +865,7 @@ function StepComponentConfig({
                 onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
               />
               <div className="space-y-1.5">
-                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">规则文案</Label>
+                <ReqLabel>规则文案</ReqLabel>
                 <RichTextEditor
                   value={cfg.ruleRichText}
                   onChange={(val) => updateConfig('rule_popup', { ...cfg, ruleRichText: val })}
@@ -1258,6 +1250,10 @@ function WelfareSelect({
 
 // ==================== 吸底按钮配置字段 ====================
 
+function ReqLabel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <Label className={className ?? "text-xs text-[var(--color-meiyou-text-secondary)]"}><span className="text-red-500 mr-0.5">*</span>{children}</Label>;
+}
+
 function StickyButtonField({
   label,
   value,
@@ -1353,7 +1349,7 @@ function GlobalConfigCard({
       <div className="space-y-4">
         {/* 背景类型选择 */}
         <div className="space-y-1.5">
-          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">背景类型</Label>
+          <ReqLabel>背景类型</ReqLabel>
           <div className="flex gap-2">
             {BACKGROUND_TYPE_OPTIONS.map((opt) => (
               <button
@@ -1375,7 +1371,7 @@ function GlobalConfigCard({
         {/* 纯色配置 */}
         {cfg.backgroundType === 'solid' && (
           <div className="space-y-1.5">
-            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">背景颜色</Label>
+            <ReqLabel>背景颜色</ReqLabel>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <input
@@ -1422,7 +1418,7 @@ function GlobalConfigCard({
             <div className="flex gap-4">
               {/* 起始颜色 */}
               <div className="space-y-1.5">
-                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">起始颜色</Label>
+                <ReqLabel>起始颜色</ReqLabel>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -1439,7 +1435,7 @@ function GlobalConfigCard({
               </div>
               {/* 结束颜色 */}
               <div className="space-y-1.5">
-                <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">结束颜色</Label>
+                <ReqLabel>结束颜色</ReqLabel>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -1457,7 +1453,7 @@ function GlobalConfigCard({
             </div>
             {/* 渐变方向 */}
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">渐变方向</Label>
+              <ReqLabel>渐变方向</ReqLabel>
               <div className="flex gap-2">
                 {GRADIENT_DIRECTION_OPTIONS.map((opt) => (
                   <button
@@ -1477,7 +1473,7 @@ function GlobalConfigCard({
             </div>
             {/* 预设渐变 */}
             <div className="space-y-1.5">
-              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">预设渐变</Label>
+              <ReqLabel>预设渐变</ReqLabel>
               <div className="flex gap-2">
                 {[
                   { start: '#ff4d88', end: '#ff8fab', label: '品牌粉' },
@@ -1665,14 +1661,14 @@ function FlashSaleConfigCard({
                   {/* 商品基础信息 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
+                      <ReqLabel>商品ID</ReqLabel>
                       <WelfareSelect
                         value={product.productId}
                         onChange={(val) => updateProduct(product.id, { productId: val })}
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">库存 <span className="text-meiyou">*</span></Label>
+                      <ReqLabel>库存</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入库存数量"
@@ -1704,7 +1700,7 @@ function FlashSaleConfigCard({
                   {/* 链接与文案 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
+                      <ReqLabel>跳转链接</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="输入跳转链接URL"
@@ -1717,7 +1713,7 @@ function FlashSaleConfigCard({
                   {/* 场次配置 */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">场次配置</Label>
+                      <ReqLabel>场次配置</ReqLabel>
                       <Button
                         type="button"
                         variant="outline"
@@ -1751,7 +1747,7 @@ function FlashSaleConfigCard({
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">预约时间</Label>
+                            <ReqLabel>预约时间</ReqLabel>
                             <TimeRangeField
                               startValue={session.bookingStartTime}
                               endValue={session.bookingEndTime}
@@ -1766,7 +1762,7 @@ function FlashSaleConfigCard({
                             />
                           </div>
                           <div>
-                            <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">抢购时间</Label>
+                            <ReqLabel>抢购时间</ReqLabel>
                             <TimeRangeField
                               startValue={session.rushStartTime}
                               endValue={session.rushEndTime}
@@ -1841,7 +1837,7 @@ function FreePurchaseConfigCard({
             />
         </div>
         <div className="flex items-center justify-between">
-          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">返现类目ID</Label>
+          <ReqLabel>返现类目ID</ReqLabel>
           <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
             <Plus className="h-3 w-3 mr-1" />
             添加类目
@@ -2002,14 +1998,14 @@ function BenefitConfigCard({
               <div className="flex-1 space-y-3">
                 <div className="grid grid-cols-4 gap-3">
                   <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID <span className="text-meiyou">*</span></Label>
+                    <ReqLabel>商品ID</ReqLabel>
                     <WelfareSelect
                       value={product.productId}
                       onChange={(val) => updateProduct(product.id, { productId: val })}
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利图片</Label>
+                    <ReqLabel>福利图片</ReqLabel>
                     <Input
                       className="mt-1 h-8 text-sm"
                       placeholder="输入图片URL"
@@ -2018,7 +2014,7 @@ function BenefitConfigCard({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">展示方式</Label>
+                    <ReqLabel>展示方式</ReqLabel>
                     <Select
                       value={product.displayMode}
                       onValueChange={(val) =>
@@ -2035,7 +2031,7 @@ function BenefitConfigCard({
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
+                    <ReqLabel>排序</ReqLabel>
                     <Input
                       className="mt-1 h-8 text-sm"
                       type="number"
