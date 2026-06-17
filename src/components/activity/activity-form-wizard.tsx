@@ -2299,6 +2299,52 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     }
   };
 
+  const handleSaveDraft = async () => {
+    const payload = {
+      name: step1Data.name,
+      category: step1Data.category,
+      template_id: step1Data.templateId,
+      template_name: templates.find((t) => t.id === step1Data.templateId)?.name || '',
+      status: 'draft' as const,
+      time_config: {
+        sellStartTime: step1Data.sellStartTime,
+        sellEndTime: step1Data.sellEndTime,
+        lotteryStartTime: step1Data.lotteryStartTime,
+        lotteryEndTime: step1Data.lotteryEndTime,
+        bufferEndTime: step1Data.bufferEndTime,
+        refundCutoffTime: step1Data.refundCutoffTime,
+      },
+      audience_groups: [],
+      lottery_config: { enabled: false, poolId: '', poolName: '' },
+      material_config: {},
+      components: Object.fromEntries(
+        step1Data.components.filter((c) => !c.required).map((c) => [c.key, c.enabled])
+      ),
+      component_configs: step2Data.componentConfigs,
+    };
+
+    try {
+      if (isEdit && editId) {
+        await fetch(`/api/activities/${editId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        alert('草稿已保存！');
+      } else {
+        await fetch('/api/activities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, id: `act_${Date.now()}` }),
+        });
+        alert('草稿已保存！');
+      }
+      router.push('/activities');
+    } catch {
+      alert('保存失败，请重试');
+    }
+  };
+
   const handleDelete = async () => {
     if (!editId) return;
     if (!confirm('确认删除此活动？删除后不可恢复。')) return;
@@ -2359,6 +2405,13 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         <div className="flex items-center gap-3">
           <Button variant="outline" className="border-[var(--color-meiyou-divider)]" onClick={() => window.close()}>
             取消
+          </Button>
+          <Button
+            variant="outline"
+            className="border-[var(--color-meiyou-divider)]"
+            onClick={handleSaveDraft}
+          >
+            保存草稿
           </Button>
           <Button
             className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
