@@ -58,7 +58,7 @@ export const mockTemplates: Template[] = [
       { id: 'comp_107', name: '会员专属礼', key: 'exclusive_gift', description: '配置会员专属权益商品（如成人洁牙与儿童涂氟、全棉礼包）', enabled: false, required: false },
       { id: 'comp_106', name: '会员专属0元购', key: 'free_purchase', description: '配置返现商品，会员下单后返现', enabled: false, required: false },
       { id: 'comp_103', name: '会员专属生活券包', key: 'free_benefit', description: '配置会员专属生活券包（如：美团外卖红包、古茗88折券）', enabled: false, required: false },
-      { id: 'comp_108', name: '吸底按钮', key: 'cta_button', description: '对会员与非会员配置按钮与跳转链接', enabled: false, required: false },
+      { id: 'comp_108', name: '吸底按钮', key: 'cta_button', description: '对会员与非会员配置按钮与跳转链接', enabled: true, required: false },
     ],
     createdAt: '2024-02-10T08:00:00Z',
     createdBy: '王五',

@@ -11,7 +11,7 @@ export const healthCheck = pgTable("health_check", {
 export const activities = pgTable("activities", {
 	id: varchar({ length: 36 }).default(sql`gen_random_uuid()`).primaryKey().notNull(),
 	name: varchar({ length: 128 }).notNull(),
-	sceneKey: varchar("scene_key", { length: 128 }).notNull(),
+	sceneKey: varchar("scene_key", { length: 128 }).default('default'),
 	templateId: varchar("template_id", { length: 36 }).notNull(),
 	templateName: varchar("template_name", { length: 128 }),
 	status: varchar({ length: 16 }).default('draft').notNull(),

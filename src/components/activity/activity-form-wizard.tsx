@@ -71,7 +71,6 @@ import type {
   StatusButtonConfig,
   RulePopupConfig,
   ComponentAudienceRule,
-  StickyButtonConfig,
 } from '@/lib/types';
 import { mapTemplateFromDb } from '@/lib/types';
 
@@ -114,7 +113,7 @@ function getCategoryColor(category: string) {
   return categoryColorMap[category] || defaultCategoryColor;
 }
 
-// ==================== 受众规则字段选项 ====================
+// ==================== 用户条件字段选项 ====================
 
 const ruleFieldOptions = [
   { value: 'member_status', label: '会员状态' },
@@ -229,7 +228,7 @@ function ImageUploadField({
   );
 }
 
-// ==================== 受众规则编辑组件 ====================
+// ==================== 用户条件编辑组件 ====================
 
 function AudienceRuleEditor({
   rules,
@@ -262,7 +261,7 @@ function AudienceRuleEditor({
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-[var(--color-meiyou-text-secondary)] flex items-center gap-1">
           <Users className="h-3 w-3" />
-          受众规则
+          用户条件
         </span>
         <Button size="sm" variant="outline" className="h-6 text-xs" onClick={addRule}>
           <Plus className="h-3 w-3 mr-1" />
@@ -840,7 +839,6 @@ function StepComponentConfig({
           <GlobalConfigCard
             config={configs.global_config || { ...defaultGlobalConfig }}
             onChange={(val) => updateConfig('global_config', val)}
-            hasReservationTime={hasReservationTime}
           />
         );
       case 'header_banner':
@@ -1254,89 +1252,12 @@ function ReqLabel({ children, className }: { children: React.ReactNode; classNam
   return <Label className={className ?? "text-xs text-[var(--color-meiyou-text-secondary)]"}><span className="text-red-500 mr-0.5">*</span>{children}</Label>;
 }
 
-function StickyButtonField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: StickyButtonConfig;
-  onChange: (val: StickyButtonConfig) => void;
-}) {
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  return (
-    <div className="rounded-lg border border-[var(--color-meiyou-border)] p-3 space-y-2.5">
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-medium text-[rgba(0,0,0,0.8)]">{label}</span>
-        <span className="text-[10px] text-[#ff4d88] bg-[rgba(255,77,136,0.08)] px-1.5 py-0.5 rounded">必填</span>
-      </div>
-      <div className="space-y-2">
-        {/* 按钮文案 */}
-        <div className="flex items-center gap-2">
-          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">按钮文案</Label>
-          <input
-            type="text"
-            className="flex-1 h-8 rounded-md border border-[var(--color-meiyou-border)] px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
-            value={value.text}
-            placeholder="请输入按钮文案"
-            onChange={(e) => onChange({ ...value, text: e.target.value })}
-          />
-        </div>
-        {/* 按钮颜色 */}
-        <div className="flex items-center gap-2">
-          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">按钮颜色</Label>
-          <div className="relative flex items-center gap-2">
-            <button
-              type="button"
-              className="w-8 h-8 rounded-md border border-[var(--color-meiyou-border)] shrink-0"
-              style={{ backgroundColor: value.color }}
-              onClick={() => setShowColorPicker(!showColorPicker)}
-            />
-            <input
-              type="text"
-              className="h-8 w-24 rounded-md border border-[var(--color-meiyou-border)] px-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
-              value={value.color}
-              onChange={(e) => onChange({ ...value, color: e.target.value })}
-            />
-            {showColorPicker && (
-              <div className="absolute top-10 left-0 z-50 bg-white rounded-lg shadow-lg border p-2">
-                <input
-                  type="color"
-                  value={value.color}
-                  onChange={(e) => {
-                    onChange({ ...value, color: e.target.value });
-                    setShowColorPicker(false);
-                  }}
-                  className="w-32 h-24 cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-        {/* 跳转链接 */}
-        <div className="flex items-center gap-2">
-          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">跳转链接</Label>
-          <input
-            type="text"
-            className="flex-1 h-8 rounded-md border border-[var(--color-meiyou-border)] px-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
-            value={value.jumpLink}
-            placeholder="请输入跳转链接"
-            onChange={(e) => onChange({ ...value, jumpLink: e.target.value })}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function GlobalConfigCard({
   config,
   onChange,
-  hasReservationTime,
 }: {
   config: GlobalConfig;
   onChange: (config: GlobalConfig) => void;
-  hasReservationTime: boolean;
 }) {
   const cfg = { ...defaultGlobalConfig, ...config };
 
@@ -1528,47 +1449,6 @@ function GlobalConfigCard({
           </div>
         )}
 
-        {/* 吸底按钮配置 */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-medium text-[rgba(0,0,0,0.8)]">吸底按钮</span>
-            <span className="text-xs text-[rgba(0,0,0,0.4)]">根据用户会员状态展示不同按钮</span>
-          </div>
-
-          {/* 非会员：始终展示 */}
-          <StickyButtonField
-            label="非会员"
-            value={cfg.nonMemberButton || { text: '', color: '#ff4d88', jumpLink: '' }}
-            onChange={(val) => updateField('nonMemberButton', val)}
-          />
-
-          {/* 会员：仅未配置预约时间时展示 */}
-          {!hasReservationTime && (
-            <StickyButtonField
-              label="会员"
-              value={cfg.memberButton || { text: '', color: '#ff4d88', jumpLink: '' }}
-              onChange={(val) => updateField('memberButton', val)}
-            />
-          )}
-
-          {/* 会员已预约：仅配置了预约时间时展示 */}
-          {hasReservationTime && (
-            <StickyButtonField
-              label="会员已预约"
-              value={cfg.memberReservedButton || { text: '', color: '#ff4d88', jumpLink: '' }}
-              onChange={(val) => updateField('memberReservedButton', val)}
-            />
-          )}
-
-          {/* 会员未预约：仅配置了预约时间时展示 */}
-          {hasReservationTime && (
-            <StickyButtonField
-              label="会员未预约"
-              value={cfg.memberUnreservedButton || { text: '', color: '#ff4d88', jumpLink: '' }}
-              onChange={(val) => updateField('memberUnreservedButton', val)}
-            />
-          )}
-        </div>
       </div>
     </div>
   );
@@ -1781,7 +1661,7 @@ function FlashSaleConfigCard({
                     ))}
                   </div>
 
-                  {/* 受众规则 */}
+                  {/* 用户条件 */}
                   <Separator />
                   <AudienceRuleEditor
                     rules={product.audienceRules}
@@ -2040,7 +1920,7 @@ function BenefitConfigCard({
                     />
                   </div>
                 </div>
-                {/* 受众规则 */}
+                {/* 用户条件 */}
                 <div className="pl-0">
                   <AudienceRuleEditor
                     rules={product.audienceRules}
@@ -2136,6 +2016,13 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     };
   });
 
+  const [activeStickyTab, setActiveStickyTab] = useState<number>(0);
+
+  // 当预约时间变化导致tab数量变化时，重置选中tab
+  useEffect(() => {
+    setActiveStickyTab(0);
+  }, [!!step1Data.sellEndTime]);
+
   // 模板加载完成后，初始化组件（新建模式）或还原组件（编辑模式的键值对格式）
   useEffect(() => {
     if (templates.length === 0) return;
@@ -2195,9 +2082,13 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           return p;
         });
       }
+      // 确保 global_config 存在
+      if (!componentConfigs.global_config) {
+        componentConfigs.global_config = { ...defaultGlobalConfig };
+      }
       return { componentConfigs };
     }
-    return { componentConfigs: {} };
+    return { componentConfigs: { global_config: { ...defaultGlobalConfig } } };
   });
 
   const isFormValid = () => {
@@ -2392,35 +2283,134 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         </CardContent>
       </Card>
 
-      {/* 底部操作栏 */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          className="border-[var(--color-meiyou-divider)]"
-          onClick={() => router.push('/activities')}
-        >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          返回列表
-        </Button>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="border-[var(--color-meiyou-divider)]" onClick={() => window.close()}>
-            取消
-          </Button>
-          <Button
-            variant="outline"
-            className="border-[var(--color-meiyou-divider)]"
-            onClick={handleSaveDraft}
-          >
-            保存草稿
-          </Button>
-          <Button
-            className="bg-meiyou hover:bg-meiyou-hover text-white h-10 rounded-lg"
-            onClick={handlePublish}
-          >
-            提交
-          </Button>
+      {/* 吸底按钮配置 + 操作栏 - 固定底部 */}
+      {step2Data.componentConfigs?.global_config && (() => {
+        const gc = step2Data.componentConfigs.global_config as GlobalConfig;
+        const hasRes = !!step1Data.sellEndTime;
+        const btns = [
+          { key: 'nonMemberButton' as const, label: '非会员' },
+          { key: 'memberButton' as const, label: '会员', show: !hasRes },
+          { key: 'memberReservedButton' as const, label: '会员已预约', show: hasRes },
+          { key: 'memberUnreservedButton' as const, label: '会员未预约', show: hasRes },
+        ].filter(b => b.show !== false);
+        const activeBtnIdx = activeStickyTab;
+        const activeBtnKey = btns[activeBtnIdx]?.key || 'nonMemberButton';
+        const activeBtnVal = gc[activeBtnKey] || { text: '', color: '#ff4d88', jumpLink: '' };
+
+        return (
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
+            <div className="max-w-5xl mx-auto px-6 py-3">
+              {/* 按钮类型切换 */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] mr-2">吸底按钮</span>
+                {btns.map((b, idx) => (
+                  <button
+                    key={b.key}
+                    onClick={() => setActiveStickyTab(idx)}
+                    className={`px-3 py-1 text-xs rounded-full transition-colors ${activeBtnIdx === idx ? 'bg-meiyou text-white' : 'bg-[var(--color-meiyou-bg-page)] text-[var(--color-meiyou-text-secondary)] hover:bg-gray-200'}`}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+              {/* 当前选中按钮配置 */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[var(--color-meiyou-text-secondary)]">文案</span>
+                  <input
+                    type="text"
+                    value={activeBtnVal.text}
+                    onChange={(e) => {
+                      const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, text: e.target.value } };
+                      setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
+                    }}
+                    className="h-8 w-32 rounded-md border border-[var(--color-meiyou-divider)] px-2 text-sm focus:outline-none focus:ring-1 focus:ring-meiyou"
+                    placeholder="按钮文案"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[var(--color-meiyou-text-secondary)]">颜色</span>
+                  <div className="relative">
+                    <input
+                      type="color"
+                      value={activeBtnVal.color || '#ff4d88'}
+                      onChange={(e) => {
+                        const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, color: e.target.value } };
+                        setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
+                      }}
+                      className="h-8 w-8 rounded cursor-pointer border border-[var(--color-meiyou-divider)]"
+                    />
+                  </div>
+                  <span className="text-xs text-[var(--color-meiyou-text-tertiary)]">{activeBtnVal.color || '#ff4d88'}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</span>
+                  <input
+                    type="text"
+                    value={activeBtnVal.jumpLink}
+                    onChange={(e) => {
+                      const newGc = { ...gc, [activeBtnKey]: { ...activeBtnVal, jumpLink: e.target.value } };
+                      setStep2Data(prev => ({ ...prev, componentConfigs: { ...prev.componentConfigs, global_config: newGc } }));
+                    }}
+                    className="h-8 flex-1 rounded-md border border-[var(--color-meiyou-divider)] px-2 text-sm focus:outline-none focus:ring-1 focus:ring-meiyou"
+                    placeholder="https://"
+                  />
+                </div>
+                {/* 预览按钮 */}
+                <button
+                  className="h-8 px-4 rounded-md text-sm text-white font-medium shrink-0"
+                  style={{ backgroundColor: activeBtnVal.color || '#ff4d88' }}
+                >
+                  {activeBtnVal.text || '按钮预览'}
+                </button>
+                {/* 操作按钮 */}
+                <div className="flex items-center gap-3 ml-4 pl-4 border-l border-[var(--color-meiyou-divider)]">
+                  <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-8" onClick={() => window.close()}>
+                    取消
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-[var(--color-meiyou-divider)] h-8"
+                    onClick={handleSaveDraft}
+                  >
+                    保存草稿
+                  </Button>
+                  <Button
+                    className="bg-meiyou hover:bg-meiyou-hover text-white h-8 rounded-lg"
+                    onClick={handlePublish}
+                  >
+                    提交
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+      {!step2Data.componentConfigs?.global_config && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-end gap-3">
+            <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-8" onClick={() => window.close()}>
+              取消
+            </Button>
+            <Button
+              variant="outline"
+              className="border-[var(--color-meiyou-divider)] h-8"
+              onClick={handleSaveDraft}
+            >
+              保存草稿
+            </Button>
+            <Button
+              className="bg-meiyou hover:bg-meiyou-hover text-white h-8 rounded-lg"
+              onClick={handlePublish}
+            >
+              提交
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
+      {/* 底部占位，防止固定栏遮挡内容 */}
+      <div className="h-28" />
     </div>
   );
 }
