@@ -7,7 +7,7 @@ export async function GET() {
     const { data, error } = await client
       .from('activities')
       .select('id, name, category, template_id, template_name, status, time_config, audience_groups, lottery_config, material_config, components, component_configs, created_at, updated_at')
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: false });
     if (error) throw new Error(`查询活动失败: ${error.message}`);
     return NextResponse.json({ success: true, data });
   } catch (err) {
