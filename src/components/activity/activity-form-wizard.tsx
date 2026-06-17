@@ -1222,6 +1222,13 @@ function StepComponentConfig({
                       />
                     </div>
                   </div>
+                  {key === 'memberNotBooked' && (
+                    <ImageUploadField
+                      label="预约成功弹窗背景图"
+                      value={cfg[key].bookingSuccessBgImage || ''}
+                      onChange={(url) => updateStatus(key, 'bookingSuccessBgImage', url)}
+                    />
+                  )}
                 </div>
               ))}
             </div>

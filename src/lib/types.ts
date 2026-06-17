@@ -129,6 +129,7 @@ export interface StickyButtonConfig {
   text: string;          // 按钮文案
   color: string;         // 按钮颜色
   jumpLink: string;      // 跳转链接
+  reservationSuccessBgImage?: string;  // 预约成功弹窗背景图（仅会员未预约）
 }
 
 /** 全局按钮样式配置 */
@@ -250,6 +251,7 @@ export interface StatusButtonConfig {
   buttonText: string;
   buttonColor: string;
   jumpLink: string;
+  bookingSuccessBgImage?: string;  // 预约成功弹窗背景图（仅会员未预约）
 }
 
 /** 吸底按钮组件配置 */
