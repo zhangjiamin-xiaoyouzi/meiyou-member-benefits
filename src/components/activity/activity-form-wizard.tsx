@@ -1162,7 +1162,7 @@ function StepComponentConfig({
                     <div className="space-y-1">
                       <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮文案</Label>
                       <Input
-                        placeholder="如：立即开通"
+                        placeholder={key === 'memberNotBooked' ? '如：立即预约' : '如：立即开通'}
                         value={cfg[key].buttonText}
                         onChange={(e) => updateStatus(key, 'buttonText', e.target.value)}
                         className="h-8 text-xs"
