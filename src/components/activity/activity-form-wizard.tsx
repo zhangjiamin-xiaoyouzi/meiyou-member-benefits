@@ -71,6 +71,7 @@ import type {
   StatusButtonConfig,
   RulePopupConfig,
   ComponentAudienceRule,
+  StickyButtonConfig,
 } from '@/lib/types';
 import { mapTemplateFromDb } from '@/lib/types';
 
@@ -144,6 +145,10 @@ const defaultGlobalConfig: GlobalConfig = {
   gradientEnd: '#ff8fab',
   gradientDirection: 'to bottom',
   backgroundImage: '',
+  nonMemberButton: { text: '立即开通', color: '#ff4d88', jumpLink: '' },
+  memberButton: { text: '立即领取', color: '#ff4d88', jumpLink: '' },
+  memberReservedButton: { text: '已预约，立即领取', color: '#ff4d88', jumpLink: '' },
+  memberUnreservedButton: { text: '立即预约', color: '#ff4d88', jumpLink: '' },
 };
 
 // ==================== 图片上传占位组件 ====================
@@ -731,11 +736,13 @@ function StepComponentConfig({
   onChange,
   components,
   onComponentsChange,
+  hasReservationTime = false,
 }: {
   data: Step2Data;
   onChange: (data: Step2Data) => void;
   components: TemplateComponent[];
   onComponentsChange: (components: TemplateComponent[]) => void;
+  hasReservationTime?: boolean;
 }) {
   const configs = data.componentConfigs;
   const [addMenuOpen, setAddMenuOpen] = useState(false);
@@ -841,6 +848,7 @@ function StepComponentConfig({
           <GlobalConfigCard
             config={configs.global_config || { ...defaultGlobalConfig }}
             onChange={(val) => updateConfig('global_config', val)}
+            hasReservationTime={hasReservationTime}
           />
         );
       case 'header_banner':
@@ -1124,7 +1132,7 @@ function RichTextEditor({
         ['bold', 'italic', 'underline', 'strike'],
         [{ color: [] }, { background: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link'],
+        ['jumpLink'],
         ['clean'],
       ],
     }),
@@ -1248,12 +1256,91 @@ function WelfareSelect({
   );
 }
 
+// ==================== 吸底按钮配置字段 ====================
+
+function StickyButtonField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: StickyButtonConfig;
+  onChange: (val: StickyButtonConfig) => void;
+}) {
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  return (
+    <div className="rounded-lg border border-[var(--color-meiyou-border)] p-3 space-y-2.5">
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-[rgba(0,0,0,0.8)]">{label}</span>
+        <span className="text-[10px] text-[#ff4d88] bg-[rgba(255,77,136,0.08)] px-1.5 py-0.5 rounded">必填</span>
+      </div>
+      <div className="space-y-2">
+        {/* 按钮文案 */}
+        <div className="flex items-center gap-2">
+          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">按钮文案</Label>
+          <input
+            type="text"
+            className="flex-1 h-8 rounded-md border border-[var(--color-meiyou-border)] px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
+            value={value.text}
+            placeholder="请输入按钮文案"
+            onChange={(e) => onChange({ ...value, text: e.target.value })}
+          />
+        </div>
+        {/* 按钮颜色 */}
+        <div className="flex items-center gap-2">
+          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">按钮颜色</Label>
+          <div className="relative flex items-center gap-2">
+            <button
+              type="button"
+              className="w-8 h-8 rounded-md border border-[var(--color-meiyou-border)] shrink-0"
+              style={{ backgroundColor: value.color }}
+              onClick={() => setShowColorPicker(!showColorPicker)}
+            />
+            <input
+              type="text"
+              className="h-8 w-24 rounded-md border border-[var(--color-meiyou-border)] px-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
+              value={value.color}
+              onChange={(e) => onChange({ ...value, color: e.target.value })}
+            />
+            {showColorPicker && (
+              <div className="absolute top-10 left-0 z-50 bg-white rounded-lg shadow-lg border p-2">
+                <input
+                  type="color"
+                  value={value.color}
+                  onChange={(e) => {
+                    onChange({ ...value, color: e.target.value });
+                    setShowColorPicker(false);
+                  }}
+                  className="w-32 h-24 cursor-pointer"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        {/* 跳转链接 */}
+        <div className="flex items-center gap-2">
+          <Label className="text-xs text-[rgba(0,0,0,0.6)] w-16 shrink-0">跳转链接</Label>
+          <input
+            type="text"
+            className="flex-1 h-8 rounded-md border border-[var(--color-meiyou-border)] px-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#ff4d88]/30"
+            value={value.jumpLink}
+            placeholder="请输入跳转链接"
+            onChange={(e) => onChange({ ...value, jumpLink: e.target.value })}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GlobalConfigCard({
   config,
   onChange,
+  hasReservationTime,
 }: {
   config: GlobalConfig;
   onChange: (config: GlobalConfig) => void;
+  hasReservationTime: boolean;
 }) {
   const cfg = { ...defaultGlobalConfig, ...config };
 
@@ -1444,6 +1531,48 @@ function GlobalConfigCard({
             )}
           </div>
         )}
+
+        {/* 吸底按钮配置 */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-medium text-[rgba(0,0,0,0.8)]">吸底按钮</span>
+            <span className="text-xs text-[rgba(0,0,0,0.4)]">根据用户会员状态展示不同按钮</span>
+          </div>
+
+          {/* 非会员：始终展示 */}
+          <StickyButtonField
+            label="非会员"
+            value={cfg.nonMemberButton || { text: '', color: '#ff4d88', jumpLink: '' }}
+            onChange={(val) => updateField('nonMemberButton', val)}
+          />
+
+          {/* 会员：仅未配置预约时间时展示 */}
+          {!hasReservationTime && (
+            <StickyButtonField
+              label="会员"
+              value={cfg.memberButton || { text: '', color: '#ff4d88', jumpLink: '' }}
+              onChange={(val) => updateField('memberButton', val)}
+            />
+          )}
+
+          {/* 会员已预约：仅配置了预约时间时展示 */}
+          {hasReservationTime && (
+            <StickyButtonField
+              label="会员已预约"
+              value={cfg.memberReservedButton || { text: '', color: '#ff4d88', jumpLink: '' }}
+              onChange={(val) => updateField('memberReservedButton', val)}
+            />
+          )}
+
+          {/* 会员未预约：仅配置了预约时间时展示 */}
+          {hasReservationTime && (
+            <StickyButtonField
+              label="会员未预约"
+              value={cfg.memberUnreservedButton || { text: '', color: '#ff4d88', jumpLink: '' }}
+              onChange={(val) => updateField('memberUnreservedButton', val)}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -2215,6 +2344,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
               onChange={setStep2Data}
               components={step1Data.components}
               onComponentsChange={(comps) => setStep1Data((prev) => ({ ...prev, components: comps }))}
+              hasReservationTime={!!step1Data.sellEndTime}
             />
           </div>
         </CardContent>

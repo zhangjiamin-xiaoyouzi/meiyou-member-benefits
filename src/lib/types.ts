@@ -125,6 +125,12 @@ export interface MaterialConfig {
 /** 全局配置 */
 export type BackgroundType = 'solid' | 'gradient' | 'image';
 
+export interface StickyButtonConfig {
+  text: string;          // 按钮文案
+  color: string;         // 按钮颜色
+  jumpLink: string;      // 跳转链接
+}
+
 export interface GlobalConfig {
   backgroundType: BackgroundType;
   solidColor: string;           // 纯色背景颜色值
@@ -132,6 +138,11 @@ export interface GlobalConfig {
   gradientEnd: string;          // 渐变色结束颜色
   gradientDirection: string;    // 渐变方向：to-right / to-bottom / to-bottom-right 等
   backgroundImage: string;      // 背景图片 URL
+  // 吸底按钮配置
+  nonMemberButton?: StickyButtonConfig;    // 非会员按钮（无预约时间时展示）
+  memberButton?: StickyButtonConfig;       // 会员按钮（无预约时间时展示）
+  memberReservedButton?: StickyButtonConfig;  // 会员已预约按钮（有预约时间时展示）
+  memberUnreservedButton?: StickyButtonConfig; // 会员未预约按钮（有预约时间时展示）
 }
 
 /** 氛围头图配置 */
@@ -215,6 +226,7 @@ export interface StatusButtonConfig {
 /** 吸底按钮组件配置 */
 export interface ActionButtonConfig {
   nonMember: StatusButtonConfig;        // 非会员
+  member?: StatusButtonConfig;          // 会员（仅未配置预约时间时展示）
   memberBooked: StatusButtonConfig;     // 会员已预约
   memberNotBooked: StatusButtonConfig;  // 会员未预约
 }
