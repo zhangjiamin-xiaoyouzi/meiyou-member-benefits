@@ -699,14 +699,20 @@ function SortableComponentItem({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {/* 拖拽手柄 */}
-              <button
-                type="button"
-                className="cursor-grab active:cursor-grabbing p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
-                {...attributes}
-                {...listeners}
-              >
-                <GripVertical className="h-4 w-4" />
-              </button>
+              {!comp.required ? (
+                <button
+                  type="button"
+                  className="cursor-grab active:cursor-grabbing p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                  {...attributes}
+                  {...listeners}
+                >
+                  <GripVertical className="h-4 w-4" />
+                </button>
+              ) : (
+                <div className="p-0.5 text-gray-300">
+                  <GripVertical className="h-4 w-4" />
+                </div>
+              )}
               <CardTitle className="text-sm flex items-center gap-2">
                 {isCopied ? (
                   <input
@@ -783,12 +789,14 @@ function DraggableNavItem({
           ? 'border-t-2 border-[var(--color-meiyou)] bg-[rgba(255,77,136,0.06)]'
           : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
       }`}
-      draggable
+      draggable={!comp.required}
       onDragStart={(e) => {
+        if (comp.required) { e.preventDefault(); return; }
         e.dataTransfer.setData('text/plain', comp.key);
         e.dataTransfer.effectAllowed = 'move';
       }}
       onDragOver={(e) => {
+        if (comp.required) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         setIsDragOver(true);
@@ -797,6 +805,7 @@ function DraggableNavItem({
       onDrop={(e) => {
         e.preventDefault();
         setIsDragOver(false);
+        if (comp.required) return;
         const dragKey = e.dataTransfer.getData('text/plain');
         if (dragKey && dragKey !== comp.key) {
           onReorder(dragKey, comp.key);
@@ -1013,6 +1022,8 @@ function StepComponentConfig({
     const oldIndex = enabledComponents.findIndex((c) => c.key === active.id);
     const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
+    // 必选组件不允许拖拽排序
+    if (enabledComponents[oldIndex].required) return;
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(mergeReorderedEnabled(newEnabled));
@@ -1023,6 +1034,8 @@ function StepComponentConfig({
     const oldIndex = enabledComponents.findIndex((c) => c.key === dragKey);
     const newIndex = enabledComponents.findIndex((c) => c.key === overKey);
     if (oldIndex === -1 || newIndex === -1) return;
+    // 必选组件不允许拖拽排序
+    if (enabledComponents[oldIndex].required) return;
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(mergeReorderedEnabled(newEnabled));
   };
@@ -2478,6 +2491,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       const oldIndex = enabledComponents.findIndex((c) => c.key === active.id);
       const newIndex = enabledComponents.findIndex((c) => c.key === over.id);
       if (oldIndex !== -1 && newIndex !== -1) {
+        // 必选组件不允许拖拽排序
+        if (enabledComponents[oldIndex].required) return;
         // Map enabled index back to full components array
         const fullOldIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[oldIndex].key);
         const fullNewIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[newIndex].key);
