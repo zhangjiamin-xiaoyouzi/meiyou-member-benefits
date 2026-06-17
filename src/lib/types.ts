@@ -131,6 +131,18 @@ export interface StickyButtonConfig {
   jumpLink: string;      // 跳转链接
 }
 
+/** 全局按钮样式配置 */
+export interface ButtonStyleConfig {
+  styleType?: 'solid' | 'outline';   // 实色按钮 / 线条按钮
+  backgroundType?: 'solid' | 'gradient' | 'image';  // 纯色 / 渐变 / 图片
+  solidColor?: string;               // 纯色背景颜色值
+  gradientStart?: string;            // 渐变色起始颜色
+  gradientEnd?: string;              // 渐变色结束颜色
+  gradientDirection?: string;        // 渐变方向
+  backgroundImage?: string;          // 背景图片 URL
+  fontColor?: string;                // 按钮字体颜色
+}
+
 export interface GlobalConfig {
   backgroundType: BackgroundType;
   solidColor: string;           // 纯色背景颜色值
@@ -143,6 +155,8 @@ export interface GlobalConfig {
   memberButton?: StickyButtonConfig;       // 会员按钮（无预约时间时展示）
   memberReservedButton?: StickyButtonConfig;  // 会员已预约按钮（有预约时间时展示）
   memberUnreservedButton?: StickyButtonConfig; // 会员未预约按钮（有预约时间时展示）
+  // 全局按钮样式
+  button?: ButtonStyleConfig;
 }
 
 /** 氛围头图配置 */

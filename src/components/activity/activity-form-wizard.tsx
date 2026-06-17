@@ -1747,11 +1747,195 @@ function GlobalConfigCard({
         )}
 
       </div>
+
+      {/* 按钮样式配置 */}
+      <div className="space-y-3">
+        <ReqLabel>按钮</ReqLabel>
+
+        {/* 按钮类型 */}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[rgba(0,0,0,0.6)]">按钮类型</Label>
+          <div className="flex gap-2">
+            {(['solid', 'outline'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => updateField('button', { ...cfg.button, styleType: type })}
+                className={`px-3 py-1.5 rounded text-xs border transition-colors ${
+                  cfg.button?.styleType === type
+                    ? 'border-[#ff4d88] text-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
+                    : 'border-[var(--color-meiyou-border)] text-[rgba(0,0,0,0.6)] bg-white hover:border-[#ff4d88]/40'
+                }`}
+              >
+                {type === 'solid' ? '实色按钮' : '线条按钮'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 按钮背景方式 */}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[rgba(0,0,0,0.6)]">按钮背景</Label>
+          <div className="flex gap-2">
+            {(['solid', 'gradient', 'image'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => updateField('button', { ...cfg.button, backgroundType: type })}
+                className={`px-3 py-1.5 rounded text-xs border transition-colors ${
+                  cfg.button?.backgroundType === type
+                    ? 'border-[#ff4d88] text-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
+                    : 'border-[var(--color-meiyou-border)] text-[rgba(0,0,0,0.6)] bg-white hover:border-[#ff4d88]/40'
+                }`}
+              >
+                {type === 'solid' ? '纯色' : type === 'gradient' ? '渐变色' : '图片'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 纯色配置 */}
+        {cfg.button?.backgroundType === 'solid' && (
+          <div className="space-y-1.5">
+            <ReqLabel>按钮颜色</ReqLabel>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={cfg.button?.solidColor || '#ff4d88'}
+                onChange={(e) => updateField('button', { ...cfg.button, solidColor: e.target.value })}
+                className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+              />
+              <Input
+                value={cfg.button?.solidColor || '#ff4d88'}
+                onChange={(e) => updateField('button', { ...cfg.button, solidColor: e.target.value })}
+                className="flex-1 h-8 text-xs"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 渐变色配置 */}
+        {cfg.button?.backgroundType === 'gradient' && (
+          <div className="space-y-3">
+            <div className="flex gap-4">
+              <div className="space-y-1.5 flex-1">
+                <ReqLabel>起始颜色</ReqLabel>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={cfg.button?.gradientStart || '#ff4d88'}
+                    onChange={(e) => updateField('button', { ...cfg.button, gradientStart: e.target.value })}
+                    className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+                  />
+                  <Input
+                    value={cfg.button?.gradientStart || '#ff4d88'}
+                    onChange={(e) => updateField('button', { ...cfg.button, gradientStart: e.target.value })}
+                    className="flex-1 h-8 text-xs"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5 flex-1">
+                <ReqLabel>结束颜色</ReqLabel>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={cfg.button?.gradientEnd || '#ff8866'}
+                    onChange={(e) => updateField('button', { ...cfg.button, gradientEnd: e.target.value })}
+                    className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+                  />
+                  <Input
+                    value={cfg.button?.gradientEnd || '#ff8866'}
+                    onChange={(e) => updateField('button', { ...cfg.button, gradientEnd: e.target.value })}
+                    className="flex-1 h-8 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[rgba(0,0,0,0.6)]">渐变方向</Label>
+              <div className="flex gap-2">
+                {[
+                  { value: 'to right', label: '→' },
+                  { value: 'to bottom', label: '↓' },
+                  { value: 'to bottom right', label: '↘' },
+                ].map((dir) => (
+                  <button
+                    key={dir.value}
+                    onClick={() => updateField('button', { ...cfg.button, gradientDirection: dir.value })}
+                    className={`w-8 h-8 rounded border text-sm transition-colors ${
+                      cfg.button?.gradientDirection === dir.value
+                        ? 'border-[#ff4d88] text-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
+                        : 'border-[var(--color-meiyou-border)] text-[rgba(0,0,0,0.6)] bg-white'
+                    }`}
+                  >
+                    {dir.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 图片背景配置 */}
+        {cfg.button?.backgroundType === 'image' && (
+          <ImageUploadField
+            label="按钮背景图片"
+            value={cfg.button?.backgroundImage || ''}
+            onChange={(val) => updateField('button', { ...cfg.button, backgroundImage: val })}
+          />
+        )}
+
+        {/* 按钮字体颜色 */}
+        <div className="space-y-1.5">
+          <ReqLabel>字体颜色</ReqLabel>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={cfg.button?.fontColor || '#ffffff'}
+              onChange={(e) => updateField('button', { ...cfg.button, fontColor: e.target.value })}
+              className="w-8 h-8 rounded cursor-pointer border border-[var(--color-meiyou-border)] p-0.5"
+            />
+            <Input
+              value={cfg.button?.fontColor || '#ffffff'}
+              onChange={(e) => updateField('button', { ...cfg.button, fontColor: e.target.value })}
+              className="flex-1 h-8 text-xs"
+            />
+          </div>
+        </div>
+
+        {/* 按钮预览 */}
+        <div className="rounded-lg border border-[var(--color-meiyou-border)] p-3 flex items-center justify-center">
+          {(() => {
+            const btn = cfg.button;
+            if (!btn) return <span className="text-xs text-[rgba(0,0,0,0.4)]">请配置按钮样式</span>;
+            const isOutline = btn.styleType === 'outline';
+            const bgStyle = btn.backgroundType === 'solid'
+              ? btn.solidColor || '#ff4d88'
+              : btn.backgroundType === 'gradient'
+                ? `linear-gradient(${btn.gradientDirection || 'to right'}, ${btn.gradientStart || '#ff4d88'}, ${btn.gradientEnd || '#ff8866'})`
+                : undefined;
+            const imgStyle = btn.backgroundType === 'image' && btn.backgroundImage
+              ? `url(${btn.backgroundImage})` : undefined;
+            return (
+              <button
+                className="px-6 py-2 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  color: btn.fontColor || '#ffffff',
+                  ...(isOutline
+                    ? { border: `2px solid ${bgStyle || '#ff4d88'}`, background: 'transparent' }
+                    : imgStyle
+                      ? { backgroundImage: imgStyle, backgroundSize: 'cover', backgroundPosition: 'center', border: 'none' }
+                      : { background: bgStyle, border: 'none' }
+                  ),
+                }}
+              >
+                按钮预览
+              </button>
+            );
+          })()}
+        </div>
+      </div>
     </div>
   );
 }
-
-// ==================== 会员限时福利配置卡片 ====================
 
 function FlashSaleConfigCard({
   config,
