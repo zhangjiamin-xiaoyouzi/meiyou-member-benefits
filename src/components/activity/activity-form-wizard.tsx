@@ -228,6 +228,83 @@ function ImageUploadField({
   );
 }
 
+// ==================== 视频上传组件 ====================
+
+function VideoUploadField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+      {value ? (
+        <div className="relative group w-40 h-24 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
+          <video src={value} className="w-full h-full object-cover" muted />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'video/mp4';
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    const url = URL.createObjectURL(file);
+                    onChange(url);
+                  }
+                };
+                input.click();
+              }}
+            >
+              <Upload className="h-3 w-3 mr-0.5" />
+              更换
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => onChange('')}
+            >
+              删除
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/mp4';
+            input.onchange = (e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+              if (file) {
+                const url = URL.createObjectURL(file);
+                onChange(url);
+              }
+            };
+            input.click();
+          }}
+          className="w-40 h-24 rounded border-2 border-dashed border-[var(--color-meiyou-border)] hover:border-meiyou/50 hover:bg-meiyou-light transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer"
+        >
+          <Upload className="h-4 w-4 text-[var(--color-meiyou-text-placeholder)]" />
+          <span className="text-[10px] text-[var(--color-meiyou-text-placeholder)]">上传MP4视频</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ==================== 用户条件编辑组件 ====================
 
 function AudienceRuleEditor({
@@ -843,13 +920,20 @@ function StepComponentConfig({
         );
       case 'header_banner':
         return (() => {
-          const cfg = configs.header_banner || { imageUrl: '' };
+          const cfg = configs.header_banner || { imageUrl: '', videoUrl: '' };
           return (
-            <ImageUploadField
-              label="氛围头图"
-              value={cfg.imageUrl}
-              onChange={(val) => updateConfig('header_banner', { ...cfg, imageUrl: val })}
-            />
+            <div className="space-y-4">
+              <ImageUploadField
+                label="氛围头图"
+                value={cfg.imageUrl}
+                onChange={(val) => updateConfig('header_banner', { ...cfg, imageUrl: val })}
+              />
+              <VideoUploadField
+                label="氛围视频"
+                value={cfg.videoUrl}
+                onChange={(val) => updateConfig('header_banner', { ...cfg, videoUrl: val })}
+              />
+            </div>
           );
         })();
       case 'rule_popup':

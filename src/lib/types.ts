@@ -148,6 +148,7 @@ export interface GlobalConfig {
 /** 氛围头图配置 */
 export interface HeaderBannerConfig {
   imageUrl: string;
+  videoUrl: string;
 }
 
 /** 受众规则（组件级别） */
