@@ -2183,7 +2183,7 @@ function FlashSaleConfigCard({
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <ReqLabel>预约时间</ReqLabel>
+                            <Label className="text-sm font-medium text-foreground/80">预约时间</Label>
                             <TimeRangeField
                               startValue={session.bookingStartTime}
                               endValue={session.bookingEndTime}
