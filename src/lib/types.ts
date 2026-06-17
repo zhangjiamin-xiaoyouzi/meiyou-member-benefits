@@ -215,6 +215,12 @@ export interface BenefitProduct {
 /** 会员专属生活券包/会员专属礼配置 */
 export interface BenefitConfig {
   moduleBgImage: string;
+  /** 模块内容类型：productList=福利商品列表，imageJump=图片跳转 */
+  moduleContentType: 'productList' | 'imageJump';
+  /** 图片跳转-图片（moduleContentType=imageJump时使用） */
+  jumpImage?: string;
+  /** 图片跳转-跳转链接（moduleContentType=imageJump时使用） */
+  jumpLink?: string;
   products: BenefitProduct[];
 }
 
