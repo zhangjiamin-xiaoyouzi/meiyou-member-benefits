@@ -40,6 +40,8 @@ import {
   Trash2,
   QrCode,
   Copy,
+  Share2,
+  Check,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
@@ -84,6 +86,8 @@ export default function ActivitiesPage() {
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
+  const [promoteActivity, setPromoteActivity] = useState<Activity | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ type: 'online' | 'delete'; activity: Activity } | null>(null);
 
   useEffect(() => {
@@ -176,6 +180,34 @@ export default function ActivitiesPage() {
   const getPreviewUrl = (activity: Activity) => {
     const domain = typeof window !== 'undefined' ? window.location.origin : '';
     return `${domain}/activities/${activity.id}/preview`;
+  };
+
+  const getH5Url = (activity: Activity) => {
+    return `https://view.seeyouyima.com/activity-template/index.html?activity_id=${activity.id}`;
+  };
+
+  const getProtocolUrl = (activity: Activity) => {
+    const h5Url = getH5Url(activity);
+    const params = btoa(JSON.stringify({ url: h5Url }));
+    return `meiyou://web?params=${params}`;
+  };
+
+  const handleCopy = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // fallback
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
   };
 
   const handleQuery = () => {
@@ -303,7 +335,7 @@ export default function ActivitiesPage() {
                 <TableHead className="w-[80px] text-center">状态</TableHead>
                 <TableHead className="w-[160px]">创建时间/人</TableHead>
                 <TableHead className="w-[160px]">操作时间/人</TableHead>
-                <TableHead className="w-[120px] text-center">操作</TableHead>
+                <TableHead className="w-[200px] text-center">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -408,6 +440,15 @@ export default function ActivitiesPage() {
                           variant="ghost"
                           size="sm"
                           className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-link hover:bg-blue-50/50 rounded-lg"
+                          onClick={() => setPromoteActivity(activity)}
+                        >
+                          <Share2 className="h-3.5 w-3.5 mr-1" />
+                          推广
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-link hover:bg-blue-50/50 rounded-lg"
                           onClick={() => setPreviewActivity(activity)}
                         >
                           <QrCode className="h-3.5 w-3.5 mr-1" />
@@ -475,6 +516,70 @@ export default function ActivitiesPage() {
           )}
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-lg">关闭</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 推广弹窗 */}
+      <AlertDialog open={!!promoteActivity} onOpenChange={(open) => { if (!open) setPromoteActivity(null); }}>
+        <AlertDialogContent className="max-w-lg rounded-xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>推广</AlertDialogTitle>
+          </AlertDialogHeader>
+          {promoteActivity && (() => {
+            const protocolUrl = getProtocolUrl(promoteActivity);
+            const h5Url = getH5Url(promoteActivity);
+            return (
+              <div className="space-y-4">
+                {/* 协议地址 */}
+                <div className="space-y-1.5">
+                  <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">协议地址:</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 rounded-md border border-[var(--color-meiyou-border)] bg-white px-3 py-2 text-xs text-[var(--color-meiyou-text-primary)] break-all max-h-20 overflow-y-auto font-mono leading-relaxed">
+                      {protocolUrl}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 h-8 px-3 text-xs rounded-md border-[var(--color-meiyou-border)]"
+                      onClick={() => handleCopy(protocolUrl, 'protocol')}
+                    >
+                      {copiedField === 'protocol' ? (
+                        <><Check className="h-3 w-3 mr-1 text-green-500" />已复制</>
+                      ) : (
+                        <><Copy className="h-3 w-3 mr-1" />复制</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                {/* H5地址 */}
+                <div className="space-y-1.5">
+                  <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">H5地址:</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 rounded-md border border-[var(--color-meiyou-border)] bg-white px-3 py-2 text-xs text-meiyou-link break-all max-h-20 overflow-y-auto leading-relaxed">
+                      {h5Url}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 h-8 px-3 text-xs rounded-md border-[var(--color-meiyou-border)]"
+                      onClick={() => handleCopy(h5Url, 'h5')}
+                    >
+                      {copiedField === 'h5' ? (
+                        <><Check className="h-3 w-3 mr-1 text-green-500" />已复制</>
+                      ) : (
+                        <><Copy className="h-3 w-3 mr-1" />复制</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+          <AlertDialogFooter>
+            <Button className="bg-meiyou hover:bg-meiyou-hover text-white rounded-lg" onClick={() => setPromoteActivity(null)}>
+              知道了
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
