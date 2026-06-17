@@ -34,13 +34,7 @@ import {
 import {
   Plus,
   Search,
-  Pencil,
-  ArrowDownCircle,
-  CircleArrowUp,
-  Trash2,
-  QrCode,
   Copy,
-  Share2,
   Check,
 } from 'lucide-react';
 import type { Activity, ActivityStatus } from '@/lib/types';
@@ -393,13 +387,11 @@ export default function ActivitiesPage() {
                       <div className="flex items-center justify-center gap-1">
                           <Link href={`/activities/${activity.id}/edit`}>
                             <Button variant="ghost" size="sm" className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou hover:bg-meiyou-light rounded-lg">
-                              <Pencil className="h-3.5 w-3.5 mr-1" />
                               编辑
                             </Button>
                           </Link>
                           <Link href={`/activities/new?copyFrom=${activity.id}`}>
                             <Button variant="ghost" size="sm" className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-green-600 hover:bg-green-50/50 rounded-lg">
-                              <Copy className="h-3.5 w-3.5 mr-1" />
                               复制
                             </Button>
                           </Link>
@@ -410,7 +402,6 @@ export default function ActivitiesPage() {
                             className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-green-600 hover:bg-green-50/50 rounded-lg"
                             onClick={() => handleOnline(activity)}
                           >
-                            <CircleArrowUp className="h-3.5 w-3.5 mr-1" />
                             上线
                           </Button>
                         )}
@@ -421,7 +412,6 @@ export default function ActivitiesPage() {
                             className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-warning hover:bg-amber-50/50 rounded-lg"
                             onClick={() => handleOffline(activity)}
                           >
-                            <ArrowDownCircle className="h-3.5 w-3.5 mr-1" />
                             下线
                           </Button>
                         )}
@@ -432,7 +422,6 @@ export default function ActivitiesPage() {
                             className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-danger hover:bg-red-50/50 rounded-lg"
                             onClick={() => handleDelete(activity)}
                           >
-                            <Trash2 className="h-3.5 w-3.5 mr-1" />
                             删除
                           </Button>
                         )}
@@ -442,7 +431,6 @@ export default function ActivitiesPage() {
                           className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-link hover:bg-blue-50/50 rounded-lg"
                           onClick={() => setPromoteActivity(activity)}
                         >
-                          <Share2 className="h-3.5 w-3.5 mr-1" />
                           推广
                         </Button>
                         <Button
@@ -451,7 +439,6 @@ export default function ActivitiesPage() {
                           className="h-7 px-2 text-[var(--color-meiyou-text-secondary)] hover:text-meiyou-link hover:bg-blue-50/50 rounded-lg"
                           onClick={() => setPreviewActivity(activity)}
                         >
-                          <QrCode className="h-3.5 w-3.5 mr-1" />
                           预览
                         </Button>
                       </div>
