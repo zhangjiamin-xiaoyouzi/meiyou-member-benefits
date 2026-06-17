@@ -118,6 +118,14 @@ function getCategoryColor(category: string) {
   return categoryColorMap[category] || defaultCategoryColor;
 }
 
+// 将 ISO 日期字符串转换为 datetime-local 输入框所需的格式 (YYYY-MM-DDTHH:mm)
+function toDatetimeLocalValue(val: string | undefined | null): string {
+  if (!val) return '';
+  // 去掉秒和时区后缀，如 "2025-05-15T00:00:00Z" → "2025-05-15T00:00"
+  const m = val.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+  return m ? `${m[1]}T${m[2]}` : val.slice(0, 16);
+}
+
 // ==================== 用户条件字段选项 ====================
 
 const ruleFieldOptions = [
@@ -2594,14 +2602,14 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         templateId: (raw.template_id || raw.templateId || '') as string,
         category: (raw.category || '') as string,
         name: initialData.name,
-        activityStartTime: timeConfig.activityStartTime || '',
-        activityEndTime: timeConfig.activityEndTime || '',
-        sellStartTime: timeConfig.sellStartTime || '',
-        sellEndTime: timeConfig.sellEndTime || '',
-        lotteryStartTime: timeConfig.lotteryStartTime || '',
-        lotteryEndTime: timeConfig.lotteryEndTime || '',
-        bufferEndTime: timeConfig.bufferEndTime || '',
-        refundCutoffTime: timeConfig.refundCutoffTime || '',
+        activityStartTime: toDatetimeLocalValue(timeConfig.activityStartTime),
+        activityEndTime: toDatetimeLocalValue(timeConfig.activityEndTime),
+        sellStartTime: toDatetimeLocalValue(timeConfig.sellStartTime),
+        sellEndTime: toDatetimeLocalValue(timeConfig.sellEndTime),
+        lotteryStartTime: toDatetimeLocalValue(timeConfig.lotteryStartTime),
+        lotteryEndTime: toDatetimeLocalValue(timeConfig.lotteryEndTime),
+        bufferEndTime: toDatetimeLocalValue(timeConfig.bufferEndTime),
+        refundCutoffTime: toDatetimeLocalValue(timeConfig.refundCutoffTime),
         components,
       };
     }
