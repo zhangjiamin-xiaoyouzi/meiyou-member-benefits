@@ -52,6 +52,7 @@ import {
   ChevronDown,
   MousePointerClick,
   Search,
+  Lock,
   Copy,
 } from 'lucide-react';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
@@ -812,8 +813,12 @@ function DraggableNavItem({
         }
       }}
     >
-      {/* 拖拽手柄 */}
-      <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab" />
+      {/* 拖拽手柄 / 锁定图标 */}
+      {comp.required ? (
+        <Lock className="h-3 w-3 text-gray-300 shrink-0" />
+      ) : (
+        <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab" />
+      )}
       {/* 点击滚动到对应区域 / 复制组件可编辑名称 */}
       {isCopied ? (
         <input
