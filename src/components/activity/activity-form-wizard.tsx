@@ -1150,7 +1150,7 @@ function StepComponentConfig({
                     <div className="space-y-1">
                       <Label className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
                       <Input
-                        placeholder="https://"
+                        placeholder="请输入meiyou:///开头地址"
                         value={cfg[key].jumpLink}
                         onChange={(e) => updateStatus(key, 'jumpLink', e.target.value)}
                         className="h-8 text-xs"
@@ -1879,7 +1879,7 @@ function FlashSaleConfigCard({
                       <ReqLabel>跳转链接</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
-                        placeholder="输入跳转链接URL"
+                        placeholder="请输入meiyou:///开头地址"
                         value={product.jumpLink}
                         onChange={(e) => updateProduct(product.id, { jumpLink: e.target.value })}
                       />
