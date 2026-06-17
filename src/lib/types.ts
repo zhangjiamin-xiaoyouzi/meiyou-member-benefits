@@ -205,9 +205,17 @@ export interface BenefitConfig {
 }
 
 /** 会员专属0元购配置 */
+/** 类目路径项 */
+export interface CategoryPathItem {
+  path: string;
+  isDefault: boolean;
+}
+
 export interface FreePurchaseConfig {
   moduleBgImage: string;
-  categoryIds: string[];
+  categories: CategoryPathItem[];
+  /** @deprecated 使用 categories 替代 */
+  categoryIds?: string[];
 }
 
 /** 规则弹窗配置 */

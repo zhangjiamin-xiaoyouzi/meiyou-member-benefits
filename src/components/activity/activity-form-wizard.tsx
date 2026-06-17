@@ -68,6 +68,7 @@ import type {
   BenefitConfig,
   BenefitProduct,
   FreePurchaseConfig,
+  CategoryPathItem,
   ActionButtonConfig,
   StatusButtonConfig,
   RulePopupConfig,
@@ -1120,7 +1121,7 @@ function StepComponentConfig({
       case 'free_purchase':
         return (
           <FreePurchaseConfigCard
-            config={configs.free_purchase || { categoryIds: [], moduleBgImage: '' }}
+            config={configs.free_purchase || { categories: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_purchase', val)}
           />
         );
@@ -2023,26 +2024,31 @@ function FreePurchaseConfigCard({
   config: FreePurchaseConfig;
   onChange: (config: FreePurchaseConfig) => void;
 }) {
-  const addCategoryId = () => {
-    onChange({ ...config, categoryIds: [...config.categoryIds, ''] });
+  // 兼容旧数据：categoryIds → categories
+  const categories: CategoryPathItem[] = config.categories && config.categories.length > 0
+    ? config.categories
+    : (config.categoryIds || []).map((id) => ({ path: id, isDefault: false }));
+
+  const addCategory = () => {
+    onChange({ ...config, categories: [...categories, { path: '', isDefault: false }] });
   };
 
-  const updateCategoryId = (index: number, value: string) => {
-    const newIds = [...config.categoryIds];
-    newIds[index] = value;
-    onChange({ ...config, categoryIds: newIds });
+  const updateCategory = (index: number, field: keyof CategoryPathItem, value: string | boolean) => {
+    const newCats = [...categories];
+    newCats[index] = { ...newCats[index], [field]: value };
+    onChange({ ...config, categories: newCats });
   };
 
-  const removeCategoryId = (index: number) => {
-    onChange({ ...config, categoryIds: config.categoryIds.filter((_, i) => i !== index) });
+  const removeCategory = (index: number) => {
+    onChange({ ...config, categories: categories.filter((_, i) => i !== index) });
   };
 
-  const moveCategoryId = (index: number, direction: 'up' | 'down') => {
-    const newIds = [...config.categoryIds];
+  const moveCategory = (index: number, direction: 'up' | 'down') => {
+    const newCats = [...categories];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= newIds.length) return;
-    [newIds[index], newIds[targetIndex]] = [newIds[targetIndex], newIds[index]];
-    onChange({ ...config, categoryIds: newIds });
+    if (targetIndex < 0 || targetIndex >= newCats.length) return;
+    [newCats[index], newCats[targetIndex]] = [newCats[targetIndex], newCats[index]];
+    onChange({ ...config, categories: newCats });
   };
 
   return (
@@ -2056,31 +2062,40 @@ function FreePurchaseConfigCard({
         </div>
         <div className="flex items-center justify-between">
           <ReqLabel>类目路径</ReqLabel>
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategoryId}>
+          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={addCategory}>
             <Plus className="h-3 w-3 mr-1" />
             添加类目
           </Button>
         </div>
-        {config.categoryIds.length === 0 ? (
+        {categories.length === 0 ? (
           <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-xs">暂无类目路径，请点击添加</div>
         ) : (
           <div className="space-y-2">
-            {config.categoryIds.map((catId, index) => (
+            {categories.map((cat, index) => (
               <div key={index} className="flex items-center gap-2">
                 <span className="text-xs text-[var(--color-meiyou-text-placeholder)] w-6 text-right shrink-0">{index + 1}.</span>
                 <Input
                   className="h-8 text-sm flex-1"
                   placeholder="请输类目路径，如 644,746,771"
-                  value={catId}
-                  onChange={(e) => updateCategoryId(index, e.target.value)}
+                  value={cat.path}
+                  onChange={(e) => updateCategory(index, 'path', e.target.value)}
                 />
+                <label className="flex items-center gap-1 shrink-0 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={cat.isDefault}
+                    onChange={(e) => updateCategory(index, 'isDefault', e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-gray-300 accent-[#ff4d88]"
+                  />
+                  <span className="text-xs text-[rgba(0,0,0,0.6)] whitespace-nowrap">默认展示</span>
+                </label>
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0"
                     disabled={index === 0}
-                    onClick={() => moveCategoryId(index, 'up')}
+                    onClick={() => moveCategory(index, 'up')}
                   >
                     <ChevronUp className="h-3 w-3" />
                   </Button>
@@ -2088,8 +2103,8 @@ function FreePurchaseConfigCard({
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0"
-                    disabled={index === config.categoryIds.length - 1}
-                    onClick={() => moveCategoryId(index, 'down')}
+                    disabled={index === categories.length - 1}
+                    onClick={() => moveCategory(index, 'down')}
                   >
                     <ChevronDown className="h-3 w-3" />
                   </Button>
@@ -2097,7 +2112,7 @@ function FreePurchaseConfigCard({
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0 text-meiyou hover:text-meiyou-hover"
-                    onClick={() => removeCategoryId(index)}
+                    onClick={() => removeCategory(index)}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>

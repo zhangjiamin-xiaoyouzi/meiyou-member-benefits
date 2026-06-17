@@ -146,9 +146,9 @@ export default function ActivityPreviewPage() {
           <div className="text-center text-xs font-semibold text-green-600 mb-2">会员专属0元购</div>
           <div className="bg-white rounded-lg p-3 text-xs text-gray-600">
             <div>下单全额返现金</div>
-            {cfg.categoryIds?.length > 0 && (
+            {(cfg.categories && cfg.categories.length > 0 || cfg.categoryIds && cfg.categoryIds.length > 0) && (
               <div className="mt-1 text-gray-400 text-[10px]">
-                返现类目: {cfg.categoryIds.join('、')}
+                返现类目: {(cfg.categories || cfg.categoryIds || []).map((c: { path: string } | string) => typeof c === 'string' ? c : c.path).join('、')}
               </div>
             )}
           </div>
