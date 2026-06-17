@@ -612,7 +612,7 @@ function StepBasicInfo({
           </div>
           {/* 活动预约时间（非必填） */}
           <div>
-            <ReqLabel>{isMemberDay ? '活动预约时间' : '售卖时间'}</ReqLabel>
+            <Label className="text-sm font-medium text-foreground/80">{isMemberDay ? '活动预约时间' : '售卖时间'}</Label>
             <TimeRangeField
               startValue={data.sellStartTime}
               endValue={data.sellEndTime}
