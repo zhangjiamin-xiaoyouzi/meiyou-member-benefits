@@ -1129,19 +1129,17 @@ function StepComponentConfig({
         return (() => {
           const cfg: ActionButtonConfig = configs.cta_button || {
             nonMember: { buttonText: '', jumpLink: '' },
-            memberBooked: { buttonText: '', jumpLink: '' },
             memberNotBooked: { buttonText: '', jumpLink: '' },
           };
-          const updateStatus = (status: 'nonMember' | 'memberBooked' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
+          const updateStatus = (status: 'nonMember' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
             updateConfig('cta_button', {
               ...cfg,
               [status]: { ...cfg[status], [field]: value },
             });
           };
-          const statuses: { key: 'nonMember' | 'memberBooked' | 'memberNotBooked'; label: string; desc: string }[] = [
+          const statuses: { key: 'nonMember' | 'memberNotBooked'; label: string; desc: string }[] = [
             { key: 'nonMember', label: '非会员', desc: '未开通会员的用户看到的按钮' },
             { key: 'memberNotBooked', label: '会员未预约', desc: '已开通会员但未预约的用户看到的按钮' },
-            { key: 'memberBooked', label: '会员已预约', desc: '已预约成功的会员看到的按钮' },
           ];
           return (
             <div className="space-y-4">

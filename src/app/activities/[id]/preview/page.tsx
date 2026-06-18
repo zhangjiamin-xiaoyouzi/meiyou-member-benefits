@@ -201,9 +201,8 @@ export default function ActivityPreviewPage() {
     if (!cfg) return null;
     // 展示三种状态的按钮
     const nonMember = cfg.nonMember;
-    const memberBooked = cfg.memberBooked;
     const memberNotBooked = cfg.memberNotBooked;
-    if (!nonMember && !memberBooked && !memberNotBooked) return null;
+    if (!nonMember && !memberNotBooked) return null;
     return (
       <div key="cta_button" className="w-full px-4 py-3 space-y-2">
         <div className="text-xs text-gray-400 mb-1">按钮状态预览</div>
@@ -226,17 +225,6 @@ export default function ActivityPreviewPage() {
               style={{ backgroundColor: '#ff4d88' }}
             >
               {memberNotBooked.buttonText || '立即预约'}
-            </button>
-          </div>
-        )}
-        {memberBooked && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 shrink-0">会员已预约</span>
-            <button
-              className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
-              style={{ backgroundColor: '#ff4d88' }}
-            >
-              {memberBooked.buttonText || '立即领取'}
             </button>
           </div>
         )}

@@ -267,7 +267,6 @@ export interface StatusButtonConfig {
 export interface ActionButtonConfig {
   nonMember: StatusButtonConfig;        // 非会员
   member?: StatusButtonConfig;          // 会员（仅未配置预约时间时展示）
-  memberBooked: StatusButtonConfig;     // 会员已预约
   memberNotBooked: StatusButtonConfig;  // 会员未预约
 }
 
