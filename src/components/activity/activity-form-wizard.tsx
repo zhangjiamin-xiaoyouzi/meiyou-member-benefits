@@ -169,14 +169,20 @@ function ImageUploadField({
   label,
   value,
   onChange,
+  required = true,
 }: {
   label: string;
   value: string;
   onChange: (val: string) => void;
+  required?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
-      <ReqLabel>{label}</ReqLabel>
+      {required ? (
+        <ReqLabel>{label}</ReqLabel>
+      ) : (
+        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+      )}
       {value ? (
         <div className="relative group w-24 h-16 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1088,6 +1094,7 @@ function StepComponentConfig({
           <GlobalConfigCard
             config={configs.global_config || { ...defaultGlobalConfig }}
             onChange={(val) => updateConfig('global_config', val)}
+            hasReservationTime={hasReservationTime}
           />
         );
       case 'header_banner':
@@ -1943,6 +1950,17 @@ function GlobalConfigCard({
             );
           })()}
         </div>
+        {/* 预约成功弹窗背景图 */}
+        {hasReservationTime && (
+          <div className="mt-4">
+            <ImageUploadField
+              label="预约成功弹窗背景图"
+              value={cfg.bookingSuccessBgImage || ''}
+              onChange={(url) => updateField('bookingSuccessBgImage', url)}
+              required
+            />
+          </div>
+        )}
       </div>
     </div>
   );
