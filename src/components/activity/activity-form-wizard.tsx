@@ -2599,35 +2599,23 @@ function BenefitConfigCard({
                   </div>
 
                   {/* 图片 + 跳转链接 */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
                     <ImageUploadField
-                      label={isProductItem ? '福利图片' : '图片'}
+                      label={isProductItem ? '商品图片' : '图片'}
                       value={product.benefitImage}
                       onChange={(val) => updateItem(product.id, { benefitImage: val })}
                     />
-                    <div>
-                      {isProductItem ? (
-                        <>
-                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
-                          <Input
-                            className="mt-1 h-8 text-sm"
-                            value={product.jumpLink || ''}
-                            onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
-                            placeholder="请输入meiyou:///开头地址"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <ReqLabel>跳转链接</ReqLabel>
-                          <Input
-                            className="mt-1 h-8 text-sm"
-                            value={product.jumpLink || ''}
-                            onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
-                            placeholder="请输入meiyou:///开头地址"
-                          />
-                        </>
-                      )}
-                    </div>
+                    {!isProductItem && (
+                      <div>
+                        <ReqLabel>跳转链接</ReqLabel>
+                        <Input
+                          className="mt-1 h-8 text-sm"
+                          value={product.jumpLink || ''}
+                          onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
+                          placeholder="请输入meiyou:///开头地址"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* 非商品项的排序 */}
