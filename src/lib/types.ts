@@ -193,6 +193,8 @@ export interface TimeSession {
 export interface FlashSaleProduct {
   id: string;
   productId: string;
+  /** 商品名称：商品ID有值时自动带出，支持修改 */
+  productName: string;
   stock: string;
   /** 商品图（根据选择的商品自动填充，支持修改） */
   productImage: string;

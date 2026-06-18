@@ -1221,14 +1221,14 @@ function StepComponentConfig({
       const cfg = config as FlashSaleConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-product-${p.id}`,
-        label: p.productId ? `商品 ${p.productId}` : `商品 ${i + 1}`,
+        label: p.productId ? (p.productName || `商品 ${p.productId}`) : `商品 ${i + 1}`,
       }));
     }
     if (key === 'exclusive_gift' || key === 'free_benefit') {
       const cfg = config as BenefitConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-item-${p.id}`,
-        label: p.productId ? `商品 ${p.productId}` : `图片 ${i + 1}`,
+        label: p.productId ? (p.productName || `商品 ${p.productId}`) : `图片 ${i + 1}`,
       }));
     }
     return [];
@@ -2103,6 +2103,7 @@ function FlashSaleConfigCard({
     const newProduct: FlashSaleProduct = {
       id: `fsp_${Date.now()}`,
       productId: '',
+      productName: '',
       stock: '',
       productImage: '',
       obtainPopupProductImage: '',
@@ -2187,7 +2188,7 @@ function FlashSaleConfigCard({
               <Card key={product.id} id={`flash_sale-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">商品 {idx + 1}</span>
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{product.productName || `商品 ${idx + 1}`}</span>
                     <div className="flex items-center gap-0.5">
                       <Button
                         size="sm"
@@ -2258,13 +2259,13 @@ function FlashSaleConfigCard({
                       <ReqLabel>商品ID</ReqLabel>
                       <WelfareSelect
                         value={product.productId}
-                        onChange={(val) => updateProduct(product.id, { productId: val })}
+                        onChange={(val) => updateProduct(product.id, { productId: val, productName: val ? product.productName : '' })}
                         onSelect={(item) => {
                           // 活动弹窗商品图：根据选择的商品id自动填充商品图片
                           if (item.image) {
-                            updateProduct(product.id, { productId: item.id, obtainPopupProductImage: item.image });
+                            updateProduct(product.id, { productId: item.id, productName: item.name, obtainPopupProductImage: item.image });
                           } else {
-                            updateProduct(product.id, { productId: item.id });
+                            updateProduct(product.id, { productId: item.id, productName: item.name });
                           }
                         }}
                       />
