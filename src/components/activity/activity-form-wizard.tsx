@@ -2109,6 +2109,7 @@ function FlashSaleConfigCard({
       productImage: '',
       obtainPopupProductImage: '',
       jumpLink: '',
+      bookingPushText: '',
       timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
       audienceRules: [],
     };
@@ -2308,6 +2309,17 @@ function FlashSaleConfigCard({
                         onChange={(e) => updateProduct(product.id, { jumpLink: e.target.value })}
                       />
                     </div>
+                  </div>
+
+                  {/* 预约通知push文案 */}
+                  <div>
+                    <ReqLabel>预约通知push文案</ReqLabel>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      placeholder="请输入预约通知push文案"
+                      value={product.bookingPushText}
+                      onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
+                    />
                   </div>
 
                   {/* 场次配置 */}
@@ -2542,7 +2554,6 @@ function BenefitConfigCard({
       benefitImage: '',
       displayMode: 'horizontal',
       jumpLink: '',
-      bookingPushText: '',
       sortOrder: config.products.length + 1,
       audienceRules: [],
     };
@@ -2793,17 +2804,6 @@ function BenefitConfigCard({
                         rules={product.audienceRules}
                         onRulesChange={(rules) => updateItem(product.id, { audienceRules: rules })}
                       />
-
-                      {/* 预约通知push文案 */}
-                      <div className="space-y-1.5">
-                        <ReqLabel>预约通知push文案</ReqLabel>
-                        <Input
-                          className="h-8 text-sm"
-                          value={product.bookingPushText || ''}
-                          onChange={(e) => updateItem(product.id, { bookingPushText: e.target.value })}
-                          placeholder="请输入预约通知push文案"
-                        />
-                      </div>
                     </div>
                   </div>
                 )}

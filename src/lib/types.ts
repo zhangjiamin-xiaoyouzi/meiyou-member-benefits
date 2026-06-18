@@ -199,6 +199,8 @@ export interface FlashSaleProduct {
   /** 获得弹窗商品图 */
   obtainPopupProductImage: string;
   jumpLink: string;
+  /** 预约通知push文案 */
+  bookingPushText: string;
   timeSessions: TimeSession[];
   audienceRules: ComponentAudienceRule[];
 }
@@ -226,8 +228,6 @@ export interface BenefitProduct {
   displayMode: 'horizontal' | 'double-column' | 'triple-column';
   /** 跳转链接：商品ID为空时必填，有商品ID时选填 */
   jumpLink: string;
-  /** 预约通知push文案 */
-  bookingPushText: string;
   sortOrder: number;
   audienceRules: ComponentAudienceRule[];
 }
