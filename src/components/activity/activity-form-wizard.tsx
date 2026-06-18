@@ -2780,25 +2780,12 @@ function BenefitConfigCard({
                         </div>
                       </div>
 
-                      {/* 商品图片 + 跳转地址 */}
-                      <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
-                        <ImageUploadField
-                          label="商品图片"
-                          value={product.benefitImage}
-                          onChange={(val) => updateItem(product.id, { benefitImage: val })}
-                        />
-                        {!isProductItem && (
-                          <div>
-                            <ReqLabel>跳转地址</ReqLabel>
-                            <Input
-                              className="mt-1 h-8 text-sm"
-                              value={product.jumpLink || ''}
-                              onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
-                              placeholder="请输入meiyou:///开头地址"
-                            />
-                          </div>
-                        )}
-                      </div>
+                      {/* 商品图片 */}
+                      <ImageUploadField
+                        label="商品图片"
+                        value={product.benefitImage}
+                        onChange={(val) => updateItem(product.id, { benefitImage: val })}
+                      />
 
                       {/* 商品名称 */}
                       <div>
@@ -2810,6 +2797,21 @@ function BenefitConfigCard({
                           placeholder="请输入商品名称"
                           readOnly={isProductItem}
                           disabled={isProductItem}
+                        />
+                      </div>
+
+                      {/* 跳转地址：商品ID为空时必填，有商品ID时选填 */}
+                      <div>
+                        {isProductItem ? (
+                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转地址</Label>
+                        ) : (
+                          <ReqLabel>跳转地址</ReqLabel>
+                        )}
+                        <Input
+                          className="mt-1 h-8 text-sm"
+                          value={product.jumpLink || ''}
+                          onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
+                          placeholder="请输入meiyou:///开头地址"
                         />
                       </div>
 
