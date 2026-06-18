@@ -1479,6 +1479,7 @@ interface WelfareItem {
   id: string;
   name: string;
   image?: string;
+  stock?: number;
 }
 
 function WelfareSelect({
@@ -1536,7 +1537,7 @@ function WelfareSelect({
               onClick={(e) => {
                 e.stopPropagation();
                 onChange('');
-                onSelect?.({ id: '', name: '', image: '' });
+                onSelect?.({ id: '', name: '', image: '', stock: 0 });
               }}
             >
               <X className="h-3.5 w-3.5" />
@@ -1583,6 +1584,11 @@ function WelfareSelect({
                     }}
                   >
                     <span className="flex-1 truncate">{item.id}-{item.name}</span>
+                    {item.stock !== undefined && (
+                      <span className={`text-xs font-mono shrink-0 ${item.stock === 0 ? 'text-[#ff4d4d]' : 'text-[rgba(0,0,0,0.35)]'}`}>
+                        库存{item.stock.toLocaleString()}
+                      </span>
+                    )}
                     {value === item.id && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--color-meiyou-primary)]" />}
                   </div>
                 ))
@@ -1590,6 +1596,11 @@ function WelfareSelect({
             </div>
           </div>
         </>
+      )}
+      {selectedItem && selectedItem.stock !== undefined && (
+        <p className={`mt-1 text-xs font-mono ${selectedItem.stock === 0 ? 'text-[#ff4d4d]' : 'text-[rgba(0,0,0,0.45)]'}`}>
+          可配库存: {selectedItem.stock.toLocaleString()} 件{selectedItem.stock === 0 ? '（该商品不可用）' : ''}
+        </p>
       )}
     </div>
   );
