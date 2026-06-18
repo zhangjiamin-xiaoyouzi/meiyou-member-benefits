@@ -2912,7 +2912,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
               onChange={setStep2Data}
               components={step1Data.components}
               onComponentsChange={(comps) => setStep1Data((prev) => ({ ...prev, components: comps }))}
-              hasReservationTime={!!step1Data.sellEndTime}
+              hasReservationTime={!!(step1Data.sellStartTime || step1Data.sellEndTime)}
             />
           </div>
         </CardContent>
