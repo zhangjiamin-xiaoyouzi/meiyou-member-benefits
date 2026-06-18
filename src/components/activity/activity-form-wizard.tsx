@@ -1175,7 +1175,7 @@ function StepComponentConfig({
       case 'flash_sale':
         return (
           <FlashSaleConfigCard
-            config={configs.flash_sale || { moduleBgImage: '', obtainPopupBgImage: '', products: [] }}
+            config={configs.flash_sale || { moduleBgImage: '', products: [] }}
             onChange={(val) => updateConfig('flash_sale', val)}
           />
         );
@@ -1495,14 +1495,17 @@ function RichTextEditor({
 interface WelfareItem {
   id: string;
   name: string;
+  image?: string;
 }
 
 function WelfareSelect({
   value,
   onChange,
+  onSelect,
 }: {
   value: string;
   onChange: (val: string) => void;
+  onSelect?: (item: WelfareItem) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
@@ -1578,6 +1581,7 @@ function WelfareSelect({
                     }`}
                     onClick={() => {
                       onChange(item.id);
+                      onSelect?.(item);
                       setOpen(false);
                       setKeyword('');
                     }}
@@ -2021,9 +2025,8 @@ function FlashSaleConfigCard({
       id: `fsp_${Date.now()}`,
       productId: '',
       stock: '',
-      rushImage: '',
-      benefitImage: '',
-      popupImage: '',
+      productImage: '',
+      obtainPopupProductImage: '',
       jumpLink: '',
       timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
       audienceRules: [],
@@ -2050,17 +2053,6 @@ function FlashSaleConfigCard({
             label="模块背景图"
             value={config.moduleBgImage}
             onChange={(val) => onChange({ ...config, moduleBgImage: val })}
-          />
-        </div>
-
-        {/* 获得弹窗配置 */}
-        <div className="space-y-4">
-          <ImageUploadField
-            label="活动弹窗商品图"
-            value={config.obtainPopupBgImage || ''}
-            onChange={(val) => onChange({ ...config, obtainPopupBgImage: val })}
-            required
-            hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
           />
         </div>
 
@@ -2162,6 +2154,14 @@ function FlashSaleConfigCard({
                       <WelfareSelect
                         value={product.productId}
                         onChange={(val) => updateProduct(product.id, { productId: val })}
+                        onSelect={(item) => {
+                          // 根据选择的商品自动填充商品图
+                          if (item.image && !product.productImage) {
+                            updateProduct(product.id, { productId: item.id, productImage: item.image });
+                          } else {
+                            updateProduct(product.id, { productId: item.id });
+                          }
+                        }}
                       />
                     </div>
                     <div>
@@ -2176,21 +2176,18 @@ function FlashSaleConfigCard({
                   </div>
 
                   {/* 商品图片 */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <ImageUploadField
-                      label="抢购图片"
-                      value={product.rushImage}
-                      onChange={(val) => updateProduct(product.id, { rushImage: val })}
+                      label="商品图"
+                      value={product.productImage}
+                      onChange={(val) => updateProduct(product.id, { productImage: val })}
+                      hint="根据选择的商品自动填充，支持修改"
                     />
                     <ImageUploadField
-                      label="权益图片"
-                      value={product.benefitImage}
-                      onChange={(val) => updateProduct(product.id, { benefitImage: val })}
-                    />
-                    <ImageUploadField
-                      label="弹窗图片"
-                      value={product.popupImage}
-                      onChange={(val) => updateProduct(product.id, { popupImage: val })}
+                      label="获得弹窗商品图"
+                      value={product.obtainPopupProductImage || ''}
+                      onChange={(val) => updateProduct(product.id, { obtainPopupProductImage: val })}
+                      hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
                     />
                   </div>
 

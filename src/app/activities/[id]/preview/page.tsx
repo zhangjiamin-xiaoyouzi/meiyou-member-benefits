@@ -93,7 +93,7 @@ export default function ActivityPreviewPage() {
           {cfg.products?.map((product) => (
             <div key={product.id} className="bg-white rounded-lg mb-2 overflow-hidden shadow-sm">
               <div className="flex">
-                {product.rushImage && <img src={product.rushImage} alt="" className="w-20 h-20 object-cover" />}
+                {product.productImage && <img src={product.productImage} alt="" className="w-20 h-20 object-cover" />}
                 <div className="flex-1 p-2 text-xs">
                   <div className="font-medium text-gray-800">商品ID: {product.productId}</div>
                   <div className="text-gray-400 mt-1">库存: {product.stock}</div>
@@ -103,7 +103,6 @@ export default function ActivityPreviewPage() {
                     </div>
                   ))}
                 </div>
-                {product.benefitImage && <img src={product.benefitImage} alt="" className="w-16 h-16 object-cover m-2" />}
               </div>
             </div>
           ))}

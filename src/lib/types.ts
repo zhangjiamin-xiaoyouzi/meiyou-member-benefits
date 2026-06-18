@@ -192,9 +192,10 @@ export interface FlashSaleProduct {
   id: string;
   productId: string;
   stock: string;
-  rushImage: string;
-  benefitImage: string;
-  popupImage: string;
+  /** 商品图（根据选择的商品自动填充，支持修改） */
+  productImage: string;
+  /** 获得弹窗商品图 */
+  obtainPopupProductImage: string;
   jumpLink: string;
   timeSessions: TimeSession[];
   audienceRules: ComponentAudienceRule[];
@@ -203,8 +204,6 @@ export interface FlashSaleProduct {
 /** 会员限时福利配置 */
 export interface FlashSaleConfig {
   moduleBgImage: string;
-  /** 活动弹窗商品图 */
-  obtainPopupBgImage: string;
   products: FlashSaleProduct[];
 }
 
