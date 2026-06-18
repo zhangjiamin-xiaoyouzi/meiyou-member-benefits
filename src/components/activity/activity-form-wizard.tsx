@@ -1221,14 +1221,14 @@ function StepComponentConfig({
       const cfg = config as FlashSaleConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-product-${p.id}`,
-        label: p.productId ? (p.productName || `商品 ${p.productId}`) : `商品 ${i + 1}`,
+        label: p.productName || (p.productId ? `商品 ${p.productId}` : `商品 ${i + 1}`),
       }));
     }
     if (key === 'exclusive_gift' || key === 'free_benefit') {
       const cfg = config as BenefitConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-item-${p.id}`,
-        label: p.productId ? (p.productName || `商品 ${p.productId}`) : `图片 ${i + 1}`,
+        label: p.productName || (p.productId ? `商品 ${p.productId}` : `图片 ${i + 1}`),
       }));
     }
     return [];
@@ -2670,7 +2670,7 @@ function BenefitConfigCard({
                       {isProductItem ? '商品' : '图片'}
                     </Badge>
                     <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] shrink-0 truncate">
-                      {isProductItem ? (product.productName || product.productId) : '图片'}
+                      {product.productName || (isProductItem ? product.productId : '图片')}
                     </span>
                     <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
                       · {displayModeText}
