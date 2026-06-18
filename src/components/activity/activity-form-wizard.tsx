@@ -2476,7 +2476,7 @@ function BenefitConfigCard({
     });
   };
 
-  // 图片跳转项操作
+  // 图片列表项操作
   const addImageJumpItem = () => {
     const newItem: ImageJumpItem = {
       id: `ij_${Date.now()}`,
@@ -2543,17 +2543,17 @@ function BenefitConfigCard({
                 onChange={() => onChange({ ...config, moduleContentType: 'imageJump' })}
                 className="accent-[#ff4d88]"
               />
-              <span className="text-sm">图片跳转</span>
+              <span className="text-sm">图片列表</span>
             </label>
           </div>
         </div>
 
-        {/* 图片跳转模式 */}
+        {/* 图片列表模式 */}
         {config.moduleContentType === 'imageJump' && (
           <>
             <div className="flex items-center justify-between">
               <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
-                图片跳转列表
+                图片列表
                 <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({imageJumpItems.length}个)</span>
               </span>
               <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addImageJumpItem}>
@@ -2596,7 +2596,7 @@ function BenefitConfigCard({
                     </Button>
                   </div>
 
-                  {/* 图片跳转字段 */}
+                  {/* 图片列表字段 */}
                   <div className="flex-1 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <ImageUploadField

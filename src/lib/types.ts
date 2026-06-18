@@ -226,9 +226,9 @@ export interface BenefitProduct {
 /** 会员专属生活券包/会员专属礼配置 */
 export interface BenefitConfig {
   moduleBgImage: string;
-  /** 模块内容类型：productList=福利商品列表，imageJump=图片跳转 */
+  /** 模块内容类型：productList=福利商品列表，imageJump=图片列表 */
   moduleContentType: 'productList' | 'imageJump';
-  /** 图片跳转项列表（moduleContentType=imageJump时使用） */
+  /** 图片列表项（moduleContentType=imageJump时使用） */
   imageJumpItems: ImageJumpItem[];
   products: BenefitProduct[];
 }
