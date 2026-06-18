@@ -25,15 +25,15 @@ export async function POST(request: NextRequest) {
       .insert({
         name: body.name,
         category: body.category,
-        template_id: body.templateId,
-        template_name: body.templateName,
+        template_id: body.template_id,
+        template_name: body.template_name,
         status: body.status || 'draft',
-        time_config: body.timeConfig,
-        audience_groups: body.audienceGroups,
-        lottery_config: body.lotteryConfig,
-        material_config: body.materialConfig,
+        time_config: body.time_config,
+        audience_groups: body.audience_groups,
+        lottery_config: body.lottery_config,
+        material_config: body.material_config,
         components: body.components,
-        component_configs: body.componentConfigs,
+        component_configs: body.component_configs,
       })
       .select()
       .single();

@@ -1252,9 +1252,9 @@ function StepComponentConfig({
   return (
     <div className="flex gap-4">
       {/* 左侧组件目录（sticky） */}
-      <div className="w-48 shrink-0">
-        <div className="sticky top-4 z-30">
-          <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-sm px-2 py-3">
+      <div className="w-52 shrink-0">
+        <div className="sticky top-14 z-30">
+          <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-sm px-2 py-3 max-h-[calc(100vh-80px)] overflow-y-auto">
             <div className="flex items-center justify-between mb-2 px-1">
               <h4 className="text-[11px] font-semibold text-[var(--color-meiyou-text-secondary)]">组件目录</h4>
               <div className="flex items-center gap-1">
@@ -1277,7 +1277,7 @@ function StepComponentConfig({
                 </button>
               </div>
             </div>
-            <nav className="space-y-0.5 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <nav className="space-y-0.5">
               {enabledComponents.map((comp) => {
                 const subItems = getComponentSubItems(comp.key);
                 const isActive = activeKey === comp.key;
@@ -1438,7 +1438,7 @@ function StepComponentConfig({
             className="fixed z-50 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-xl overflow-hidden"
             style={{
               top: addMenuPosition.y + 4,
-              left: addMenuPosition.left + 192,
+              left: addMenuPosition.left + 208,
               width: 240,
             }}
           >
