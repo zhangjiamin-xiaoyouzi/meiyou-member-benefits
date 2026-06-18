@@ -2795,8 +2795,6 @@ function BenefitConfigCard({
                           value={product.productName || ''}
                           onChange={(e) => updateItem(product.id, { productName: e.target.value })}
                           placeholder="请输入商品名称"
-                          readOnly={isProductItem}
-                          disabled={isProductItem}
                         />
                       </div>
 
