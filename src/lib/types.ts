@@ -213,12 +213,17 @@ export interface FlashSaleConfig {
   products: FlashSaleProduct[];
 }
 
-/** 会员专属生活券包/会员专属礼商品 */
+/** 会员专属生活券包/会员专属礼列表项（商品ID为空时=纯图片项，有值时=商品项） */
 export interface BenefitProduct {
   id: string;
+  /** 商品ID：空=纯图片项，非空=商品项 */
   productId: string;
+  /** 图片：商品ID有值时自动填充，支持修改；无商品ID时手动上传 */
   benefitImage: string;
+  /** 展示方式：仅商品ID有值时有效 */
   displayMode: 'horizontal' | 'double-column' | 'triple-column';
+  /** 跳转链接：商品ID为空时必填，有商品ID时选填 */
+  jumpLink: string;
   sortOrder: number;
   audienceRules: ComponentAudienceRule[];
 }
@@ -226,20 +231,7 @@ export interface BenefitProduct {
 /** 会员专属生活券包/会员专属礼配置 */
 export interface BenefitConfig {
   moduleBgImage: string;
-  /** 模块内容类型：productList=福利商品列表，imageJump=图片列表 */
-  moduleContentType: 'productList' | 'imageJump';
-  /** 图片列表项（moduleContentType=imageJump时使用） */
-  imageJumpItems: ImageJumpItem[];
   products: BenefitProduct[];
-}
-
-/** 图片跳转项 */
-export interface ImageJumpItem {
-  id: string;
-  image: string;
-  jumpLink: string;
-  sortOrder: number;
-  audienceRules: ComponentAudienceRule[];
 }
 
 /** 会员专属0元购配置 */

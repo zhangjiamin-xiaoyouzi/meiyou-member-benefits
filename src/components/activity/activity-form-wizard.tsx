@@ -70,7 +70,6 @@ import type {
   FlashSaleProduct,
   BenefitConfig,
   BenefitProduct,
-  ImageJumpItem,
   FreePurchaseConfig,
   CategoryPathItem,
   ActionButtonConfig,
@@ -1102,7 +1101,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
-            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
+            config={cfg || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig(compKey, val)}
           />
         );
@@ -1112,7 +1111,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
-            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
+            config={cfg || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig(compKey, val)}
           />
         );
@@ -1184,7 +1183,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属礼"
-            config={configs.exclusive_gift || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
+            config={configs.exclusive_gift || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('exclusive_gift', val)}
           />
         );
@@ -1199,7 +1198,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属生活券包"
-            config={configs.free_benefit || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
+            config={configs.free_benefit || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_benefit', val)}
           />
         );
@@ -2427,7 +2426,7 @@ function FreePurchaseConfigCard({
 }
 
 function BenefitConfigCard({
-  title,
+  title: _title,
   config,
   onChange,
 }: {
@@ -2435,33 +2434,33 @@ function BenefitConfigCard({
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
-  const imageJumpItems = config.imageJumpItems ?? [];
-
-  const addProduct = () => {
-    const newProduct: BenefitProduct = {
+  const addItem = () => {
+    const newItem: BenefitProduct = {
       id: `bp_${Date.now()}`,
       productId: '',
       benefitImage: '',
       displayMode: 'horizontal',
+      jumpLink: '',
       sortOrder: config.products.length + 1,
       audienceRules: [],
     };
-    onChange({ ...config, products: [...config.products, newProduct] });
+    onChange({ ...config, products: [...config.products, newItem] });
   };
 
-  const removeProduct = (productId: string) => {
-    onChange({ ...config, products: config.products.filter((p) => p.id !== productId) });
+  const removeItem = (itemId: string) => {
+    const updated = config.products.filter((p) => p.id !== itemId);
+    onChange({ ...config, products: updated.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
   };
 
-  const updateProduct = (productId: string, updates: Partial<BenefitProduct>) => {
+  const updateItem = (itemId: string, updates: Partial<BenefitProduct>) => {
     onChange({
       ...config,
-      products: config.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
+      products: config.products.map((p) => (p.id === itemId ? { ...p, ...updates } : p)),
     });
   };
 
-  const moveProduct = (productId: string, direction: 'up' | 'down') => {
-    const idx = config.products.findIndex((p) => p.id === productId);
+  const moveItem = (itemId: string, direction: 'up' | 'down') => {
+    const idx = config.products.findIndex((p) => p.id === itemId);
     if (idx < 0) return;
     const newProducts = [...config.products];
     if (direction === 'up' && idx > 0) {
@@ -2469,296 +2468,197 @@ function BenefitConfigCard({
     } else if (direction === 'down' && idx < newProducts.length - 1) {
       [newProducts[idx], newProducts[idx + 1]] = [newProducts[idx + 1], newProducts[idx]];
     }
-    // 更新排序号
-    onChange({
-      ...config,
-      products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })),
-    });
-  };
-
-  // 图片列表项操作
-  const addImageJumpItem = () => {
-    const newItem: ImageJumpItem = {
-      id: `ij_${Date.now()}`,
-      image: '',
-      jumpLink: '',
-      sortOrder: imageJumpItems.length + 1,
-      audienceRules: [],
-    };
-    onChange({ ...config, imageJumpItems: [...imageJumpItems, newItem] });
-  };
-
-  const removeImageJumpItem = (itemId: string) => {
-    const updated = imageJumpItems.filter((i) => i.id !== itemId);
-    onChange({ ...config, imageJumpItems: updated.map((i, idx) => ({ ...i, sortOrder: idx + 1 })) });
-  };
-
-  const updateImageJumpItem = (itemId: string, updates: Partial<ImageJumpItem>) => {
-    onChange({
-      ...config,
-      imageJumpItems: imageJumpItems.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
-    });
-  };
-
-  const moveImageJumpItem = (itemId: string, direction: 'up' | 'down') => {
-    const idx = imageJumpItems.findIndex((i) => i.id === itemId);
-    if (idx < 0) return;
-    const newItems = [...imageJumpItems];
-    if (direction === 'up' && idx > 0) {
-      [newItems[idx - 1], newItems[idx]] = [newItems[idx], newItems[idx - 1]];
-    } else if (direction === 'down' && idx < newItems.length - 1) {
-      [newItems[idx], newItems[idx + 1]] = [newItems[idx + 1], newItems[idx]];
-    }
-    onChange({ ...config, imageJumpItems: newItems.map((i, idx) => ({ ...i, sortOrder: idx + 1 })) });
+    onChange({ ...config, products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
   };
 
   return (
     <div className="space-y-4">
       <div>
-          <ImageUploadField
-              label="模块背景图"
-              value={config.moduleBgImage}
-              onChange={(v) => onChange({ ...config, moduleBgImage: v })}
-            />
+        <ImageUploadField
+          label="模块背景图"
+          value={config.moduleBgImage}
+          onChange={(v) => onChange({ ...config, moduleBgImage: v })}
+        />
+      </div>
+
+      <Separator />
+
+      {/* 统一列表 */}
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+            列表项
+            <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
+          </span>
+          <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addItem}>
+            <Plus className="h-3 w-3 mr-1" />
+            添加项目
+          </Button>
         </div>
-        {/* 模块内容 */}
-        <div>
-          <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">模块内容</Label>
-          <div className="flex items-center gap-6 mt-1.5">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name={`moduleContentType-${title}`}
-                checked={config.moduleContentType !== 'imageJump'}
-                onChange={() => onChange({ ...config, moduleContentType: 'productList' })}
-                className="accent-[#ff4d88]"
-              />
-              <span className="text-sm">福利商品列表</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name={`moduleContentType-${title}`}
-                checked={config.moduleContentType === 'imageJump'}
-                onChange={() => onChange({ ...config, moduleContentType: 'imageJump' })}
-                className="accent-[#ff4d88]"
-              />
-              <span className="text-sm">图片列表</span>
-            </label>
+
+        {config.products.length === 0 && (
+          <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
+            暂无项目，点击"添加项目"开始配置
           </div>
-        </div>
+        )}
 
-        {/* 图片列表模式 */}
-        {config.moduleContentType === 'imageJump' && (
-          <>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
-                图片列表
-                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({imageJumpItems.length}个)</span>
-              </span>
-              <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addImageJumpItem}>
-                <Plus className="h-3 w-3 mr-1" />
-                添加图片
-              </Button>
-            </div>
+        <div className="space-y-3">
+          {config.products.map((product, idx) => {
+            const isProductItem = !!product.productId;
+            return (
+              <div
+                key={product.id}
+                className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
+              >
+                {/* 排序控制 */}
+                <div className="flex flex-col gap-0.5 pt-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-5 w-5 p-0"
+                    disabled={idx === 0}
+                    onClick={() => moveItem(product.id, 'up')}
+                  >
+                    <ChevronLeft className="h-3 w-3 rotate-90" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-5 w-5 p-0"
+                    disabled={idx === config.products.length - 1}
+                    onClick={() => moveItem(product.id, 'down')}
+                  >
+                    <ChevronLeft className="h-3 w-3 -rotate-90" />
+                  </Button>
+                </div>
 
-            {imageJumpItems.length === 0 && (
-              <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-                暂无图片，点击"添加图片"开始配置
-              </div>
-            )}
-
-            <div className="space-y-3">
-              {imageJumpItems.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
-                >
-                  {/* 排序控制 */}
-                  <div className="flex flex-col gap-0.5 pt-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === 0}
-                      onClick={() => moveImageJumpItem(item.id, 'up')}
-                    >
-                      <ChevronLeft className="h-3 w-3 rotate-90" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === imageJumpItems.length - 1}
-                      onClick={() => moveImageJumpItem(item.id, 'down')}
-                    >
-                      <ChevronLeft className="h-3 w-3 -rotate-90" />
-                    </Button>
+                {/* 字段区域 */}
+                <div className="flex-1 space-y-3">
+                  {/* 标题行：标识类型 */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+                      {isProductItem ? '商品' : '图片'} {idx + 1}
+                    </span>
+                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                      {isProductItem ? '商品项' : '图片项'}
+                    </Badge>
                   </div>
 
-                  {/* 图片列表字段 */}
-                  <div className="flex-1 space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <ImageUploadField
-                        label="图片"
-                        value={item.image}
-                        onChange={(val) => updateImageJumpItem(item.id, { image: val })}
+                  {/* 商品ID + 条件显隐 */}
+                  <div className={isProductItem ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-1 gap-3'}>
+                    <div>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
+                      <WelfareSelect
+                        value={product.productId}
+                        onChange={(val) => updateItem(product.id, { productId: val })}
+                        onSelect={(item) => {
+                          if (item.image && !product.benefitImage) {
+                            updateItem(product.id, { productId: item.id, benefitImage: item.image });
+                          } else {
+                            updateItem(product.id, { productId: item.id });
+                          }
+                        }}
                       />
-                      <div>
-                        <ReqLabel>跳转链接</ReqLabel>
-                        <Input
-                          className="mt-1 h-8 text-sm"
-                          value={item.jumpLink}
-                          onChange={(e) => updateImageJumpItem(item.id, { jumpLink: e.target.value })}
-                          placeholder="请输入meiyou:///开头地址"
-                        />
-                      </div>
                     </div>
+                    {isProductItem && (
+                      <>
+                        <div>
+                          <ReqLabel>展示方式</ReqLabel>
+                          <Select
+                            value={product.displayMode}
+                            onValueChange={(val) =>
+                              updateItem(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
+                            }
+                          >
+                            <SelectTrigger className="mt-1 h-8 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="horizontal">单列</SelectItem>
+                              <SelectItem value="double-column">双列</SelectItem>
+                              <SelectItem value="triple-column">三列</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <ReqLabel>排序</ReqLabel>
+                          <Input
+                            className="mt-1 h-8 text-sm"
+                            type="number"
+                            value={product.sortOrder}
+                            onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* 图片 + 跳转链接 */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <ImageUploadField
+                      label={isProductItem ? '福利图片' : '图片'}
+                      value={product.benefitImage}
+                      onChange={(val) => updateItem(product.id, { benefitImage: val })}
+                    />
+                    <div>
+                      {isProductItem ? (
+                        <>
+                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
+                          <Input
+                            className="mt-1 h-8 text-sm"
+                            value={product.jumpLink || ''}
+                            onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
+                            placeholder="请输入meiyou:///开头地址"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <ReqLabel>跳转链接</ReqLabel>
+                          <Input
+                            className="mt-1 h-8 text-sm"
+                            value={product.jumpLink || ''}
+                            onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
+                            placeholder="请输入meiyou:///开头地址"
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 非商品项的排序 */}
+                  {!isProductItem && (
                     <div>
                       <ReqLabel>排序</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm w-24"
                         type="number"
-                        value={item.sortOrder}
-                        onChange={(e) => updateImageJumpItem(item.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                        value={product.sortOrder}
+                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
                       />
                     </div>
-                    {/* 用户条件 */}
-                    <AudienceRuleEditor
-                      rules={item.audienceRules}
-                      onRulesChange={(rules) => updateImageJumpItem(item.id, { audienceRules: rules })}
-                    />
-                  </div>
+                  )}
 
-                  {/* 删除按钮 */}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
-                    onClick={() => removeImageJumpItem(item.id)}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* 福利商品列表模式 */}
-        {config.moduleContentType !== 'imageJump' && (
-          <>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
-                商品列表
-                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
-              </span>
-              <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
-                <Plus className="h-3 w-3 mr-1" />
-                添加商品
-              </Button>
-            </div>
-
-            {config.products.length === 0 && (
-              <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-                暂无商品，点击"添加商品"开始配置
-              </div>
-            )}
-
-            <div className="space-y-3">
-              {config.products.map((product, idx) => (
-                <div
-                  key={product.id}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
-                >
-                  {/* 排序控制 */}
-                  <div className="flex flex-col gap-0.5 pt-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === 0}
-                      onClick={() => moveProduct(product.id, 'up')}
-                    >
-                      <ChevronLeft className="h-3 w-3 rotate-90" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === config.products.length - 1}
-                      onClick={() => moveProduct(product.id, 'down')}
-                    >
-                      <ChevronLeft className="h-3 w-3 -rotate-90" />
-                    </Button>
-                  </div>
-
-                  {/* 商品字段 */}
-                  <div className="flex-1 space-y-3">
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <ReqLabel>商品ID</ReqLabel>
-                        <WelfareSelect
-                          value={product.productId}
-                          onChange={(val) => updateProduct(product.id, { productId: val })}
-                        />
-                      </div>
-                      <div>
-                        <ReqLabel>展示方式</ReqLabel>
-                        <Select
-                          value={product.displayMode}
-                          onValueChange={(val) =>
-                            updateProduct(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
-                          }
-                        >
-                      <SelectTrigger className="mt-1 h-8 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="horizontal">单列</SelectItem>
-                        <SelectItem value="double-column">双列</SelectItem>
-                        <SelectItem value="triple-column">三列</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <ReqLabel>排序</ReqLabel>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      type="number"
-                      value={product.sortOrder}
-                      onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
-                </div>
-                <ImageUploadField
-                  label="福利图片"
-                  value={product.benefitImage}
-                  onChange={(val) => updateProduct(product.id, { benefitImage: val })}
-                />
-                {/* 用户条件 */}
-                <div className="pl-0">
+                  {/* 用户条件 */}
                   <AudienceRuleEditor
                     rules={product.audienceRules}
-                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
+                    onRulesChange={(rules) => updateItem(product.id, { audienceRules: rules })}
                   />
                 </div>
-              </div>
 
-              {/* 删除按钮 */}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
-                onClick={() => removeProduct(product.id)}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ))}
-            </div>
-          </>
-        )}
+                {/* 删除按钮 */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
+                  onClick={() => removeItem(product.id)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
