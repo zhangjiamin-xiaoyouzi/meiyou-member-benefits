@@ -405,7 +405,7 @@ export default function ActivitiesPage() {
                             上线
                           </Button>
                         )}
-                        {activity.status === 'active' && (
+                        {(activity.status === 'active' || activity.status === 'pending') && (
                           <Button
                             variant="ghost"
                             size="sm"
