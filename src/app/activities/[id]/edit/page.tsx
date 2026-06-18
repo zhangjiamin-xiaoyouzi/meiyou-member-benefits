@@ -8,13 +8,17 @@ function toCamelCase(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-function toCamelCaseDeep(obj: unknown): unknown {
-  if (Array.isArray(obj)) return obj.map(toCamelCaseDeep);
-  if (obj && typeof obj === 'object') {
+/**
+ * 仅转换顶层 key 为 camelCase，不递归转换嵌套对象内部的 key。
+ * 因为 components 和 component_configs 内部的 key（如 flash_sale、global_config）
+ * 本身就是 snake_case，是业务约定的组件标识符，不应被转换。
+ */
+function toCamelCaseShallow(obj: unknown): unknown {
+  if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
     const record = obj as Record<string, unknown>;
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(record)) {
-      result[toCamelCase(key)] = toCamelCaseDeep(record[key]);
+      result[toCamelCase(key)] = record[key];
     }
     return result;
   }
@@ -33,7 +37,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            setActivity(toCamelCaseDeep(data.data) as Activity);
+            setActivity(toCamelCaseShallow(data.data) as Activity);
           }
         })
         .finally(() => setLoading(false));
