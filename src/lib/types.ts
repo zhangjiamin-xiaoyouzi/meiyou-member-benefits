@@ -243,6 +243,8 @@ export interface CategoryPathItem {
 
 export interface FreePurchaseConfig {
   moduleBgImage: string;
+  /** 步骤图 */
+  stepImage: string;
   categories: CategoryPathItem[];
   /** @deprecated 使用 categories 替代 */
   categoryIds?: string[];

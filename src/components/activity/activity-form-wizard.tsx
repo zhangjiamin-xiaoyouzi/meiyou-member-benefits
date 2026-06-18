@@ -1190,7 +1190,7 @@ function StepComponentConfig({
       case 'free_purchase':
         return (
           <FreePurchaseConfigCard
-            config={configs.free_purchase || { categories: [], moduleBgImage: '' }}
+            config={configs.free_purchase || { categories: [], moduleBgImage: '', stepImage: '' }}
             onChange={(val) => updateConfig('free_purchase', val)}
           />
         );
@@ -2358,6 +2358,15 @@ function FreePurchaseConfigCard({
               label="模块背景图"
               value={config.moduleBgImage}
               onChange={(v) => onChange({ ...config, moduleBgImage: v })}
+            />
+        </div>
+        <div>
+          <ImageUploadField
+              label="步骤图"
+              value={config.stepImage || ''}
+              onChange={(v) => onChange({ ...config, stepImage: v })}
+              required
+              hint="建议尺寸：900*240；格式：png/jpg/pag/webp；大小：不超过 2MB"
             />
         </div>
         <div className="flex items-center justify-between">
