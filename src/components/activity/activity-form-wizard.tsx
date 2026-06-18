@@ -1221,14 +1221,14 @@ function StepComponentConfig({
       const cfg = config as FlashSaleConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-product-${p.id}`,
-        label: p.productName || (p.productId ? `商品 ${p.productId}` : `商品 ${i + 1}`),
+        label: p.productName || (p.productId ? `福利 ${p.productId}` : `福利 ${i + 1}`),
       }));
     }
     if (key === 'exclusive_gift' || key === 'free_benefit') {
       const cfg = config as BenefitConfig;
       return (cfg.products || []).map((p, i) => ({
         id: `${key}-item-${p.id}`,
-        label: p.productName || (p.productId ? `商品 ${p.productId}` : `图片 ${i + 1}`),
+        label: p.productName || (p.productId ? `福利 ${p.productId}` : `图片 ${i + 1}`),
       }));
     }
     return [];
@@ -1663,7 +1663,7 @@ function WelfareSelect({
       )}
       {selectedItem && selectedItem.stock !== undefined && (
         <p className={`mt-1 text-xs font-mono ${selectedItem.stock === 0 ? 'text-[#ff4d4d]' : 'text-[rgba(0,0,0,0.45)]'}`}>
-          可配库存: {selectedItem.stock.toLocaleString()} 件{selectedItem.stock === 0 ? '（该商品不可用）' : ''}
+          可配库存: {selectedItem.stock.toLocaleString()} 件{selectedItem.stock === 0 ? '（该福利不可用）' : ''}
         </p>
       )}
     </div>
@@ -2164,22 +2164,22 @@ function FlashSaleConfigCard({
 
         <Separator />
 
-        {/* 福利商品列表 */}
+        {/* 福利列表 */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-              福利商品
+              福利列表
               <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
             </span>
             <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
               <Plus className="h-3 w-3 mr-1" />
-              添加商品
+              添加福利
             </Button>
           </div>
 
           {config.products.length === 0 && (
             <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-              暂无商品，点击"添加商品"开始配置
+              暂无福利，点击"添加福利"开始配置
             </div>
           )}
 
@@ -2188,7 +2188,7 @@ function FlashSaleConfigCard({
               <Card key={product.id} id={`flash_sale-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{product.productName || `商品 ${idx + 1}`}</span>
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{product.productName || `福利 ${idx + 1}`}</span>
                     <div className="flex items-center gap-0.5">
                       <Button
                         size="sm"
@@ -2253,15 +2253,15 @@ function FlashSaleConfigCard({
                   </div>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-4">
-                  {/* 商品基础信息 */}
+                  {/* 福利基础信息 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <ReqLabel>商品ID</ReqLabel>
+                      <ReqLabel>福利ID</ReqLabel>
                       <WelfareSelect
                         value={product.productId}
                         onChange={(val) => updateProduct(product.id, { productId: val, productName: val ? product.productName : '' })}
                         onSelect={(item) => {
-                          // 活动弹窗商品图：根据选择的商品id自动填充商品图片
+                          // 活动弹窗福利图：根据选择的福利id自动填充福利图片
                           if (item.image) {
                             updateProduct(product.id, { productId: item.id, productName: item.name, obtainPopupProductImage: item.image });
                           } else {
@@ -2281,16 +2281,16 @@ function FlashSaleConfigCard({
                     </div>
                   </div>
 
-                  {/* 商品图片 */}
+                  {/* 福利图片 */}
                   <div className="grid grid-cols-2 gap-3">
                     <ImageUploadField
-                      label="商品图"
+                      label="福利图"
                       value={product.productImage}
                       onChange={(val) => updateProduct(product.id, { productImage: val })}
-                      hint="根据选择的商品自动填充，支持修改"
+                      hint="根据选择的福利自动填充，支持修改"
                     />
                     <ImageUploadField
-                      label="获得弹窗商品图"
+                      label="获得弹窗福利图"
                       value={product.obtainPopupProductImage || ''}
                       onChange={(val) => updateProduct(product.id, { obtainPopupProductImage: val })}
                       hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
@@ -2667,7 +2667,7 @@ function BenefitConfigCard({
                     onClick={() => toggleCollapse(product.id)}
                   >
                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">
-                      {isProductItem ? '商品' : '图片'}
+                      {isProductItem ? '福利' : '图片'}
                     </Badge>
                     <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] shrink-0 truncate">
                       {product.productName || (isProductItem ? product.productId : '图片')}
@@ -2705,7 +2705,7 @@ function BenefitConfigCard({
                 {!isCollapsed && (
                   <div className="px-3 pb-3 pt-1 border-t border-[var(--color-meiyou-border)]">
                     <div className="space-y-3 pt-3">
-                      {/* 展示方式 + 排序 + 商品ID */}
+                      {/* 展示方式 + 排序 + 福利ID */}
                       <div className="grid grid-cols-3 gap-3">
                         {/* 展示方式 - 可视化布局选择器 */}
                         <div>
@@ -2764,9 +2764,9 @@ function BenefitConfigCard({
                             onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
                           />
                         </div>
-                        {/* 商品ID */}
+                        {/* 福利ID */}
                         <div>
-                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
+                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利ID</Label>
                           <WelfareSelect
                             value={product.productId}
                             onChange={(val) => updateItem(product.id, { productId: val, productName: val ? product.productName : '' })}
@@ -2781,25 +2781,25 @@ function BenefitConfigCard({
                         </div>
                       </div>
 
-                      {/* 商品图片 */}
+                      {/* 福利图片 */}
                       <ImageUploadField
-                        label="商品图片"
+                        label="福利图片"
                         value={product.benefitImage}
                         onChange={(val) => updateItem(product.id, { benefitImage: val })}
                       />
 
-                      {/* 商品名称 */}
+                      {/* 福利名称 */}
                       <div>
-                        <ReqLabel>商品名称</ReqLabel>
+                        <ReqLabel>福利名称</ReqLabel>
                         <Input
                           className="mt-1 h-8 text-sm"
                           value={product.productName || ''}
                           onChange={(e) => updateItem(product.id, { productName: e.target.value })}
-                          placeholder="请输入商品名称"
+                          placeholder="请输入福利名称"
                         />
                       </div>
 
-                      {/* 跳转地址：商品ID为空时必填，有商品ID时选填 */}
+                      {/* 跳转地址：福利ID为空时必填，有福利ID时选填 */}
                       <div>
                         {isProductItem ? (
                           <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">跳转地址</Label>

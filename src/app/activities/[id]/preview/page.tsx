@@ -95,7 +95,7 @@ export default function ActivityPreviewPage() {
               <div className="flex">
                 {product.productImage && <img src={product.productImage} alt="" className="w-20 h-20 object-cover" />}
                 <div className="flex-1 p-2 text-xs">
-                  <div className="font-medium text-gray-800">商品ID: {product.productId}</div>
+                  <div className="font-medium text-gray-800">福利ID: {product.productId}</div>
                   <div className="text-gray-400 mt-1">库存: {product.stock}</div>
                   {product.timeSessions?.map((session, idx) => (
                     <div key={session.id || idx} className="text-gray-400 mt-0.5 text-[10px]">
@@ -126,7 +126,7 @@ export default function ActivityPreviewPage() {
                 {product.benefitImage && (
                   <img src={product.benefitImage} alt="" className="w-full h-24 object-cover" />
                 )}
-                <div className="p-1.5 text-[10px] text-gray-600 text-center">商品ID: {product.productId}</div>
+                <div className="p-1.5 text-[10px] text-gray-600 text-center">福利ID: {product.productId}</div>
               </div>
             ))}
           </div>
