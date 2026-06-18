@@ -1250,8 +1250,8 @@ function StepComponentConfig({
   return (
     <div className="flex gap-4">
       {/* 左侧组件目录（sticky） */}
-      <div className="w-52 shrink-0">
-        <div className="sticky top-14 z-30">
+      <div className="w-52 shrink-0 self-start">
+        <div className="sticky top-2 z-30">
           <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-sm px-2 py-3 max-h-[calc(100vh-80px)] overflow-y-auto">
             <div className="flex items-center justify-between mb-2 px-1">
               <h4 className="text-[11px] font-semibold text-[var(--color-meiyou-text-secondary)]">组件目录</h4>
@@ -1299,7 +1299,7 @@ function StepComponentConfig({
                       {isCopyable(comp.key) && (
                         <button
                           type="button"
-                          className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-gray-400 hover:text-[var(--color-meiyou)] transition-opacity shrink-0"
+                          className="text-gray-300 hover:text-[var(--color-meiyou)] transition-colors shrink-0"
                           onClick={(e) => { e.stopPropagation(); handleStartCopy(comp.key); }}
                           title="复制组件"
                         >
