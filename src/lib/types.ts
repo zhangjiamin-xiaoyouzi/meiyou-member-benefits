@@ -260,7 +260,6 @@ export interface RulePopupConfig {
 /** 按钮状态配置 */
 export interface StatusButtonConfig {
   buttonText: string;
-  buttonColor: string;
   jumpLink: string;
 }
 

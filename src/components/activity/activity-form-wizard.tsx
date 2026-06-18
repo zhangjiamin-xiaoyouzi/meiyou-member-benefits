@@ -1205,9 +1205,9 @@ function StepComponentConfig({
       case 'cta_button':
         return (() => {
           const cfg: ActionButtonConfig = configs.cta_button || {
-            nonMember: { buttonText: '', buttonColor: '', jumpLink: '' },
-            memberBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
-            memberNotBooked: { buttonText: '', buttonColor: '', jumpLink: '' },
+            nonMember: { buttonText: '', jumpLink: '' },
+            memberBooked: { buttonText: '', jumpLink: '' },
+            memberNotBooked: { buttonText: '', jumpLink: '' },
           };
           const updateStatus = (status: 'nonMember' | 'memberBooked' | 'memberNotBooked', field: keyof StatusButtonConfig, value: string) => {
             updateConfig('cta_button', {
@@ -1237,23 +1237,6 @@ function StepComponentConfig({
                         onChange={(e) => updateStatus(key, 'buttonText', e.target.value)}
                         className="h-8 text-xs"
                       />
-                    </div>
-                    <div className="space-y-1">
-                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">按钮颜色</ReqLabel>
-                      <div className="flex gap-2 items-center">
-                        <input
-                          type="color"
-                          value={cfg[key].buttonColor || '#ff4d88'}
-                          onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
-                          className="h-8 w-8 rounded border border-[var(--color-meiyou-border)] cursor-pointer"
-                        />
-                        <Input
-                          value={cfg[key].buttonColor || '#ff4d88'}
-                          onChange={(e) => updateStatus(key, 'buttonColor', e.target.value)}
-                          className="h-8 text-xs flex-1"
-                          placeholder="#ff4d88"
-                        />
-                      </div>
                     </div>
                     <div className="space-y-1">
                       <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</ReqLabel>

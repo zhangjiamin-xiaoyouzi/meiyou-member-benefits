@@ -212,7 +212,7 @@ export default function ActivityPreviewPage() {
             <span className="text-xs text-gray-500 shrink-0">非会员</span>
             <button
               className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
-              style={{ backgroundColor: nonMember.buttonColor || '#ff4d88' }}
+              style={{ backgroundColor: '#ff4d88' }}
             >
               {nonMember.buttonText || '立即参与'}
             </button>
@@ -223,7 +223,7 @@ export default function ActivityPreviewPage() {
             <span className="text-xs text-gray-500 shrink-0">会员未预约</span>
             <button
               className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
-              style={{ backgroundColor: memberNotBooked.buttonColor || '#ff4d88' }}
+              style={{ backgroundColor: '#ff4d88' }}
             >
               {memberNotBooked.buttonText || '立即预约'}
             </button>
@@ -234,7 +234,7 @@ export default function ActivityPreviewPage() {
             <span className="text-xs text-gray-500 shrink-0">会员已预约</span>
             <button
               className="flex-1 py-2.5 rounded-full text-white font-semibold text-sm"
-              style={{ backgroundColor: memberBooked.buttonColor || '#ff4d88' }}
+              style={{ backgroundColor: '#ff4d88' }}
             >
               {memberBooked.buttonText || '立即领取'}
             </button>
