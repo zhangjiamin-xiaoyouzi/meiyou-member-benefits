@@ -2321,6 +2321,17 @@ function FlashSaleConfigCard({
                     />
                   </div>
 
+                  {/* 福利名称 */}
+                  <div>
+                    <ReqLabel>福利名称</ReqLabel>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      placeholder="请输入福利名称"
+                      value={product.productName}
+                      onChange={(e) => updateProduct(product.id, { productName: e.target.value })}
+                    />
+                  </div>
+
                   {/* 链接与文案 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
