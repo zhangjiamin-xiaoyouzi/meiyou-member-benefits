@@ -228,11 +228,18 @@ export interface BenefitConfig {
   moduleBgImage: string;
   /** 模块内容类型：productList=福利商品列表，imageJump=图片跳转 */
   moduleContentType: 'productList' | 'imageJump';
-  /** 图片跳转-图片（moduleContentType=imageJump时使用） */
-  jumpImage?: string;
-  /** 图片跳转-跳转链接（moduleContentType=imageJump时使用） */
-  jumpLink?: string;
+  /** 图片跳转项列表（moduleContentType=imageJump时使用） */
+  imageJumpItems: ImageJumpItem[];
   products: BenefitProduct[];
+}
+
+/** 图片跳转项 */
+export interface ImageJumpItem {
+  id: string;
+  image: string;
+  jumpLink: string;
+  sortOrder: number;
+  audienceRules: ComponentAudienceRule[];
 }
 
 /** 会员专属0元购配置 */

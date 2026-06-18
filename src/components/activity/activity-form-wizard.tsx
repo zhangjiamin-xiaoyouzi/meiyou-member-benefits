@@ -70,6 +70,7 @@ import type {
   FlashSaleProduct,
   BenefitConfig,
   BenefitProduct,
+  ImageJumpItem,
   FreePurchaseConfig,
   CategoryPathItem,
   ActionButtonConfig,
@@ -1101,7 +1102,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
-            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const }}
+            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
             onChange={(val) => updateConfig(compKey, val)}
           />
         );
@@ -1111,7 +1112,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
-            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const }}
+            config={cfg || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
             onChange={(val) => updateConfig(compKey, val)}
           />
         );
@@ -1183,7 +1184,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属礼"
-            config={configs.exclusive_gift || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const }}
+            config={configs.exclusive_gift || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
             onChange={(val) => updateConfig('exclusive_gift', val)}
           />
         );
@@ -1198,7 +1199,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属生活券包"
-            config={configs.free_benefit || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const }}
+            config={configs.free_benefit || { products: [], moduleBgImage: '', moduleContentType: 'productList' as const, imageJumpItems: [] }}
             onChange={(val) => updateConfig('free_benefit', val)}
           />
         );
@@ -2434,6 +2435,8 @@ function BenefitConfigCard({
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
+  const imageJumpItems = config.imageJumpItems ?? [];
+
   const addProduct = () => {
     const newProduct: BenefitProduct = {
       id: `bp_${Date.now()}`,
@@ -2471,6 +2474,42 @@ function BenefitConfigCard({
       ...config,
       products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })),
     });
+  };
+
+  // 图片跳转项操作
+  const addImageJumpItem = () => {
+    const newItem: ImageJumpItem = {
+      id: `ij_${Date.now()}`,
+      image: '',
+      jumpLink: '',
+      sortOrder: imageJumpItems.length + 1,
+      audienceRules: [],
+    };
+    onChange({ ...config, imageJumpItems: [...imageJumpItems, newItem] });
+  };
+
+  const removeImageJumpItem = (itemId: string) => {
+    const updated = imageJumpItems.filter((i) => i.id !== itemId);
+    onChange({ ...config, imageJumpItems: updated.map((i, idx) => ({ ...i, sortOrder: idx + 1 })) });
+  };
+
+  const updateImageJumpItem = (itemId: string, updates: Partial<ImageJumpItem>) => {
+    onChange({
+      ...config,
+      imageJumpItems: imageJumpItems.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
+    });
+  };
+
+  const moveImageJumpItem = (itemId: string, direction: 'up' | 'down') => {
+    const idx = imageJumpItems.findIndex((i) => i.id === itemId);
+    if (idx < 0) return;
+    const newItems = [...imageJumpItems];
+    if (direction === 'up' && idx > 0) {
+      [newItems[idx - 1], newItems[idx]] = [newItems[idx], newItems[idx - 1]];
+    } else if (direction === 'down' && idx < newItems.length - 1) {
+      [newItems[idx], newItems[idx + 1]] = [newItems[idx + 1], newItems[idx]];
+    }
+    onChange({ ...config, imageJumpItems: newItems.map((i, idx) => ({ ...i, sortOrder: idx + 1 })) });
   };
 
   return (
@@ -2511,22 +2550,99 @@ function BenefitConfigCard({
 
         {/* 图片跳转模式 */}
         {config.moduleContentType === 'imageJump' && (
-          <div className="space-y-3">
-            <ImageUploadField
-              label="图片"
-              value={config.jumpImage ?? ''}
-              onChange={(v) => onChange({ ...config, jumpImage: v })}
-            />
-            <div>
-              <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">跳转链接</Label>
-              <Input
-                className="mt-1 h-8 text-sm"
-                value={config.jumpLink || ''}
-                onChange={(e) => onChange({ ...config, jumpLink: e.target.value })}
-                placeholder="请输入meiyou:///开头地址"
-              />
+          <>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-[var(--color-meiyou-text-secondary)]">
+                图片跳转列表
+                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({imageJumpItems.length}个)</span>
+              </span>
+              <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addImageJumpItem}>
+                <Plus className="h-3 w-3 mr-1" />
+                添加图片
+              </Button>
             </div>
-          </div>
+
+            {imageJumpItems.length === 0 && (
+              <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
+                暂无图片，点击"添加图片"开始配置
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {imageJumpItems.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
+                >
+                  {/* 排序控制 */}
+                  <div className="flex flex-col gap-0.5 pt-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0"
+                      disabled={idx === 0}
+                      onClick={() => moveImageJumpItem(item.id, 'up')}
+                    >
+                      <ChevronLeft className="h-3 w-3 rotate-90" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0"
+                      disabled={idx === imageJumpItems.length - 1}
+                      onClick={() => moveImageJumpItem(item.id, 'down')}
+                    >
+                      <ChevronLeft className="h-3 w-3 -rotate-90" />
+                    </Button>
+                  </div>
+
+                  {/* 图片跳转字段 */}
+                  <div className="flex-1 space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <ImageUploadField
+                        label="图片"
+                        value={item.image}
+                        onChange={(val) => updateImageJumpItem(item.id, { image: val })}
+                      />
+                      <div>
+                        <ReqLabel>跳转链接</ReqLabel>
+                        <Input
+                          className="mt-1 h-8 text-sm"
+                          value={item.jumpLink}
+                          onChange={(e) => updateImageJumpItem(item.id, { jumpLink: e.target.value })}
+                          placeholder="请输入meiyou:///开头地址"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <ReqLabel>排序</ReqLabel>
+                      <Input
+                        className="mt-1 h-8 text-sm w-24"
+                        type="number"
+                        value={item.sortOrder}
+                        onChange={(e) => updateImageJumpItem(item.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                      />
+                    </div>
+                    {/* 用户条件 */}
+                    <AudienceRuleEditor
+                      rules={item.audienceRules}
+                      onRulesChange={(rules) => updateImageJumpItem(item.id, { audienceRules: rules })}
+                    />
+                  </div>
+
+                  {/* 删除按钮 */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
+                    onClick={() => removeImageJumpItem(item.id)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* 福利商品列表模式 */}
