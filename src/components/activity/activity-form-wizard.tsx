@@ -1529,8 +1529,21 @@ function WelfareSelect({
         ) : (
           <span className="flex-1 text-[var(--color-meiyou-text-placeholder)]">选择福利</span>
         )}
-        <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-      </div>
+        {value && (
+            <button
+              type="button"
+              className="ml-1 shrink-0 rounded-sm opacity-50 hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange('');
+                onSelect?.({ id: '', name: '', image: '' });
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+          <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        </div>
       {open && (
         <>
           {/* 背景遮罩 */}
