@@ -2311,17 +2311,6 @@ function FlashSaleConfigCard({
                     </div>
                   </div>
 
-                  {/* 预约通知push文案 */}
-                  <div>
-                    <ReqLabel>预约通知push文案</ReqLabel>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      placeholder="请输入预约通知push文案"
-                      value={product.bookingPushText}
-                      onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
-                    />
-                  </div>
-
                   {/* 场次配置 */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -2392,6 +2381,19 @@ function FlashSaleConfigCard({
                       </div>
                     ))}
                   </div>
+
+                  {/* 预约通知push文案 - 仅配置了预约时间时展示 */}
+                  {product.timeSessions.some((s) => s.bookingStartTime || s.bookingEndTime) && (
+                    <div>
+                      <ReqLabel>预约通知push文案</ReqLabel>
+                      <Input
+                        className="mt-1 h-8 text-sm"
+                        placeholder="请输入预约通知push文案"
+                        value={product.bookingPushText}
+                        onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
+                      />
+                    </div>
+                  )}
 
                   {/* 用户条件 */}
                   <Separator />
