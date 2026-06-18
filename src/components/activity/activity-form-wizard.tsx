@@ -1198,23 +1198,36 @@ function StepComponentConfig({
       return next;
     });
     setActiveKey(key);
+    // 展开目标组件
+    setCollapsedKeys(prev => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
     // 滚动到对应区域
     setTimeout(() => {
       const el = document.getElementById(`comp-section-${key}`);
-      if (el) {
-        const scrollContainer = el.closest('[style*="overflow"]') || document.querySelector('main[style*="overflow"]');
-        if (scrollContainer) {
-          const rect = el.getBoundingClientRect();
-          const containerRect = scrollContainer.getBoundingClientRect();
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
-            behavior: 'smooth',
-          });
-        } else {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!el) return;
+      // 查找最近的可滚动祖先元素
+      let scrollContainer: HTMLElement | null = el.parentElement;
+      while (scrollContainer) {
+        const style = window.getComputedStyle(scrollContainer);
+        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+          break;
         }
+        scrollContainer = scrollContainer.parentElement;
       }
-    }, 80);
+      if (scrollContainer) {
+        const rect = el.getBoundingClientRect();
+        const containerRect = scrollContainer.getBoundingClientRect();
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
+          behavior: 'smooth',
+        });
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const handleCollapseAll = () => {
@@ -1256,20 +1269,26 @@ function StepComponentConfig({
     setActiveKey(parentKey);
     setTimeout(() => {
       const el = document.getElementById(subId);
-      if (el) {
-        const scrollContainer = el.closest('[style*="overflow"]') || document.querySelector('main[style*="overflow"]');
-        if (scrollContainer) {
-          const rect = el.getBoundingClientRect();
-          const containerRect = scrollContainer.getBoundingClientRect();
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
-            behavior: 'smooth',
-          });
-        } else {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!el) return;
+      let scrollContainer: HTMLElement | null = el.parentElement;
+      while (scrollContainer) {
+        const style = window.getComputedStyle(scrollContainer);
+        if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+          break;
         }
+        scrollContainer = scrollContainer.parentElement;
       }
-    }, 80);
+      if (scrollContainer) {
+        const rect = el.getBoundingClientRect();
+        const containerRect = scrollContainer.getBoundingClientRect();
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
+          behavior: 'smooth',
+        });
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   return (
