@@ -160,6 +160,8 @@ export interface GlobalConfig {
   button?: ButtonStyleConfig;
   // 预约成功弹窗背景图（配置了预约时间时必填）
   bookingSuccessBgImage?: string;
+  // 预约通知push文案
+  bookingPushText: string;
 }
 
 /** 氛围头图配置 */
@@ -224,6 +226,8 @@ export interface BenefitProduct {
   displayMode: 'horizontal' | 'double-column' | 'triple-column';
   /** 跳转链接：商品ID为空时必填，有商品ID时选填 */
   jumpLink: string;
+  /** 预约通知push文案 */
+  bookingPushText: string;
   sortOrder: number;
   audienceRules: ComponentAudienceRule[];
 }

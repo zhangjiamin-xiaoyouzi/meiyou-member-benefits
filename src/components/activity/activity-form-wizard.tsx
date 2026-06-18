@@ -163,6 +163,7 @@ const defaultGlobalConfig: GlobalConfig = {
   memberButton: { text: '立即领取', color: '#ff4d88', jumpLink: '' },
   memberReservedButton: { text: '已预约，立即领取', color: '#ff4d88', jumpLink: '' },
   memberUnreservedButton: { text: '立即预约', color: '#ff4d88', jumpLink: '' },
+  bookingPushText: '',
 };
 
 // ==================== 图片上传占位组件 ====================
@@ -2073,6 +2074,14 @@ function GlobalConfigCard({
             />
           </div>
         )}
+        <div className="space-y-1.5">
+          <ReqLabel>预约通知push文案</ReqLabel>
+          <Input
+            value={cfg.bookingPushText || ''}
+            onChange={(e) => updateField('bookingPushText', e.target.value)}
+            placeholder="请输入预约通知push文案"
+          />
+        </div>
       </div>
     </div>
   );
@@ -2533,6 +2542,7 @@ function BenefitConfigCard({
       benefitImage: '',
       displayMode: 'horizontal',
       jumpLink: '',
+      bookingPushText: '',
       sortOrder: config.products.length + 1,
       audienceRules: [],
     };
@@ -2783,6 +2793,17 @@ function BenefitConfigCard({
                         rules={product.audienceRules}
                         onRulesChange={(rules) => updateItem(product.id, { audienceRules: rules })}
                       />
+
+                      {/* 预约通知push文案 */}
+                      <div className="space-y-1.5">
+                        <ReqLabel>预约通知push文案</ReqLabel>
+                        <Input
+                          className="h-8 text-sm"
+                          value={product.bookingPushText || ''}
+                          onChange={(e) => updateItem(product.id, { bookingPushText: e.target.value })}
+                          placeholder="请输入预约通知push文案"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
