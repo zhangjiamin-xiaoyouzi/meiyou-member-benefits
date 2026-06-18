@@ -41,7 +41,7 @@ import type { Activity, ActivityStatus } from '@/lib/types';
 import { DEFAULT_CATEGORIES } from '@/lib/types';
 
 const statusConfig: Record<ActivityStatus, { label: string; color: string }> = {
-  active: { label: '进行中', color: 'bg-green-50/80 text-green-700 border-green-200/60' },
+  active: { label: '生效中', color: 'bg-green-50/80 text-green-700 border-green-200/60' },
   pending: { label: '待生效', color: 'bg-amber-50/80 text-amber-700 border-amber-200/60' },
   draft: { label: '草稿', color: 'bg-[var(--color-meiyou-bg)] text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)]' },
   ended: { label: '已结束', color: 'bg-gray-50/80 text-gray-400 border-gray-200/60' },
@@ -284,10 +284,10 @@ export default function ActivitiesPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部状态</SelectItem>
-                  <SelectItem value="active">进行中</SelectItem>
-                  <SelectItem value="scheduled">待上线</SelectItem>
+                  <SelectItem value="active">生效中</SelectItem>
+                  <SelectItem value="pending">待生效</SelectItem>
                   <SelectItem value="draft">草稿</SelectItem>
-                  <SelectItem value="expired">已结束</SelectItem>
+                  <SelectItem value="ended">已结束</SelectItem>
                 </SelectContent>
               </Select>
             </div>
