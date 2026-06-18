@@ -2551,6 +2551,7 @@ function BenefitConfigCard({
     const newItem: BenefitProduct = {
       id: `bp_${Date.now()}`,
       productId: '',
+      productName: '',
       benefitImage: '',
       displayMode: 'horizontal',
       jumpLink: '',
@@ -2667,8 +2668,8 @@ function BenefitConfigCard({
                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">
                       {isProductItem ? '商品' : '图片'}
                     </Badge>
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] shrink-0">
-                      {isProductItem ? product.productId : '图片'}
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] shrink-0 truncate">
+                      {isProductItem ? (product.productName || product.productId) : '图片'}
                     </span>
                     <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
                       · {displayModeText}
@@ -2767,12 +2768,12 @@ function BenefitConfigCard({
                           <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
                           <WelfareSelect
                             value={product.productId}
-                            onChange={(val) => updateItem(product.id, { productId: val })}
+                            onChange={(val) => updateItem(product.id, { productId: val, productName: val ? product.productName : '' })}
                             onSelect={(item) => {
                               if (item.image && !product.benefitImage) {
-                                updateItem(product.id, { productId: item.id, benefitImage: item.image });
+                                updateItem(product.id, { productId: item.id, productName: item.name, benefitImage: item.image });
                               } else {
-                                updateItem(product.id, { productId: item.id });
+                                updateItem(product.id, { productId: item.id, productName: item.name });
                               }
                             }}
                           />
@@ -2797,6 +2798,19 @@ function BenefitConfigCard({
                             />
                           </div>
                         )}
+                      </div>
+
+                      {/* 商品名称 */}
+                      <div>
+                        <ReqLabel>商品名称</ReqLabel>
+                        <Input
+                          className="mt-1 h-8 text-sm"
+                          value={product.productName || ''}
+                          onChange={(e) => updateItem(product.id, { productName: e.target.value })}
+                          placeholder="请输入商品名称"
+                          readOnly={isProductItem}
+                          disabled={isProductItem}
+                        />
                       </div>
 
                       {/* 用户条件 */}

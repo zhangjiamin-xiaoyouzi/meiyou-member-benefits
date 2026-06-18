@@ -222,6 +222,8 @@ export interface BenefitProduct {
   id: string;
   /** 商品ID：空=纯图片项，非空=商品项 */
   productId: string;
+  /** 商品名称：商品ID有值时自动带出，无商品ID时手动输入 */
+  productName: string;
   /** 图片：商品ID有值时自动填充，支持修改；无商品ID时手动上传 */
   benefitImage: string;
   /** 展示方式：仅商品ID有值时有效 */
