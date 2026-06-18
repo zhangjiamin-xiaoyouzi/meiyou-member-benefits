@@ -1201,8 +1201,20 @@ function StepComponentConfig({
     // 滚动到对应区域
     setTimeout(() => {
       const el = document.getElementById(`comp-section-${key}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
+      if (el) {
+        const scrollContainer = el.closest('[style*="overflow"]') || document.querySelector('main[style*="overflow"]');
+        if (scrollContainer) {
+          const rect = el.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+          scrollContainer.scrollTo({
+            top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
+            behavior: 'smooth',
+          });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 80);
   };
 
   const handleCollapseAll = () => {
@@ -1244,8 +1256,20 @@ function StepComponentConfig({
     setActiveKey(parentKey);
     setTimeout(() => {
       const el = document.getElementById(subId);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
+      if (el) {
+        const scrollContainer = el.closest('[style*="overflow"]') || document.querySelector('main[style*="overflow"]');
+        if (scrollContainer) {
+          const rect = el.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect();
+          scrollContainer.scrollTo({
+            top: scrollContainer.scrollTop + rect.top - containerRect.top - 8,
+            behavior: 'smooth',
+          });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 80);
   };
 
   return (
