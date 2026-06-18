@@ -2600,7 +2600,7 @@ function BenefitConfigCard({
                   {/* 商品图片 + 跳转链接 */}
                   <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
                     <ImageUploadField
-                      label={isProductItem ? '商品图片' : '图片'}
+                      label="商品图片"
                       value={product.benefitImage}
                       onChange={(val) => updateItem(product.id, { benefitImage: val })}
                     />
