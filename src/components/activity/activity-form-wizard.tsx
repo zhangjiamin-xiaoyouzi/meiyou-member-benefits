@@ -3076,18 +3076,28 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
 
     try {
       if (isEdit && editId) {
-        await fetch(`/api/activities/${editId}`, {
+        const res = await fetch(`/api/activities/${editId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          alert(`提交失败: ${result.error || '未知错误'}`);
+          return;
+        }
         alert('活动已更新成功！');
       } else {
-        await fetch('/api/activities', {
+        const res = await fetch('/api/activities', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: `act_${Date.now()}` }),
         });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          alert(`提交失败: ${result.error || '未知错误'}`);
+          return;
+        }
         alert('活动已创建成功！');
       }
       router.push('/activities');
@@ -3124,18 +3134,28 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
 
     try {
       if (isEdit && editId) {
-        await fetch(`/api/activities/${editId}`, {
+        const res = await fetch(`/api/activities/${editId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          alert(`保存失败: ${result.error || '未知错误'}`);
+          return;
+        }
         alert('草稿已保存！');
       } else {
-        await fetch('/api/activities', {
+        const res = await fetch('/api/activities', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: `act_${Date.now()}` }),
         });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          alert(`保存失败: ${result.error || '未知错误'}`);
+          return;
+        }
         alert('草稿已保存！');
       }
       router.push('/activities');
