@@ -3113,7 +3113,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       </div>
 
       {/* 单页配置：基础信息 + 活动组件 */}
-      <Card className="mr-52">
+      <Card className="">
         <CardContent className="pt-6 space-y-6">
           {/* 基础信息 */}
           <div>
@@ -3138,7 +3138,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       {/* 固定底部操作栏 */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
         <div className="px-6 py-3">
-          <div className="max-w-5xl mx-auto flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-3">
             <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-9 px-6" onClick={() => window.close()}>
               取消
             </Button>
