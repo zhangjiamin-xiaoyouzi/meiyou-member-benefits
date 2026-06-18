@@ -72,7 +72,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="flex-1 overflow-auto bg-meiyou-bg p-6">
+        <main className="flex-1 overflow-auto bg-meiyou-bg p-6 min-h-0">
           {children}
         </main>
       </SidebarInset>
