@@ -1191,12 +1191,6 @@ function StepComponentConfig({
   };
 
   const handleNavClick = (key: string) => {
-    // 展开组件
-    setCollapsedKeys((prev) => {
-      const next = new Set(prev);
-      next.delete(key);
-      return next;
-    });
     setActiveKey(key);
     // 展开目标组件
     setCollapsedKeys(prev => {
@@ -1204,13 +1198,23 @@ function StepComponentConfig({
       next.delete(key);
       return next;
     });
-    // 滚动到对应区域
-    setTimeout(() => {
-      const el = document.getElementById(`comp-section-${key}`);
-      if (!el) return;
-      // 使用 scrollIntoView，元素自带 scroll-mt-4 偏移
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
+    // 滚动到对应区域 - 使用双 rAF 确保展开后的 DOM 更新完成
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`comp-section-${key}`);
+        if (!el) return;
+        // 找到滚动容器（admin-layout 的 main[overflow-auto]）
+        const scrollContainer = el.closest('main');
+        if (scrollContainer && getComputedStyle(scrollContainer).overflowY !== 'visible') {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const elementRect = el.getBoundingClientRect();
+          const offset = elementRect.top - containerRect.top + scrollContainer.scrollTop - 8;
+          scrollContainer.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   };
 
   const handleCollapseAll = () => {
@@ -1244,17 +1248,27 @@ function StepComponentConfig({
 
   // 跳转到子项（展开父组件 + 滚动到子项）
   const handleSubItemClick = (parentKey: string, subId: string) => {
+    setActiveKey(parentKey);
     setCollapsedKeys((prev) => {
       const next = new Set(prev);
       next.delete(parentKey);
       return next;
     });
-    setActiveKey(parentKey);
-    setTimeout(() => {
-      const el = document.getElementById(subId);
-      if (!el) return;
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(subId);
+        if (!el) return;
+        const scrollContainer = el.closest('main');
+        if (scrollContainer && getComputedStyle(scrollContainer).overflowY !== 'visible') {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const elementRect = el.getBoundingClientRect();
+          const offset = elementRect.top - containerRect.top + scrollContainer.scrollTop - 8;
+          scrollContainer.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   };
 
   return (
@@ -1291,7 +1305,7 @@ function StepComponentConfig({
                 return (
                   <div key={comp.key}>
                     <div
-                      className={`flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-colors truncate group cursor-pointer ${
+                      className={`relative flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-colors truncate group cursor-pointer ${
                         isActive
                           ? 'bg-[rgba(255,77,136,0.08)] text-[var(--color-meiyou)] font-medium'
                           : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
@@ -1318,7 +1332,7 @@ function StepComponentConfig({
                       {/* 拖拽放置区域 */}
                       {!comp.required && (
                         <span
-                          className="absolute inset-0"
+                          className="absolute inset-0 pointer-events-none"
                           onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                           onDrop={(e) => {
                             e.preventDefault(); e.stopPropagation();
