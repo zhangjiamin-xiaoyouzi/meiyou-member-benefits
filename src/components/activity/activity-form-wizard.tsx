@@ -1008,6 +1008,20 @@ function StepComponentConfig({
     onComponentsChange(mergeReorderedEnabled(newEnabled));
   };
 
+  // 拖拽子项（福利）排序
+  const handleSubItemReorder = (compKey: string, dragId: string, overId: string) => {
+    if (dragId === overId) return;
+    const config = configs[compKey as keyof ComponentConfigs];
+    if (!config) return;
+    const products = (config as { products?: { id: string }[] }).products;
+    if (!products || !Array.isArray(products)) return;
+    const oldIndex = products.findIndex((p: { id: string }) => p.id === dragId);
+    const newIndex = products.findIndex((p: { id: string }) => p.id === overId);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const newProducts = arrayMove(products, oldIndex, newIndex);
+    onChange({ ...data, componentConfigs: { ...configs, [compKey]: { ...config, products: newProducts } } });
+  };
+
   // 渲染单个组件的配置内容
   const renderComponentContent = (compKey: string) => {
     // 处理复制组件（key 如 exclusive_gift_1, free_benefit_2 等）
@@ -1349,10 +1363,15 @@ function StepComponentConfig({
                           <button
                             key={sub.id}
                             type="button"
-                            className="w-full text-left px-2 py-1 rounded text-[11px] text-gray-400 hover:text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate"
+                            draggable
+                            onDragStart={(e) => { e.dataTransfer.setData('text/sub-reorder', sub.id); e.dataTransfer.effectAllowed = 'move'; }}
+                            onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+                            onDrop={(e) => { e.preventDefault(); const dragId = e.dataTransfer.getData('text/sub-reorder'); if (dragId && dragId !== sub.id) handleSubItemReorder(comp.key, dragId, sub.id); }}
+                            className="w-full text-left px-2 py-1 rounded text-[11px] text-gray-400 hover:text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate flex items-center gap-1 cursor-grab active:cursor-grabbing"
                             onClick={() => handleSubItemClick(comp.key, sub.id)}
                           >
-                            {sub.label}
+                            <GripVertical className="w-3 h-3 shrink-0 text-gray-300" />
+                            <span className="truncate">{sub.label}</span>
                           </button>
                         ))}
                       </div>
