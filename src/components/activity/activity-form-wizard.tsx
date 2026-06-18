@@ -1157,7 +1157,8 @@ function StepComponentConfig({
           return (
             <div className="space-y-4">
               <ImageUploadField
-                label="规则Icon图片"
+                label="规则图片"
+                required={false}
                 value={cfg.iconImage}
                 onChange={(val) => updateConfig('rule_popup', { ...cfg, iconImage: val })}
               />
