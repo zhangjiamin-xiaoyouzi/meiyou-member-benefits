@@ -2551,24 +2551,52 @@ function BenefitConfigCard({
 
                   {/* 展示方式 + 排序 + 商品ID */}
                   <div className="grid grid-cols-3 gap-3">
-                    {/* 展示方式 - 必填，优先配置 */}
+                    {/* 展示方式 - 可视化布局选择器 */}
                     <div>
                       <ReqLabel>展示方式</ReqLabel>
-                      <Select
-                        value={product.displayMode}
-                        onValueChange={(val) =>
-                          updateItem(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
-                        }
-                      >
-                        <SelectTrigger className="mt-1 h-8 text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="horizontal">单排</SelectItem>
-                          <SelectItem value="double-column">双排</SelectItem>
-                          <SelectItem value="triple-column">三排</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="mt-1 flex gap-2">
+                        {([
+                          { value: 'horizontal' as const, label: '单排', cols: 1 },
+                          { value: 'double-column' as const, label: '双排', cols: 2 },
+                          { value: 'triple-column' as const, label: '三排', cols: 3 },
+                        ]).map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => updateItem(product.id, { displayMode: opt.value })}
+                            className={`flex flex-1 flex-col items-center gap-1 rounded-lg border-2 px-2 py-2 transition-all ${
+                              product.displayMode === opt.value
+                                ? 'border-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
+                                : 'border-gray-200 bg-white hover:border-gray-300'
+                            }`}
+                          >
+                            {/* 布局缩略图 */}
+                            <div className="flex gap-[3px]" style={{ width: 40 }}>
+                              {Array.from({ length: opt.cols }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`rounded-sm ${
+                                    product.displayMode === opt.value
+                                      ? 'bg-[#ff4d88]/30'
+                                      : 'bg-gray-200'
+                                  }`}
+                                  style={{
+                                    width: opt.cols === 1 ? 40 : opt.cols === 2 ? 18 : 11,
+                                    height: 24,
+                                  }}
+                                />
+                              ))}
+                            </div>
+                            <span className={`text-[11px] leading-tight ${
+                              product.displayMode === opt.value
+                                ? 'text-[#ff4d88] font-medium'
+                                : 'text-gray-500'
+                            }`}>
+                              {opt.label}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     {/* 排序 - 必填，优先配置 */}
                     <div>
