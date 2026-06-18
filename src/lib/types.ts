@@ -166,6 +166,7 @@ export interface GlobalConfig {
 export interface HeaderBannerConfig {
   imageUrl: string;
   videoUrl: string;
+  coverImageUrl: string;
 }
 
 /** 受众规则（组件级别） */

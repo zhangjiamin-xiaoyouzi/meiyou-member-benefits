@@ -1099,7 +1099,7 @@ function StepComponentConfig({
         );
       case 'header_banner':
         return (() => {
-          const cfg = configs.header_banner || { imageUrl: '', videoUrl: '' };
+          const cfg = configs.header_banner || { imageUrl: '', videoUrl: '', coverImageUrl: '' };
           return (
             <div className="space-y-4">
               <ImageUploadField
@@ -1111,6 +1111,12 @@ function StepComponentConfig({
                 label="头图视频"
                 value={cfg.videoUrl}
                 onChange={(val) => updateConfig('header_banner', { ...cfg, videoUrl: val })}
+              />
+              <ImageUploadField
+                label="首帧静态图"
+                value={cfg.coverImageUrl || ''}
+                onChange={(val) => updateConfig('header_banner', { ...cfg, coverImageUrl: val })}
+                required={false}
               />
             </div>
           );
