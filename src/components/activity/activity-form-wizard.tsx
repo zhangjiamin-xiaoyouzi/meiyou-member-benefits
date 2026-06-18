@@ -54,7 +54,9 @@ import {
   Search,
   Lock,
   Copy,
+  Info,
 } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { TimeRangeField, SingleTimeField } from '@/components/activity/time-range-field';
 import type {
   Template,
@@ -180,12 +182,23 @@ function ImageUploadField({
 }) {
   return (
     <div className="space-y-1.5">
-      {required ? (
-        <ReqLabel>{label}</ReqLabel>
-      ) : (
-        <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">{label}</Label>
-      )}
-      {hint && <p className="text-[10px] text-[var(--color-meiyou-text-placeholder)] -mt-1">{hint}</p>}
+      <div className="flex items-center gap-1">
+        {required ? (
+          <ReqLabel>{label}</ReqLabel>
+        ) : (
+          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+        )}
+        {hint && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)] cursor-help shrink-0" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+              {hint}
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
       {value ? (
         <div className="relative group w-24 h-16 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -256,14 +269,28 @@ function VideoUploadField({
   label,
   value,
   onChange,
+  hint,
 }: {
   label: string;
   value: string;
   onChange: (val: string) => void;
+  hint?: string;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+      <div className="flex items-center gap-1">
+        <Label className="text-sm text-[var(--color-meiyou-text-secondary)]">{label}</Label>
+        {hint && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)] cursor-help shrink-0" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+              {hint}
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
       {value ? (
         <div className="relative group w-40 h-24 rounded border border-[var(--color-meiyou-border)] overflow-hidden bg-meiyou-bg">
           <video src={value} className="w-full h-full object-cover" muted />
