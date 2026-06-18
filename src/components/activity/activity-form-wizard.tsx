@@ -2565,37 +2565,35 @@ function BenefitConfigCard({
                         }}
                       />
                     </div>
-                    {isProductItem && (
-                      <>
-                        <div>
-                          <ReqLabel>展示方式</ReqLabel>
-                          <Select
-                            value={product.displayMode}
-                            onValueChange={(val) =>
-                              updateItem(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
-                            }
-                          >
-                            <SelectTrigger className="mt-1 h-8 text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="horizontal">单列</SelectItem>
-                              <SelectItem value="double-column">双列</SelectItem>
-                              <SelectItem value="triple-column">三列</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <ReqLabel>排序</ReqLabel>
-                          <Input
-                            className="mt-1 h-8 text-sm"
-                            type="number"
-                            value={product.sortOrder}
-                            onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                          />
-                        </div>
-                      </>
-                    )}
+                    {/* 排序 - 必填，优先配置 */}
+                    <div>
+                      <ReqLabel>排序</ReqLabel>
+                      <Input
+                        className="mt-1 h-8 text-sm"
+                        type="number"
+                        value={product.sortOrder}
+                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                      />
+                    </div>
+                    {/* 展示方式 - 必填，优先配置 */}
+                    <div>
+                      <ReqLabel>展示方式</ReqLabel>
+                      <Select
+                        value={product.displayMode}
+                        onValueChange={(val) =>
+                          updateItem(product.id, { displayMode: val as 'horizontal' | 'double-column' | 'triple-column' })
+                        }
+                      >
+                        <SelectTrigger className="mt-1 h-8 text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="horizontal">单列</SelectItem>
+                          <SelectItem value="double-column">双列</SelectItem>
+                          <SelectItem value="triple-column">三列</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {/* 图片 + 跳转链接 */}
@@ -2617,19 +2615,6 @@ function BenefitConfigCard({
                       </div>
                     )}
                   </div>
-
-                  {/* 非商品项的排序 */}
-                  {!isProductItem && (
-                    <div>
-                      <ReqLabel>排序</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm w-24"
-                        type="number"
-                        value={product.sortOrder}
-                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                  )}
 
                   {/* 用户条件 */}
                   <AudienceRuleEditor
