@@ -1175,7 +1175,7 @@ function StepComponentConfig({
       case 'flash_sale':
         return (
           <FlashSaleConfigCard
-            config={configs.flash_sale || { moduleBgImage: '', products: [] }}
+            config={configs.flash_sale || { moduleBgImage: '', obtainPopupBgImage: '', obtainPopupHaloEffect: '', obtainPopupTitleEffect: '', products: [] }}
             onChange={(val) => updateConfig('flash_sale', val)}
           />
         );
@@ -2053,6 +2053,31 @@ function FlashSaleConfigCard({
             label="模块背景图"
             value={config.moduleBgImage}
             onChange={(val) => onChange({ ...config, moduleBgImage: val })}
+          />
+        </div>
+
+        {/* 获得弹窗配置 */}
+        <div className="space-y-4">
+          <ImageUploadField
+            label="获得弹窗背景图"
+            value={config.obtainPopupBgImage || ''}
+            onChange={(val) => onChange({ ...config, obtainPopupBgImage: val })}
+            required
+            hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
+          />
+          <ImageUploadField
+            label="获得弹窗背景光圈动效"
+            value={config.obtainPopupHaloEffect || ''}
+            onChange={(val) => onChange({ ...config, obtainPopupHaloEffect: val })}
+            required={false}
+            hint="建议尺寸：1125*2436；格式：pag/webp；大小：不超过 2MB"
+          />
+          <ImageUploadField
+            label="获得弹窗标题背景动效"
+            value={config.obtainPopupTitleEffect || ''}
+            onChange={(val) => onChange({ ...config, obtainPopupTitleEffect: val })}
+            required={false}
+            hint="建议尺寸：1125*1125；格式：pag/webp；大小：不超过 2MB"
           />
         </div>
 

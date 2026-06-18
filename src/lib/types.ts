@@ -204,6 +204,12 @@ export interface FlashSaleProduct {
 /** 会员限时福利配置 */
 export interface FlashSaleConfig {
   moduleBgImage: string;
+  /** 获得弹窗背景图 */
+  obtainPopupBgImage: string;
+  /** 获得弹窗背景光圈动效 */
+  obtainPopupHaloEffect: string;
+  /** 获得弹窗标题背景动效 */
+  obtainPopupTitleEffect: string;
   products: FlashSaleProduct[];
 }
 
