@@ -718,6 +718,8 @@ function SortableComponentItem({
   onRemove,
   isCopied,
   onNameChange,
+  collapsed,
+  onToggleCollapsed,
 }: {
   id: string;
   sectionId: string;
@@ -726,9 +728,10 @@ function SortableComponentItem({
   onRemove?: () => void;
   isCopied?: boolean;
   onNameChange?: (name: string) => void;
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
-  const [collapsed, setCollapsed] = useState(false);
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -737,8 +740,10 @@ function SortableComponentItem({
     zIndex: isDragging ? 50 : 'auto' as never,
   };
 
+  const isCollapsed = collapsed ?? false;
+
   return (
-    <div ref={setNodeRef} style={style} id={sectionId}>
+    <div ref={setNodeRef} style={style} id={sectionId} className="scroll-mt-4">
       <Card className="border-[var(--color-meiyou-border)]">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -755,7 +760,7 @@ function SortableComponentItem({
                 </button>
               ) : (
                 <div className="p-0.5 text-gray-300">
-                  <GripVertical className="h-4 w-4" />
+                  <Lock className="h-4 w-4" />
                 </div>
               )}
               <CardTitle className="text-sm flex items-center gap-2">
@@ -784,9 +789,9 @@ function SortableComponentItem({
               <button
                 type="button"
                 className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
-                onClick={() => setCollapsed(!collapsed)}
+                onClick={() => onToggleCollapsed?.()}
               >
-                {collapsed
+                {isCollapsed
                   ? <ChevronDown className="h-4 w-4" />
                   : <ChevronUp className="h-4 w-4" />
                 }
@@ -804,97 +809,8 @@ function SortableComponentItem({
             </div>
           </div>
         </CardHeader>
-        {!collapsed && <CardContent>{children}</CardContent>}
+        {!isCollapsed && <CardContent>{children}</CardContent>}
       </Card>
-    </div>
-  );
-}
-
-// ==================== 可拖拽导航项（HTML5 Drag） ====================
-
-function DraggableNavItem({
-  comp,
-  onReorder,
-  onCopy,
-  isCopied,
-  onNameChange,
-}: {
-  comp: TemplateComponent;
-  onReorder: (dragKey: string, overKey: string) => void;
-  onCopy?: () => void;
-  isCopied?: boolean;
-  onNameChange?: (key: string, name: string) => void;
-}) {
-  const [isDragOver, setIsDragOver] = useState(false);
-
-  return (
-    <div
-      className={`flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-colors truncate group ${
-        isDragOver
-          ? 'border-t-2 border-[var(--color-meiyou)] bg-[rgba(255,77,136,0.06)]'
-          : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
-      }`}
-      draggable={!comp.required}
-      onDragStart={(e) => {
-        if (comp.required) { e.preventDefault(); return; }
-        e.dataTransfer.setData('text/plain', comp.key);
-        e.dataTransfer.effectAllowed = 'move';
-      }}
-      onDragOver={(e) => {
-        if (comp.required) return;
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        setIsDragOver(true);
-      }}
-      onDragLeave={() => setIsDragOver(false)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setIsDragOver(false);
-        if (comp.required) return;
-        const dragKey = e.dataTransfer.getData('text/plain');
-        if (dragKey && dragKey !== comp.key) {
-          onReorder(dragKey, comp.key);
-        }
-      }}
-    >
-      {/* 拖拽手柄 / 锁定图标 */}
-      {comp.required ? (
-        <Lock className="h-3 w-3 text-gray-300 shrink-0" />
-      ) : (
-        <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab" />
-      )}
-      {/* 点击滚动到对应区域 / 复制组件可编辑名称 */}
-      {isCopied ? (
-        <input
-          type="text"
-          value={comp.name}
-          onChange={(e) => onNameChange?.(comp.key, e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-          className="flex-1 text-left truncate bg-transparent border-b border-transparent hover:border-gray-300 focus:border-[var(--color-meiyou)] focus:outline-none text-xs text-[var(--color-meiyou-text-primary)] py-0 transition-colors"
-        />
-      ) : (
-        <button
-          type="button"
-          className="flex-1 text-left truncate"
-          onClick={() => {
-            const el = document.getElementById(`comp-section-${comp.key}`);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
-        >
-          {comp.name}
-        </button>
-      )}
-      {/* 复制按钮 */}
-      {onCopy && (
-        <button
-          type="button"
-          className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-gray-400 hover:text-[var(--color-meiyou)] transition-opacity shrink-0"
-          onClick={(e) => { e.stopPropagation(); onCopy(); }}
-          title="复制组件"
-        >
-          <Copy className="h-3 w-3" />
-        </button>
-      )}
     </div>
   );
 }
@@ -918,6 +834,8 @@ function StepComponentConfig({
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [pendingAddKeys, setPendingAddKeys] = useState<Set<string>>(new Set());
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
+  const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(new Set());
+  const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const updateConfig = (key: string, value: unknown) => {
     onChange({
@@ -1101,6 +1019,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
+            compKey={compKey}
             config={cfg || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig(compKey, val)}
           />
@@ -1111,6 +1030,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title={compName}
+            compKey={compKey}
             config={cfg || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig(compKey, val)}
           />
@@ -1184,6 +1104,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属礼"
+            compKey="exclusive_gift"
             config={configs.exclusive_gift || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('exclusive_gift', val)}
           />
@@ -1199,6 +1120,7 @@ function StepComponentConfig({
         return (
           <BenefitConfigCard
             title="会员专属生活券包"
+            compKey="free_benefit"
             config={configs.free_benefit || { products: [], moduleBgImage: '' }}
             onChange={(val) => updateConfig('free_benefit', val)}
           />
@@ -1260,89 +1182,231 @@ function StepComponentConfig({
     }
   };
 
+  const handleToggleCollapse = (key: string) => {
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const handleNavClick = (key: string) => {
+    // 展开组件
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+    setActiveKey(key);
+    // 滚动到对应区域
+    setTimeout(() => {
+      const el = document.getElementById(`comp-section-${key}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
+  const handleCollapseAll = () => {
+    setCollapsedKeys(new Set(enabledComponents.map((c) => c.key)));
+  };
+
+  const handleExpandAll = () => {
+    setCollapsedKeys(new Set());
+  };
+
+  // 获取组件子项列表（用于目录树展示）
+  const getComponentSubItems = (key: string): { id: string; label: string }[] => {
+    const config = configs[key];
+    if (!config) return [];
+    if (key === 'flash_sale') {
+      const cfg = config as FlashSaleConfig;
+      return (cfg.products || []).map((p, i) => ({
+        id: `${key}-product-${p.id}`,
+        label: p.productId ? `商品 ${p.productId}` : `商品 ${i + 1}`,
+      }));
+    }
+    if (key === 'exclusive_gift' || key === 'free_benefit') {
+      const cfg = config as BenefitConfig;
+      return (cfg.products || []).map((p, i) => ({
+        id: `${key}-item-${p.id}`,
+        label: p.productId ? `商品 ${p.productId}` : `图片 ${i + 1}`,
+      }));
+    }
+    return [];
+  };
+
+  // 跳转到子项（展开父组件 + 滚动到子项）
+  const handleSubItemClick = (parentKey: string, subId: string) => {
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(parentKey);
+      return next;
+    });
+    setActiveKey(parentKey);
+    setTimeout(() => {
+      const el = document.getElementById(subId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
   return (
-    <div className="relative">
-      {/* 右侧悬浮组件目录 */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-30 w-44">
-        <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-lg px-2 py-3">
-          <h4 className="text-[11px] font-semibold text-[var(--color-meiyou-text-secondary)] mb-2 px-1">组件目录</h4>
-          <nav className="space-y-0.5">
-            {enabledComponents.map((comp) => (
-              <DraggableNavItem
-                key={comp.key}
-                comp={comp}
-                onReorder={handleNavReorder}
-                onCopy={isCopyable(comp.key) ? () => handleStartCopy(comp.key) : undefined}
-                isCopied={isCopiedComp(comp.key)}
-                onNameChange={handleCompNameChange}
-              />
-            ))}
-          </nav>
-          {availableComponents.length > 0 && (
-            <div className="mt-2 px-1 relative">
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
-                onClick={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setAddMenuPosition({ x: rect.right, y: rect.bottom, left: rect.left });
-                  setAddMenuOpen(!addMenuOpen);
-                }}
-              >
-                <Plus className="h-3 w-3" />
-                添加组件
-              </button>
+    <div className="flex gap-4">
+      {/* 左侧组件目录（sticky） */}
+      <div className="w-48 shrink-0">
+        <div className="sticky top-4 z-30">
+          <div className="bg-white/95 backdrop-blur-sm border border-[var(--color-meiyou-border)] rounded-lg shadow-sm px-2 py-3">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <h4 className="text-[11px] font-semibold text-[var(--color-meiyou-text-secondary)]">组件目录</h4>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  className="text-[10px] text-gray-400 hover:text-[var(--color-meiyou)] transition-colors"
+                  onClick={handleExpandAll}
+                  title="全部展开"
+                >
+                  展开
+                </button>
+                <span className="text-[10px] text-gray-300">/</span>
+                <button
+                  type="button"
+                  className="text-[10px] text-gray-400 hover:text-[var(--color-meiyou)] transition-colors"
+                  onClick={handleCollapseAll}
+                  title="全部折叠"
+                >
+                  折叠
+                </button>
+              </div>
             </div>
-          )}
+            <nav className="space-y-0.5 max-h-[calc(100vh-200px)] overflow-y-auto">
+              {enabledComponents.map((comp) => {
+                const subItems = getComponentSubItems(comp.key);
+                const isActive = activeKey === comp.key;
+                return (
+                  <div key={comp.key}>
+                    <div
+                      className={`flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-colors truncate group cursor-pointer ${
+                        isActive
+                          ? 'bg-[rgba(255,77,136,0.08)] text-[var(--color-meiyou)] font-medium'
+                          : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
+                      }`}
+                      onClick={() => handleNavClick(comp.key)}
+                    >
+                      {comp.required ? (
+                        <Lock className="h-3 w-3 text-gray-300 shrink-0" />
+                      ) : (
+                        <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-60 text-gray-400 shrink-0 cursor-grab pointer-events-none" />
+                      )}
+                      <span className="flex-1 truncate">{comp.name}</span>
+                      {/* 复制按钮 */}
+                      {isCopyable(comp.key) && (
+                        <button
+                          type="button"
+                          className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-gray-400 hover:text-[var(--color-meiyou)] transition-opacity shrink-0"
+                          onClick={(e) => { e.stopPropagation(); handleStartCopy(comp.key); }}
+                          title="复制组件"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
+                      )}
+                      {/* 拖拽放置区域 */}
+                      {!comp.required && (
+                        <span
+                          className="absolute inset-0"
+                          onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                          onDrop={(e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            const dragKey = e.dataTransfer.getData('text/plain');
+                            if (dragKey && dragKey !== comp.key) handleNavReorder(dragKey, comp.key);
+                          }}
+                        />
+                      )}
+                    </div>
+                    {/* 子项列表 */}
+                    {subItems.length > 0 && (
+                      <div className="ml-4 border-l border-[var(--color-meiyou-divider)] pl-1.5 space-y-0.5 mt-0.5 mb-1">
+                        {subItems.map((sub) => (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            className="w-full text-left px-2 py-1 rounded text-[11px] text-gray-400 hover:text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate"
+                            onClick={() => handleSubItemClick(comp.key, sub.id)}
+                          >
+                            {sub.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </nav>
+            {availableComponents.length > 0 && (
+              <div className="mt-2 px-1 relative">
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-center gap-1 h-7 border border-dashed border-[var(--color-meiyou-border)] rounded text-[11px] text-[var(--color-meiyou-text-secondary)] hover:border-[var(--color-meiyou)] hover:text-[var(--color-meiyou)] transition-colors"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setAddMenuPosition({ x: rect.right, y: rect.bottom, left: rect.left });
+                    setAddMenuOpen(!addMenuOpen);
+                  }}
+                >
+                  <Plus className="h-3 w-3" />
+                  添加组件
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 复制组件命名弹窗 */}
-      {copyingCompKey && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/20" onClick={handleCancelCopy} />
-          <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl w-80">
-            <div className="px-5 py-4 border-b border-[var(--color-meiyou-divider)]">
-              <h3 className="text-sm font-semibold text-[var(--color-meiyou-text-primary)]">复制组件</h3>
+      {/* 右侧组件配置区域 */}
+      <div className="flex-1 min-w-0">
+        {/* 复制组件命名弹窗 */}
+        {copyingCompKey && (
+          <>
+            <div className="fixed inset-0 z-50 bg-black/20" onClick={handleCancelCopy} />
+            <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl w-80">
+              <div className="px-5 py-4 border-b border-[var(--color-meiyou-divider)]">
+                <h3 className="text-sm font-semibold text-[var(--color-meiyou-text-primary)]">复制组件</h3>
+              </div>
+              <div className="px-5 py-4">
+                <label className="block text-xs text-[var(--color-meiyou-text-secondary)] mb-1.5">组件名称</label>
+                <input
+                  type="text"
+                  className="w-full h-9 px-3 text-sm border border-[var(--color-meiyou-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-meiyou)]/30"
+                  value={copyCompName}
+                  onChange={(e) => setCopyCompName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleConfirmCopy();
+                    if (e.key === 'Escape') handleCancelCopy();
+                  }}
+                  autoFocus
+                  placeholder="请输入组件名称"
+                />
+              </div>
+              <div className="px-5 py-3 flex justify-end gap-2 border-t border-[var(--color-meiyou-divider)]">
+                <button
+                  type="button"
+                  className="h-8 px-4 text-xs rounded-lg border border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:bg-gray-50 transition-colors"
+                  onClick={handleCancelCopy}
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  className="h-8 px-4 text-xs rounded-lg bg-[var(--color-meiyou)] text-white hover:bg-[var(--color-meiyou-hover)] transition-colors disabled:opacity-50"
+                  onClick={handleConfirmCopy}
+                  disabled={!copyCompName.trim()}
+                >
+                  确认复制
+                </button>
+              </div>
             </div>
-            <div className="px-5 py-4">
-              <label className="block text-xs text-[var(--color-meiyou-text-secondary)] mb-1.5">组件名称</label>
-              <input
-                type="text"
-                className="w-full h-9 px-3 text-sm border border-[var(--color-meiyou-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-meiyou)]/30"
-                value={copyCompName}
-                onChange={(e) => setCopyCompName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleConfirmCopy();
-                  if (e.key === 'Escape') handleCancelCopy();
-                }}
-                autoFocus
-                placeholder="请输入组件名称"
-              />
-            </div>
-            <div className="px-5 py-3 flex justify-end gap-2 border-t border-[var(--color-meiyou-divider)]">
-              <button
-                type="button"
-                className="h-8 px-4 text-xs rounded-lg border border-[var(--color-meiyou-border)] text-[var(--color-meiyou-text-secondary)] hover:bg-gray-50 transition-colors"
-                onClick={handleCancelCopy}
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                className="h-8 px-4 text-xs rounded-lg bg-[var(--color-meiyou)] text-white hover:bg-[var(--color-meiyou-hover)] transition-colors disabled:opacity-50"
-                onClick={handleConfirmCopy}
-                disabled={!copyCompName.trim()}
-              >
-                确认复制
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
 
-      {/* 组件列表（dnd-kit 拖拽排序） */}
-      <div>
+        {/* 组件列表（dnd-kit 拖拽排序） */}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
             <div className="space-y-4">
@@ -1355,6 +1419,8 @@ function StepComponentConfig({
                     onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
                     isCopied={isCopiedComp(comp.key)}
                     onNameChange={(name) => handleCompNameChange(comp.key, name)}
+                    collapsed={collapsedKeys.has(comp.key)}
+                    onToggleCollapsed={() => handleToggleCollapse(comp.key)}
                   >
                     {renderComponentContent(comp.key)}
                   </SortableComponentItem>
@@ -1364,7 +1430,7 @@ function StepComponentConfig({
         </DndContext>
       </div>
 
-      {/* 添加组件下拉菜单（在悬浮目录左侧弹出） */}
+      {/* 添加组件下拉菜单 */}
       {addMenuOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => { setAddMenuOpen(false); setPendingAddKeys(new Set()); }} />
@@ -1372,7 +1438,7 @@ function StepComponentConfig({
             className="fixed z-50 bg-white border border-[var(--color-meiyou-border)] rounded-lg shadow-xl overflow-hidden"
             style={{
               top: addMenuPosition.y + 4,
-              left: addMenuPosition.left - 248,
+              left: addMenuPosition.left + 192,
               width: 240,
             }}
           >
@@ -2112,7 +2178,7 @@ function FlashSaleConfigCard({
 
           <div className="space-y-4">
             {config.products.map((product, idx) => (
-              <Card key={product.id} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50">
+              <Card key={product.id} id={`flash_sale-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">商品 {idx + 1}</span>
@@ -2444,10 +2510,12 @@ function FreePurchaseConfigCard({
 
 function BenefitConfigCard({
   title: _title,
+  compKey,
   config,
   onChange,
 }: {
   title: string;
+  compKey: string;
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
@@ -2536,7 +2604,8 @@ function BenefitConfigCard({
             return (
               <div
                 key={product.id}
-                className="rounded-lg border border-[var(--color-meiyou-border)] bg-white overflow-hidden"
+                id={`${compKey}-item-${product.id}`}
+                className="rounded-lg border border-[var(--color-meiyou-border)] bg-white overflow-hidden scroll-mt-4"
               >
                 {/* 标题行：缩略图 + 摘要信息 + 折叠按钮（始终可见） */}
                 <div className="flex items-center gap-3 p-3">
