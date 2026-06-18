@@ -2187,9 +2187,9 @@ function FlashSaleConfigCard({
                         value={product.productId}
                         onChange={(val) => updateProduct(product.id, { productId: val })}
                         onSelect={(item) => {
-                          // 根据选择的商品自动填充商品图
-                          if (item.image && !product.productImage) {
-                            updateProduct(product.id, { productId: item.id, productImage: item.image });
+                          // 活动弹窗商品图：根据选择的商品id自动填充商品图片
+                          if (item.image) {
+                            updateProduct(product.id, { productId: item.id, obtainPopupProductImage: item.image });
                           } else {
                             updateProduct(product.id, { productId: item.id });
                           }
