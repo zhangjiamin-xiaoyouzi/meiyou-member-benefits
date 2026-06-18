@@ -2549,32 +2549,8 @@ function BenefitConfigCard({
                     </Badge>
                   </div>
 
-                  {/* 商品ID + 条件显隐 */}
-                  <div className={isProductItem ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-1 gap-3'}>
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
-                      <WelfareSelect
-                        value={product.productId}
-                        onChange={(val) => updateItem(product.id, { productId: val })}
-                        onSelect={(item) => {
-                          if (item.image && !product.benefitImage) {
-                            updateItem(product.id, { productId: item.id, benefitImage: item.image });
-                          } else {
-                            updateItem(product.id, { productId: item.id });
-                          }
-                        }}
-                      />
-                    </div>
-                    {/* 排序 - 必填，优先配置 */}
-                    <div>
-                      <ReqLabel>排序</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        type="number"
-                        value={product.sortOrder}
-                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
+                  {/* 展示方式 + 排序 + 商品ID */}
+                  <div className="grid grid-cols-3 gap-3">
                     {/* 展示方式 - 必填，优先配置 */}
                     <div>
                       <ReqLabel>展示方式</ReqLabel>
@@ -2594,9 +2570,34 @@ function BenefitConfigCard({
                         </SelectContent>
                       </Select>
                     </div>
+                    {/* 排序 - 必填，优先配置 */}
+                    <div>
+                      <ReqLabel>排序</ReqLabel>
+                      <Input
+                        className="mt-1 h-8 text-sm"
+                        type="number"
+                        value={product.sortOrder}
+                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                      />
+                    </div>
+                    {/* 商品ID */}
+                    <div>
+                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
+                      <WelfareSelect
+                        value={product.productId}
+                        onChange={(val) => updateItem(product.id, { productId: val })}
+                        onSelect={(item) => {
+                          if (item.image && !product.benefitImage) {
+                            updateItem(product.id, { productId: item.id, benefitImage: item.image });
+                          } else {
+                            updateItem(product.id, { productId: item.id });
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  {/* 图片 + 跳转链接 */}
+                  {/* 商品图片 + 跳转链接 */}
                   <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
                     <ImageUploadField
                       label={isProductItem ? '商品图片' : '图片'}
