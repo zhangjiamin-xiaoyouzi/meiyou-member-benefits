@@ -3211,31 +3211,27 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         </CardContent>
       </Card>
 
-      {/* 固定底部操作栏 */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
-        <div className="px-6 py-3">
-          <div className="flex items-center justify-end gap-3">
-            <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-9 px-6" onClick={() => window.close()}>
-              取消
-            </Button>
-            <Button
-              variant="outline"
-              className="border-[var(--color-meiyou-divider)] h-9 px-6"
-              onClick={handleSaveDraft}
-            >
-              保存草稿
-            </Button>
-            <Button
-              className="bg-meiyou hover:bg-meiyou-hover text-white h-9 px-8 rounded-lg"
-              onClick={handlePublish}
-            >
-              提交
-            </Button>
-          </div>
+      {/* 固定底部操作栏 - sticky相对于滚动容器<main>定位，不覆盖侧边栏 */}
+      <div className="sticky bottom-0 z-40 bg-white border-t border-[var(--color-meiyou-divider)] shadow-[0_-2px_8px_rgba(0,0,0,0.06)] -mx-6 px-6 py-3">
+        <div className="flex items-center justify-end gap-3">
+          <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-9 px-6" onClick={() => window.close()}>
+            取消
+          </Button>
+          <Button
+            variant="outline"
+            className="border-[var(--color-meiyou-divider)] h-9 px-6"
+            onClick={handleSaveDraft}
+          >
+            保存草稿
+          </Button>
+          <Button
+            className="bg-meiyou hover:bg-meiyou-hover text-white h-9 px-8 rounded-lg"
+            onClick={handlePublish}
+          >
+            提交
+          </Button>
         </div>
       </div>
-      {/* 底部占位，防止固定栏遮挡内容 */}
-      <div className="h-36" />
     </div>
   );
 }
