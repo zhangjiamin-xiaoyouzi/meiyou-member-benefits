@@ -43,7 +43,7 @@ import {
   Puzzle,
   Settings2,
   X,
-  Image,
+  Image as ImageIcon,
   Upload,
   Trash2,
   Users,
@@ -2450,6 +2450,15 @@ function BenefitConfigCard({
   config: BenefitConfig;
   onChange: (config: BenefitConfig) => void;
 }) {
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  const toggleCollapse = (id: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
   const addItem = () => {
     const newItem: BenefitProduct = {
       id: `bp_${Date.now()}`,
@@ -2521,157 +2530,194 @@ function BenefitConfigCard({
         <div className="space-y-3">
           {config.products.map((product, idx) => {
             const isProductItem = !!product.productId;
+            const isCollapsed = collapsedIds.has(product.id);
+            const displayModeText = product.displayMode === 'horizontal' ? '单排' : product.displayMode === 'double-column' ? '双排' : '三排';
             return (
               <div
                 key={product.id}
-                className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-meiyou-border)] bg-white"
+                className="rounded-lg border border-[var(--color-meiyou-border)] bg-white overflow-hidden"
               >
-                {/* 排序控制 */}
-                <div className="flex flex-col gap-0.5 pt-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-5 w-5 p-0"
-                    disabled={idx === 0}
-                    onClick={() => moveItem(product.id, 'up')}
-                  >
-                    <ChevronLeft className="h-3 w-3 rotate-90" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-5 w-5 p-0"
-                    disabled={idx === config.products.length - 1}
-                    onClick={() => moveItem(product.id, 'down')}
-                  >
-                    <ChevronLeft className="h-3 w-3 -rotate-90" />
-                  </Button>
-                </div>
-
-                {/* 字段区域 */}
-                <div className="flex-1 space-y-3">
-                  {/* 标题行：标识类型 */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-                      {isProductItem ? '商品' : '图片'} {idx + 1}
-                    </span>
-                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                      {isProductItem ? '商品项' : '图片项'}
-                    </Badge>
+                {/* 标题行：缩略图 + 摘要信息 + 折叠按钮（始终可见） */}
+                <div className="flex items-center gap-3 p-3">
+                  {/* 排序控制 */}
+                  <div className="flex flex-col gap-0.5">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0"
+                      disabled={idx === 0}
+                      onClick={() => moveItem(product.id, 'up')}
+                    >
+                      <ChevronLeft className="h-3 w-3 rotate-90" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-5 w-5 p-0"
+                      disabled={idx === config.products.length - 1}
+                      onClick={() => moveItem(product.id, 'down')}
+                    >
+                      <ChevronLeft className="h-3 w-3 -rotate-90" />
+                    </Button>
                   </div>
 
-                  {/* 展示方式 + 排序 + 商品ID */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {/* 展示方式 - 可视化布局选择器 */}
-                    <div>
-                      <ReqLabel>展示方式</ReqLabel>
-                      <div className="mt-1 flex gap-2">
-                        {([
-                          { value: 'horizontal' as const, label: '单排', cols: 1 },
-                          { value: 'double-column' as const, label: '双排', cols: 2 },
-                          { value: 'triple-column' as const, label: '三排', cols: 3 },
-                        ]).map((opt) => (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            onClick={() => updateItem(product.id, { displayMode: opt.value })}
-                            className={`flex flex-1 flex-col items-center gap-1 rounded-lg border-2 px-2 py-2 transition-all ${
-                              product.displayMode === opt.value
-                                ? 'border-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
-                                : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                          >
-                            {/* 布局缩略图 */}
-                            <div className="flex gap-[3px]" style={{ width: 40 }}>
-                              {Array.from({ length: opt.cols }).map((_, i) => (
-                                <div
-                                  key={i}
-                                  className={`rounded-sm ${
-                                    product.displayMode === opt.value
-                                      ? 'bg-[#ff4d88]/30'
-                                      : 'bg-gray-200'
-                                  }`}
-                                  style={{
-                                    width: opt.cols === 1 ? 40 : opt.cols === 2 ? 18 : 11,
-                                    height: 24,
-                                  }}
-                                />
-                              ))}
-                            </div>
-                            <span className={`text-[11px] leading-tight ${
-                              product.displayMode === opt.value
-                                ? 'text-[#ff4d88] font-medium'
-                                : 'text-gray-500'
-                            }`}>
-                              {opt.label}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    {/* 排序 - 必填，优先配置 */}
-                    <div>
-                      <ReqLabel>排序</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        type="number"
-                        value={product.sortOrder}
-                        onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-                    {/* 商品ID */}
-                    <div>
-                      <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
-                      <WelfareSelect
-                        value={product.productId}
-                        onChange={(val) => updateItem(product.id, { productId: val })}
-                        onSelect={(item) => {
-                          if (item.image && !product.benefitImage) {
-                            updateItem(product.id, { productId: item.id, benefitImage: item.image });
-                          } else {
-                            updateItem(product.id, { productId: item.id });
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 商品图片 + 跳转链接 */}
-                  <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
-                    <ImageUploadField
-                      label="商品图片"
-                      value={product.benefitImage}
-                      onChange={(val) => updateItem(product.id, { benefitImage: val })}
-                    />
-                    {!isProductItem && (
-                      <div>
-                        <ReqLabel>跳转链接</ReqLabel>
-                        <Input
-                          className="mt-1 h-8 text-sm"
-                          value={product.jumpLink || ''}
-                          onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
-                          placeholder="请输入meiyou:///开头地址"
-                        />
-                      </div>
+                  {/* 缩略图 */}
+                  <div className="h-9 w-9 shrink-0 rounded-md border border-[var(--color-meiyou-border)] bg-gray-50 overflow-hidden flex items-center justify-center">
+                    {product.benefitImage ? (
+                      <img src={product.benefitImage} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <ImageIcon className="h-4 w-4 text-gray-300" />
                     )}
                   </div>
 
-                  {/* 用户条件 */}
-                  <AudienceRuleEditor
-                    rules={product.audienceRules}
-                    onRulesChange={(rules) => updateItem(product.id, { audienceRules: rules })}
-                  />
+                  {/* 摘要信息 */}
+                  <div
+                    className="flex-1 flex items-center gap-2 cursor-pointer min-w-0"
+                    onClick={() => toggleCollapse(product.id)}
+                  >
+                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">
+                      {isProductItem ? '商品' : '图片'}
+                    </Badge>
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] shrink-0">
+                      {isProductItem ? product.productId : '图片'}
+                    </span>
+                    <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
+                      · {displayModeText}
+                    </span>
+                    <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
+                      · 排序{product.sortOrder}
+                    </span>
+                  </div>
+
+                  {/* 折叠按钮 */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 w-7 p-0 shrink-0"
+                    onClick={() => toggleCollapse(product.id)}
+                  >
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isCollapsed ? '' : 'rotate-180'}`} />
+                  </Button>
+
+                  {/* 删除按钮 */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 shrink-0"
+                    onClick={() => removeItem(product.id)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
 
-                {/* 删除按钮 */}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-7 w-7 p-0 mt-1"
-                  onClick={() => removeItem(product.id)}
-                >
-                  <X className="h-3.5 w-3.5" />
-                </Button>
+                {/* 可折叠内容区域 */}
+                {!isCollapsed && (
+                  <div className="px-3 pb-3 pt-1 border-t border-[var(--color-meiyou-border)]">
+                    <div className="space-y-3 pt-3">
+                      {/* 展示方式 + 排序 + 商品ID */}
+                      <div className="grid grid-cols-3 gap-3">
+                        {/* 展示方式 - 可视化布局选择器 */}
+                        <div>
+                          <ReqLabel>展示方式</ReqLabel>
+                          <div className="mt-1 flex gap-2">
+                            {([
+                              { value: 'horizontal' as const, label: '单排', cols: 1 },
+                              { value: 'double-column' as const, label: '双排', cols: 2 },
+                              { value: 'triple-column' as const, label: '三排', cols: 3 },
+                            ]).map((opt) => (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => updateItem(product.id, { displayMode: opt.value })}
+                                className={`flex flex-1 flex-col items-center gap-1 rounded-lg border-2 px-2 py-2 transition-all ${
+                                  product.displayMode === opt.value
+                                    ? 'border-[#ff4d88] bg-[rgba(255,77,136,0.06)]'
+                                    : 'border-gray-200 bg-white hover:border-gray-300'
+                                }`}
+                              >
+                                {/* 布局缩略图 */}
+                                <div className="flex gap-[3px]" style={{ width: 40 }}>
+                                  {Array.from({ length: opt.cols }).map((_, i) => (
+                                    <div
+                                      key={i}
+                                      className={`rounded-sm ${
+                                        product.displayMode === opt.value
+                                          ? 'bg-[#ff4d88]/30'
+                                          : 'bg-gray-200'
+                                      }`}
+                                      style={{
+                                        width: opt.cols === 1 ? 40 : opt.cols === 2 ? 18 : 11,
+                                        height: 24,
+                                      }}
+                                    />
+                                  ))}
+                                </div>
+                                <span className={`text-[11px] leading-tight ${
+                                  product.displayMode === opt.value
+                                    ? 'text-[#ff4d88] font-medium'
+                                    : 'text-gray-500'
+                                }`}>
+                                  {opt.label}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        {/* 排序 */}
+                        <div>
+                          <ReqLabel>排序</ReqLabel>
+                          <Input
+                            className="mt-1 h-8 text-sm"
+                            type="number"
+                            value={product.sortOrder}
+                            onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                          />
+                        </div>
+                        {/* 商品ID */}
+                        <div>
+                          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">商品ID</Label>
+                          <WelfareSelect
+                            value={product.productId}
+                            onChange={(val) => updateItem(product.id, { productId: val })}
+                            onSelect={(item) => {
+                              if (item.image && !product.benefitImage) {
+                                updateItem(product.id, { productId: item.id, benefitImage: item.image });
+                              } else {
+                                updateItem(product.id, { productId: item.id });
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 商品图片 + 跳转链接 */}
+                      <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
+                        <ImageUploadField
+                          label="商品图片"
+                          value={product.benefitImage}
+                          onChange={(val) => updateItem(product.id, { benefitImage: val })}
+                        />
+                        {!isProductItem && (
+                          <div>
+                            <ReqLabel>跳转链接</ReqLabel>
+                            <Input
+                              className="mt-1 h-8 text-sm"
+                              value={product.jumpLink || ''}
+                              onChange={(e) => updateItem(product.id, { jumpLink: e.target.value })}
+                              placeholder="请输入meiyou:///开头地址"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 用户条件 */}
+                      <AudienceRuleEditor
+                        rules={product.audienceRules}
+                        onRulesChange={(rules) => updateItem(product.id, { audienceRules: rules })}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
