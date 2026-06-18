@@ -1162,7 +1162,7 @@ function StepComponentConfig({
                       />
                     </div>
                     <div className="space-y-1">
-                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转链接</ReqLabel>
+                      <ReqLabel className="text-[11px] text-[var(--color-meiyou-text-secondary)]">跳转地址</ReqLabel>
                       <Input
                         placeholder="请输入meiyou:///开头地址"
                         value={cfg[key].jumpLink}
@@ -2293,7 +2293,7 @@ function FlashSaleConfigCard({
                   {/* 链接与文案 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <ReqLabel>跳转链接</ReqLabel>
+                      <ReqLabel>跳转地址</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="请输入meiyou:///开头地址"
@@ -2760,7 +2760,7 @@ function BenefitConfigCard({
                         </div>
                       </div>
 
-                      {/* 商品图片 + 跳转链接 */}
+                      {/* 商品图片 + 跳转地址 */}
                       <div className={isProductItem ? '' : 'grid grid-cols-2 gap-3'}>
                         <ImageUploadField
                           label="商品图片"
@@ -2769,7 +2769,7 @@ function BenefitConfigCard({
                         />
                         {!isProductItem && (
                           <div>
-                            <ReqLabel>跳转链接</ReqLabel>
+                            <ReqLabel>跳转地址</ReqLabel>
                             <Input
                               className="mt-1 h-8 text-sm"
                               value={product.jumpLink || ''}
