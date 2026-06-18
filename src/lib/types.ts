@@ -158,6 +158,8 @@ export interface GlobalConfig {
   memberUnreservedButton?: StickyButtonConfig; // 会员未预约按钮（有预约时间时展示）
   // 全局按钮样式
   button?: ButtonStyleConfig;
+  // 预约成功弹窗背景图（配置了预约时间时必填）
+  bookingSuccessBgImage?: string;
 }
 
 /** 氛围头图配置 */
@@ -251,7 +253,6 @@ export interface StatusButtonConfig {
   buttonText: string;
   buttonColor: string;
   jumpLink: string;
-  bookingSuccessBgImage?: string;  // 预约成功弹窗背景图（仅会员未预约）
 }
 
 /** 吸底按钮组件配置 */

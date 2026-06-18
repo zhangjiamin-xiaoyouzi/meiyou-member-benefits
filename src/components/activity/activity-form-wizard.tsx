@@ -625,11 +625,11 @@ function StepBasicInfo({
               startValue={data.sellStartTime}
               endValue={data.sellEndTime}
               onStartChange={(val) => {
-                if (data.activityStartTime && val < data.activityStartTime) return;
+                if (val && data.activityStartTime && val < data.activityStartTime) return;
                 onChange({ ...data, sellStartTime: val });
               }}
               onEndChange={(val) => {
-                if (data.activityEndTime && val > data.activityEndTime) return;
+                if (val && data.activityEndTime && val > data.activityEndTime) return;
                 onChange({ ...data, sellEndTime: val });
               }}
             />
@@ -643,12 +643,12 @@ function StepBasicInfo({
                 startValue={data.lotteryStartTime}
                 endValue={data.lotteryEndTime}
                 onStartChange={(val) => {
-                  if (data.sellStartTime && val < data.sellStartTime) return;
-                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  if (val && data.sellStartTime && val < data.sellStartTime) return;
+                  if (val && data.bufferEndTime && val > data.bufferEndTime) return;
                   onChange({ ...data, lotteryStartTime: val });
                 }}
                 onEndChange={(val) => {
-                  if (data.bufferEndTime && val > data.bufferEndTime) return;
+                  if (val && data.bufferEndTime && val > data.bufferEndTime) return;
                   onChange({ ...data, lotteryEndTime: val });
                 }}
               />
@@ -1222,13 +1222,7 @@ function StepComponentConfig({
                       />
                     </div>
                   </div>
-                  {key === 'memberNotBooked' && (
-                    <ImageUploadField
-                      label="预约成功弹窗背景图"
-                      value={cfg[key].bookingSuccessBgImage || ''}
-                      onChange={(url) => updateStatus(key, 'bookingSuccessBgImage', url)}
-                    />
-                  )}
+
                 </div>
               ))}
             </div>
@@ -1567,9 +1561,11 @@ function ReqLabel({ children, className }: { children: React.ReactNode; classNam
 function GlobalConfigCard({
   config,
   onChange,
+  hasReservationTime,
 }: {
   config: GlobalConfig;
   onChange: (config: GlobalConfig) => void;
+  hasReservationTime?: boolean;
 }) {
   const cfg = { ...defaultGlobalConfig, ...config };
 
