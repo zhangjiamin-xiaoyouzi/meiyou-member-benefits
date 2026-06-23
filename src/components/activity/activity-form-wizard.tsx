@@ -2807,9 +2807,7 @@ function BenefitConfigCard({
                     <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
                       · {displayModeText}
                     </span>
-                    <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">
-                      · 排序{product.sortOrder}
-                    </span>
+
                   </div>
 
                   {/* 折叠按钮 */}
