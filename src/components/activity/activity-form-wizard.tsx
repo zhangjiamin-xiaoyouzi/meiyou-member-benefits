@@ -2375,13 +2375,13 @@ function FlashSaleConfigCard({
                     ))}
                   </div>
 
-                  {/* 活动预约push副标题 - 仅配置了预约时间时展示 */}
+                  {/* 商品预约push副标题 - 仅配置了预约时间时展示 */}
                   {product.timeSessions.some((s) => s.bookingStartTime || s.bookingEndTime) && (
                     <div>
-                      <ReqLabel>活动预约push副标题</ReqLabel>
+                      <ReqLabel>商品预约push副标题</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
-                        placeholder="请输入活动预约push副标题"
+                        placeholder="请输入商品预约push副标题"
                         value={product.bookingPushText}
                         onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
                       />
