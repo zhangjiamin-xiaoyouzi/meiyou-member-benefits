@@ -678,7 +678,8 @@ function SortableNavItem({
   onClickNav: (key: string) => void;
   onClickSubNav: (compKey: string, subKey: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: comp.required });
+  const isFixedLast = comp.key === 'cta_button';
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: comp.required || isFixedLast });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -693,8 +694,8 @@ function SortableNavItem({
         style={{ background: isActive && !hasSubItems ? 'rgba(255,77,136,0.08)' : 'transparent', color: isActive && !hasSubItems ? 'var(--color-meiyou)' : 'rgba(0,0,0,0.7)' }}
         onClick={() => onClickNav(comp.key)}
       >
-        {/* 拖拽手柄 */}
-        {!comp.required && (
+        {/* 拖拽手柄 - 必选和固定组件不显示 */}
+        {!comp.required && !isFixedLast && (
           <button type="button" className="cursor-grab active:cursor-grabbing p-0 rounded hover:text-gray-500 text-gray-300 hover:text-gray-500" {...attributes} {...listeners}>
             <GripVertical className="h-3.5 w-3.5" />
           </button>
@@ -702,6 +703,7 @@ function SortableNavItem({
         <span className="truncate flex-1">{comp.name}</span>
         {isCopied && <span className="text-[10px] bg-blue-50 text-blue-500 px-1 py-0 rounded shrink-0">已复制</span>}
         {comp.required && <span className="text-[10px] bg-[var(--color-meiyou)]/10 text-[var(--color-meiyou)] px-1 py-0 rounded">必选</span>}
+        {isFixedLast && <span className="text-[10px] bg-gray-100 text-gray-500 px-1 py-0 rounded">固定</span>}
         {onCopy && !comp.required && (
           <button type="button" className="shrink-0 p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-[var(--color-meiyou)]" onClick={(e) => { e.stopPropagation(); onCopy(comp.key); }}>
             <Copy className="h-3.5 w-3.5" />
@@ -904,7 +906,13 @@ function StepComponentConfig({
   };
 
   // 已添加的组件（enabled 的）
-  const enabledComponents = components.filter((c) => c.enabled);
+  const enabledComponentsRaw = components.filter((c) => c.enabled);
+  // cta_button（吸底按钮）固定在最后，不参与拖拽排序
+  const enabledComponents = (() => {
+    const ctaBtn = enabledComponentsRaw.find((c) => c.key === 'cta_button');
+    const others = enabledComponentsRaw.filter((c) => c.key !== 'cta_button');
+    return ctaBtn ? [...others, ctaBtn] : others;
+  })();
   // 可添加的组件（非必选且未启用的）
   const availableComponents = components.filter((c) => !c.required && !c.enabled);
 
@@ -1060,6 +1068,8 @@ function StepComponentConfig({
     if (oldIndex === -1 || newIndex === -1) return;
     // 必选组件不允许拖拽排序
     if (enabledComponents[oldIndex].required) return;
+    // cta_button（吸底按钮）固定在最后，不允许拖拽排序
+    if (enabledComponents[oldIndex].key === 'cta_button' || enabledComponents[newIndex].key === 'cta_button') return;
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(mergeReorderedEnabled(newEnabled));
@@ -3128,6 +3138,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       if (oldIndex !== -1 && newIndex !== -1) {
         // 必选组件不允许拖拽排序
         if (enabledComponents[oldIndex].required) return;
+        // cta_button（吸底按钮）固定在最后，不允许拖拽排序
+        if (enabledComponents[oldIndex].key === 'cta_button' || enabledComponents[newIndex].key === 'cta_button') return;
         // Map enabled index back to full components array
         const fullOldIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[oldIndex].key);
         const fullNewIndex = step1Data.components.findIndex((c) => c.key === enabledComponents[newIndex].key);
