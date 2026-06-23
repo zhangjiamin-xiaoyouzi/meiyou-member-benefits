@@ -2056,11 +2056,11 @@ function GlobalConfigCard({
           </div>
         )}
         <div className="space-y-1.5">
-          <ReqLabel>预约通知push文案</ReqLabel>
+          <ReqLabel>活动预约push副标题</ReqLabel>
           <Input
             value={cfg.bookingPushText || ''}
             onChange={(e) => updateField('bookingPushText', e.target.value)}
-            placeholder="请输入预约通知push文案"
+            placeholder="请输入活动预约push副标题"
           />
         </div>
       </div>
@@ -2375,13 +2375,13 @@ function FlashSaleConfigCard({
                     ))}
                   </div>
 
-                  {/* 预约通知push文案 - 仅配置了预约时间时展示 */}
+                  {/* 活动预约push副标题 - 仅配置了预约时间时展示 */}
                   {product.timeSessions.some((s) => s.bookingStartTime || s.bookingEndTime) && (
                     <div>
-                      <ReqLabel>预约通知push文案</ReqLabel>
+                      <ReqLabel>活动预约push副标题</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
-                        placeholder="请输入预约通知push文案"
+                        placeholder="请输入活动预约push副标题"
                         value={product.bookingPushText}
                         onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
                       />
