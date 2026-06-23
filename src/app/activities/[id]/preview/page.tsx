@@ -90,20 +90,20 @@ export default function ActivityPreviewPage() {
       <div key="flash_sale" className="w-full" style={cfg.moduleBgImage ? { backgroundImage: `url(${cfg.moduleBgImage})`, backgroundSize: 'cover' } : {}}>
         <div className="px-3 py-2">
           <div className="text-center text-xs font-semibold text-meiyou mb-2">会员限时福利</div>
-          {cfg.products?.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg mb-2 overflow-hidden shadow-sm">
-              <div className="flex">
-                {product.productImage && <img src={product.productImage} alt="" className="w-20 h-20 object-cover" />}
-                <div className="flex-1 p-2 text-xs">
-                  <div className="font-medium text-gray-800">福利ID: {product.productId}</div>
-                  <div className="text-gray-400 mt-1">库存: {product.stock}</div>
-                  {product.timeSessions?.map((session, idx) => (
-                    <div key={session.id || idx} className="text-gray-400 mt-0.5 text-[10px]">
-                      第{idx + 1}场: {session.rushStartTime?.slice(0, 16).replace('T', ' ')} ~ {session.rushEndTime?.slice(11, 16)}
+          {cfg.sessions?.map((session, sIdx) => (
+            <div key={session.id || sIdx} className="mb-2">
+              <div className="text-[10px] text-gray-500 mb-1 px-1">第{sIdx + 1}场: {session.rushStartTime?.slice(0, 16).replace('T', ' ')} ~ {session.rushEndTime?.slice(11, 16)}</div>
+              {session.products?.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg mb-1 overflow-hidden shadow-sm">
+                  <div className="flex">
+                    {product.productImage && <img src={product.productImage} alt="" className="w-20 h-20 object-cover" />}
+                    <div className="flex-1 p-2 text-xs">
+                      <div className="font-medium text-gray-800">{product.productName || `福利ID: ${product.productId}`}</div>
+                      <div className="text-gray-400 mt-1">库存: {product.stock}</div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           ))}
         </div>

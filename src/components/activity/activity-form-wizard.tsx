@@ -71,6 +71,7 @@ import type {
   HeaderBannerConfig,
   FlashSaleConfig,
   FlashSaleProduct,
+  FlashSaleSession,
   BenefitConfig,
   BenefitProduct,
   FreePurchaseConfig,
@@ -1038,7 +1039,7 @@ function StepComponentConfig({
   );
 
   // 自定义碰撞检测：拖拽子项时只匹配同类型子项，拖拽组件项时只匹配组件项
-  const isSubItemId = (id: UniqueIdentifier) => /-product-|-item-/.test(String(id));
+  const isSubItemId = (id: UniqueIdentifier) => /-product-|-item-|-session-/.test(String(id));
   const customCollisionDetection: CollisionDetection = (args) => {
     const collisions = closestCenter(args);
     const activeIsSub = isSubItemId(args.active.id);
@@ -1164,7 +1165,7 @@ function StepComponentConfig({
       case 'flash_sale':
         return (
           <FlashSaleConfigCard
-            config={configs.flash_sale || { moduleBgImage: '', obtainPopupBgImage: '', obtainPopupHaloEffect: '', obtainPopupTitleEffect: '', products: [] }}
+            config={configs.flash_sale || { moduleBgImage: '', obtainPopupBgImage: '', obtainPopupHaloEffect: '', obtainPopupTitleEffect: '', sessions: [] }}
             onChange={(val) => updateConfig('flash_sale', val)}
           />
         );
@@ -1298,9 +1299,9 @@ function StepComponentConfig({
     if (!config) return [];
     if (key === 'flash_sale') {
       const cfg = config as FlashSaleConfig;
-      return (cfg.products || []).map((p, i) => ({
-        id: `${key}-product-${p.id}`,
-        label: p.productName || (p.productId ? `福利 ${p.productId}` : `福利 ${i + 1}`),
+      return (cfg.sessions || []).map((s, i) => ({
+        id: `${key}-session-${s.id}`,
+        label: `第 ${i + 1} 场`,
       }));
     }
     if (key === 'exclusive_gift' || key === 'free_benefit') {
@@ -1382,18 +1383,29 @@ function StepComponentConfig({
                   // 子项拖拽 —— 仅允许同组件内的子项交换
                   // 从子项 ID 提取 compKey 和 productId
                   const parseSubId = (id: string) => {
-                    const match = id.match(/^(.+?)-(product|item)-(.+)$/);
-                    return match ? { compKey: match[1], productId: match[3] } : null;
+                    const match = id.match(/^(.+?)-(product|item|session)-(.+)$/);
+                    return match ? { compKey: match[1], subType: match[2], subId: match[3] } : null;
                   };
                   const from = parseSubId(activeId);
                   const to = parseSubId(overId);
-                  if (from && to && from.compKey === to.compKey) {
+                  if (from && to && from.compKey === to.compKey && from.subType === to.subType) {
                     const cfg = { ...configs };
                     const compCfg = cfg[from.compKey] as Record<string, unknown>;
-                    if (compCfg && Array.isArray(compCfg.products)) {
+                    if (from.subType === 'session' && compCfg && Array.isArray(compCfg.sessions)) {
+                      // 场次拖拽排序
+                      const sessions = [...(compCfg.sessions as { id: string }[])];
+                      const fromIdx = sessions.findIndex((s) => s.id === from.subId);
+                      const toIdx = sessions.findIndex((s) => s.id === to.subId);
+                      if (fromIdx !== -1 && toIdx !== -1) {
+                        const [moved] = sessions.splice(fromIdx, 1);
+                        sessions.splice(toIdx, 0, moved);
+                        cfg[from.compKey] = { ...compCfg, sessions };
+                        onChange({ ...data, componentConfigs: cfg });
+                      }
+                    } else if (compCfg && Array.isArray(compCfg.products)) {
                       const prods = [...(compCfg.products as { id: string }[])];
-                      const fromIdx = prods.findIndex((p) => p.id === from.productId);
-                      const toIdx = prods.findIndex((p) => p.id === to.productId);
+                      const fromIdx = prods.findIndex((p) => p.id === from.subId);
+                      const toIdx = prods.findIndex((p) => p.id === to.subId);
                       if (fromIdx !== -1 && toIdx !== -1) {
                         const [moved] = prods.splice(fromIdx, 1);
                         prods.splice(toIdx, 0, moved);
@@ -2200,39 +2212,79 @@ function FlashSaleConfigCard({
   config: FlashSaleConfig;
   onChange: (config: FlashSaleConfig) => void;
 }) {
-  const moveProduct = (fromIdx: number, toIdx: number) => {
-    if (toIdx < 0 || toIdx >= config.products.length) return;
-    const updated = [...config.products];
-    [updated[fromIdx], updated[toIdx]] = [updated[toIdx], updated[fromIdx]];
-    onChange({ ...config, products: updated });
+  const sessions = config.sessions || [];
+
+  // ============ 场次操作 ============
+  const addSession = () => {
+    const newSession: FlashSaleSession = {
+      id: `fs_${Date.now()}`,
+      bookingStartTime: '',
+      bookingEndTime: '',
+      rushStartTime: '',
+      rushEndTime: '',
+      products: [],
+    };
+    onChange({ ...config, sessions: [...sessions, newSession] });
   };
 
-  const addProduct = () => {
+  const removeSession = (sessionId: string) => {
+    onChange({ ...config, sessions: sessions.filter((s) => s.id !== sessionId) });
+  };
+
+  const updateSession = (sessionId: string, updates: Partial<FlashSaleSession>) => {
+    onChange({
+      ...config,
+      sessions: sessions.map((s) => (s.id === sessionId ? { ...s, ...updates } : s)),
+    });
+  };
+
+  const moveSession = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= sessions.length) return;
+    const updated = [...sessions];
+    [updated[fromIdx], updated[toIdx]] = [updated[toIdx], updated[fromIdx]];
+    onChange({ ...config, sessions: updated });
+  };
+
+  // ============ 场次内福利操作 ============
+  const addProductToSession = (sessionId: string) => {
+    const session = sessions.find((s) => s.id === sessionId);
+    if (!session) return;
     const newProduct: FlashSaleProduct = {
       id: `fsp_${Date.now()}`,
       productId: '',
       productName: '',
-      sortOrder: config.products.length + 1,
+      sortOrder: session.products.length + 1,
       stock: '',
       productImage: '',
       obtainPopupProductImage: '',
       jumpLink: '',
       bookingPushText: '',
-      timeSessions: [{ id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' }],
       audienceRules: [],
     };
-    onChange({ ...config, products: [...config.products, newProduct] });
+    updateSession(sessionId, { products: [...session.products, newProduct] });
   };
 
-  const removeProduct = (productId: string) => {
-    onChange({ ...config, products: config.products.filter((p) => p.id !== productId) });
+  const removeProductFromSession = (sessionId: string, productId: string) => {
+    const session = sessions.find((s) => s.id === sessionId);
+    if (!session) return;
+    updateSession(sessionId, { products: session.products.filter((p) => p.id !== productId) });
   };
 
-  const updateProduct = (productId: string, updates: Partial<FlashSaleProduct>) => {
-    onChange({
-      ...config,
-      products: config.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
+  const updateProductInSession = (sessionId: string, productId: string, updates: Partial<FlashSaleProduct>) => {
+    const session = sessions.find((s) => s.id === sessionId);
+    if (!session) return;
+    updateSession(sessionId, {
+      products: session.products.map((p) => (p.id === productId ? { ...p, ...updates } : p)),
     });
+  };
+
+  const moveProductInSession = (sessionId: string, fromIdx: number, toIdx: number) => {
+    const session = sessions.find((s) => s.id === sessionId);
+    if (!session) return;
+    if (toIdx < 0 || toIdx >= session.products.length) return;
+    const updated = [...session.products];
+    [updated[fromIdx], updated[toIdx]] = [updated[toIdx], updated[fromIdx]];
+    updateSession(sessionId, { products: updated });
   };
 
   return (
@@ -2273,45 +2325,45 @@ function FlashSaleConfigCard({
 
         <Separator />
 
-        {/* 福利列表 */}
+        {/* 场次列表 */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
-              福利列表
-              <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({config.products.length}个)</span>
+              场次列表
+              <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({sessions.length}个)</span>
             </span>
-            <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addProduct}>
+            <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={addSession}>
               <Plus className="h-3 w-3 mr-1" />
-              添加福利
+              添加场次
             </Button>
           </div>
 
-          {config.products.length === 0 && (
+          {sessions.length === 0 && (
             <div className="text-center py-6 text-[var(--color-meiyou-text-placeholder)] text-sm border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
-              暂无福利，点击"添加福利"开始配置
+              暂无场次，点击"添加场次"开始配置
             </div>
           )}
 
           <div className="space-y-4">
-            {config.products.map((product, idx) => (
-              <Card key={product.id} id={`flash_sale-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
+            {sessions.map((session, sessionIdx) => (
+              <Card key={session.id} id={`flash_sale-session-${session.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 min-w-0">
-                      <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${idx + 1}`}</span>
+                      <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">第 {sessionIdx + 1} 场</span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       <Button
                         size="sm"
                         variant="ghost"
                         className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                        disabled={idx === 0}
+                        disabled={sessionIdx === 0}
                         title="置顶"
                         onClick={() => {
-                          const updated = [...config.products];
-                          const [item] = updated.splice(idx, 1);
+                          const updated = [...sessions];
+                          const [item] = updated.splice(sessionIdx, 1);
                           updated.unshift(item);
-                          onChange({ ...config, products: updated });
+                          onChange({ ...config, sessions: updated });
                         }}
                       >
                         <ArrowUpToLine className="h-3.5 w-3.5" />
@@ -2320,9 +2372,9 @@ function FlashSaleConfigCard({
                         size="sm"
                         variant="ghost"
                         className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                        disabled={idx === 0}
+                        disabled={sessionIdx === 0}
                         title="上移"
-                        onClick={() => moveProduct(idx, idx - 1)}
+                        onClick={() => moveSession(sessionIdx, sessionIdx - 1)}
                       >
                         <ChevronUp className="h-3.5 w-3.5" />
                       </Button>
@@ -2330,9 +2382,9 @@ function FlashSaleConfigCard({
                         size="sm"
                         variant="ghost"
                         className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                        disabled={idx === config.products.length - 1}
+                        disabled={sessionIdx === sessions.length - 1}
                         title="下移"
-                        onClick={() => moveProduct(idx, idx + 1)}
+                        onClick={() => moveSession(sessionIdx, sessionIdx + 1)}
                       >
                         <ChevronDown className="h-3.5 w-3.5" />
                       </Button>
@@ -2340,13 +2392,13 @@ function FlashSaleConfigCard({
                         size="sm"
                         variant="ghost"
                         className="h-6 w-6 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                        disabled={idx === config.products.length - 1}
+                        disabled={sessionIdx === sessions.length - 1}
                         title="置底"
                         onClick={() => {
-                          const updated = [...config.products];
-                          const [item] = updated.splice(idx, 1);
+                          const updated = [...sessions];
+                          const [item] = updated.splice(sessionIdx, 1);
                           updated.push(item);
-                          onChange({ ...config, products: updated });
+                          onChange({ ...config, sessions: updated });
                         }}
                       >
                         <ArrowDownToLine className="h-3.5 w-3.5" />
@@ -2356,7 +2408,7 @@ function FlashSaleConfigCard({
                         size="sm"
                         variant="ghost"
                         className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-6 w-6 p-0"
-                        onClick={() => removeProduct(product.id)}
+                        onClick={() => removeSession(session.id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -2364,174 +2416,224 @@ function FlashSaleConfigCard({
                   </div>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-4">
-                  {/* 福利基础信息 */}
+                  {/* 场次时间配置 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <ReqLabel>福利ID</ReqLabel>
-                      <WelfareSelect
-                        value={product.productId}
-                        onChange={(val) => updateProduct(product.id, { productId: val, productName: val ? product.productName : '' })}
-                        onSelect={(item) => {
-                          // 活动弹窗福利图：根据选择的福利id自动填充福利图片
-                          if (item.image) {
-                            updateProduct(product.id, { productId: item.id, productName: item.name, obtainPopupProductImage: item.image });
-                          } else {
-                            updateProduct(product.id, { productId: item.id, productName: item.name });
-                          }
-                        }}
+                      <Label className="text-sm font-medium text-foreground/80">预约时间</Label>
+                      <TimeRangeField
+                        startValue={session.bookingStartTime}
+                        endValue={session.bookingEndTime}
+                        onStartChange={(val) => updateSession(session.id, { bookingStartTime: val })}
+                        onEndChange={(val) => updateSession(session.id, { bookingEndTime: val })}
                       />
                     </div>
                     <div>
-                      <ReqLabel>库存</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="输入库存数量"
-                        value={product.stock}
-                        onChange={(e) => updateProduct(product.id, { stock: e.target.value })}
+                      <ReqLabel>抢购时间</ReqLabel>
+                      <TimeRangeField
+                        startValue={session.rushStartTime}
+                        endValue={session.rushEndTime}
+                        onStartChange={(val) => updateSession(session.id, { rushStartTime: val })}
+                        onEndChange={(val) => updateSession(session.id, { rushEndTime: val })}
                       />
                     </div>
-                  </div>
-                  {/* 排序 */}
-                  <div>
-                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      type="number"
-                      value={product.sortOrder ?? (idx + 1)}
-                      onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
-
-                  {/* 福利图片 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <ImageUploadField
-                      label="福利图"
-                      value={product.productImage}
-                      onChange={(val) => updateProduct(product.id, { productImage: val })}
-                      hint="根据选择的福利自动填充，支持修改"
-                    />
-                    <ImageUploadField
-                      label="获得弹窗福利图"
-                      value={product.obtainPopupProductImage || ''}
-                      onChange={(val) => updateProduct(product.id, { obtainPopupProductImage: val })}
-                      hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
-                    />
-                  </div>
-
-                  {/* 福利名称 */}
-                  <div>
-                    <ReqLabel>福利名称</ReqLabel>
-                    <Input
-                      className="mt-1 h-8 text-sm"
-                      placeholder="请输入福利名称"
-                      value={product.productName}
-                      onChange={(e) => updateProduct(product.id, { productName: e.target.value })}
-                    />
-                  </div>
-
-                  {/* 链接与文案 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <ReqLabel>跳转地址</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="请输入meiyou:///开头地址"
-                        value={product.jumpLink}
-                        onChange={(e) => updateProduct(product.id, { jumpLink: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 场次配置 */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <ReqLabel>场次配置</ReqLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-6 text-xs"
-                        onClick={() => {
-                          const newSession = { id: `ts_${Date.now()}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' };
-                          updateProduct(product.id, { timeSessions: [...product.timeSessions, newSession] });
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" /> 添加场次
-                      </Button>
-                    </div>
-                    {(product.timeSessions || []).map((session, sessionIdx) => (
-                      <div key={session.id} className="bg-meiyou-bg/80 rounded-lg p-3 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-[var(--color-meiyou-text-placeholder)]">第 {sessionIdx + 1} 场</span>
-                          {(product.timeSessions || []).length > 1 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-5 text-xs text-meiyou hover:text-meiyou-hover"
-                              onClick={() => {
-                                updateProduct(product.id, { timeSessions: product.timeSessions.filter((s) => s.id !== session.id) });
-                              }}
-                            >
-                              <Trash2 className="h-3 w-3 mr-1" /> 删除场次
-                            </Button>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label className="text-sm font-medium text-foreground/80">预约时间</Label>
-                            <TimeRangeField
-                              startValue={session.bookingStartTime}
-                              endValue={session.bookingEndTime}
-                              onStartChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingStartTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                              onEndChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, bookingEndTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <ReqLabel>抢购时间</ReqLabel>
-                            <TimeRangeField
-                              startValue={session.rushStartTime}
-                              endValue={session.rushEndTime}
-                              onStartChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushStartTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                              onEndChange={(val) => {
-                                const updated = product.timeSessions.map((s) => s.id === session.id ? { ...s, rushEndTime: val } : s);
-                                updateProduct(product.id, { timeSessions: updated });
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
                   </div>
 
                   {/* 福利预约push副标题 - 仅配置了预约时间时展示 */}
-                  {product.timeSessions.some((s) => s.bookingStartTime || s.bookingEndTime) && (
+                  {(session.bookingStartTime || session.bookingEndTime) && (
                     <div>
                       <ReqLabel>福利预约push副标题</ReqLabel>
                       <Input
                         className="mt-1 h-8 text-sm"
                         placeholder="请输入福利预约push副标题"
-                        value={product.bookingPushText}
-                        onChange={(e) => updateProduct(product.id, { bookingPushText: e.target.value })}
+                        value={session.products.length > 0 ? (session.products[0].bookingPushText || '') : ''}
+                        onChange={(e) => {
+                          // push副标题同步到该场次所有福利
+                          const updatedProducts = session.products.map((p) => ({ ...p, bookingPushText: e.target.value }));
+                          updateSession(session.id, { products: updatedProducts });
+                        }}
                       />
                     </div>
                   )}
 
-                  {/* 用户条件 */}
                   <Separator />
-                  <AudienceRuleEditor
-                    rules={product.audienceRules}
-                    onRulesChange={(rules) => updateProduct(product.id, { audienceRules: rules })}
-                  />
+
+                  {/* 场次内福利列表 */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">
+                        福利列表
+                        <span className="text-xs text-[var(--color-meiyou-text-placeholder)] ml-1">({session.products.length}个)</span>
+                      </span>
+                      <Button size="sm" className="bg-meiyou hover:bg-meiyou-hover text-white" onClick={() => addProductToSession(session.id)}>
+                        <Plus className="h-3 w-3 mr-1" />
+                        添加福利
+                      </Button>
+                    </div>
+
+                    {session.products.length === 0 && (
+                      <div className="text-center py-4 text-[var(--color-meiyou-text-placeholder)] text-xs border rounded-lg border-dashed border-[var(--color-meiyou-divider)]">
+                        暂无福利，点击"添加福利"开始配置
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      {session.products.map((product, pIdx) => (
+                        <Card key={product.id} id={`flash_sale-session-${session.id}-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-white scroll-mt-4">
+                          <CardHeader className="py-2 px-3 pb-1">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1 min-w-0">
+                                <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${pIdx + 1}`}</span>
+                              </div>
+                              <div className="flex items-center gap-0.5">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                                  disabled={pIdx === 0}
+                                  title="置顶"
+                                  onClick={() => {
+                                    const updated = [...session.products];
+                                    const [item] = updated.splice(pIdx, 1);
+                                    updated.unshift(item);
+                                    updateSession(session.id, { products: updated });
+                                  }}
+                                >
+                                  <ArrowUpToLine className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                                  disabled={pIdx === 0}
+                                  title="上移"
+                                  onClick={() => moveProductInSession(session.id, pIdx, pIdx - 1)}
+                                >
+                                  <ChevronUp className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                                  disabled={pIdx === session.products.length - 1}
+                                  title="下移"
+                                  onClick={() => moveProductInSession(session.id, pIdx, pIdx + 1)}
+                                >
+                                  <ChevronDown className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
+                                  disabled={pIdx === session.products.length - 1}
+                                  title="置底"
+                                  onClick={() => {
+                                    const updated = [...session.products];
+                                    const [item] = updated.splice(pIdx, 1);
+                                    updated.push(item);
+                                    updateSession(session.id, { products: updated });
+                                  }}
+                                >
+                                  <ArrowDownToLine className="h-3 w-3" />
+                                </Button>
+                                <div className="w-px h-3 bg-[var(--color-meiyou-divider)] mx-0.5" />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-5 w-5 p-0"
+                                  onClick={() => removeProductFromSession(session.id, product.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="px-3 pb-3 space-y-3">
+                            {/* 福利基础信息 */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <ReqLabel>福利ID</ReqLabel>
+                                <WelfareSelect
+                                  value={product.productId}
+                                  onChange={(val) => updateProductInSession(session.id, product.id, { productId: val, productName: val ? product.productName : '' })}
+                                  onSelect={(item) => {
+                                    if (item.image) {
+                                      updateProductInSession(session.id, product.id, { productId: item.id, productName: item.name, obtainPopupProductImage: item.image });
+                                    } else {
+                                      updateProductInSession(session.id, product.id, { productId: item.id, productName: item.name });
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <ReqLabel>库存</ReqLabel>
+                                <Input
+                                  className="mt-1 h-8 text-sm"
+                                  placeholder="输入库存数量"
+                                  value={product.stock}
+                                  onChange={(e) => updateProductInSession(session.id, product.id, { stock: e.target.value })}
+                                />
+                              </div>
+                            </div>
+                            {/* 排序 */}
+                            <div>
+                              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
+                              <Input
+                                className="mt-1 h-8 text-sm"
+                                type="number"
+                                value={product.sortOrder ?? (pIdx + 1)}
+                                onChange={(e) => updateProductInSession(session.id, product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                              />
+                            </div>
+
+                            {/* 福利图片 */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <ImageUploadField
+                                label="福利图"
+                                value={product.productImage}
+                                onChange={(val) => updateProductInSession(session.id, product.id, { productImage: val })}
+                                hint="根据选择的福利自动填充，支持修改"
+                              />
+                              <ImageUploadField
+                                label="获得弹窗福利图"
+                                value={product.obtainPopupProductImage || ''}
+                                onChange={(val) => updateProductInSession(session.id, product.id, { obtainPopupProductImage: val })}
+                                hint="建议尺寸：885*1314；格式：png/jpg/pag/webp；大小：不超过 2MB"
+                              />
+                            </div>
+
+                            {/* 福利名称 */}
+                            <div>
+                              <ReqLabel>福利名称</ReqLabel>
+                              <Input
+                                className="mt-1 h-8 text-sm"
+                                placeholder="请输入福利名称"
+                                value={product.productName}
+                                onChange={(e) => updateProductInSession(session.id, product.id, { productName: e.target.value })}
+                              />
+                            </div>
+
+                            {/* 跳转地址 */}
+                            <div>
+                              <ReqLabel>跳转地址</ReqLabel>
+                              <Input
+                                className="mt-1 h-8 text-sm"
+                                placeholder="请输入meiyou:///开头地址"
+                                value={product.jumpLink}
+                                onChange={(e) => updateProductInSession(session.id, product.id, { jumpLink: e.target.value })}
+                              />
+                            </div>
+
+                            {/* 用户条件 */}
+                            <Separator />
+                            <AudienceRuleEditor
+                              rules={product.audienceRules}
+                              onRulesChange={(rules) => updateProductInSession(session.id, product.id, { audienceRules: rules })}
+                            />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -2540,7 +2642,6 @@ function FlashSaleConfigCard({
       </div>
   );
 }
-
 // ==================== 会员专属生活券包/会员专属礼配置卡片 ====================
 
 function FreePurchaseConfigCard({
@@ -3074,25 +3175,31 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
       const raw = initialData as unknown as Record<string, unknown>;
       const rawConfigs = raw.component_configs || raw.componentConfigs || {};
       const parsed = (typeof rawConfigs === 'string' ? JSON.parse(rawConfigs as string) : rawConfigs) as ComponentConfigs;
-      // Deep clone to avoid mutating props, and migrate old flash_sale products
+      // Deep clone to avoid mutating props, and migrate old flash_sale structure
       const componentConfigs: ComponentConfigs = JSON.parse(JSON.stringify(parsed));
-      const fsConfig = componentConfigs.flash_sale;
-      if (fsConfig && Array.isArray(fsConfig.products)) {
-        fsConfig.products = fsConfig.products.map((p: FlashSaleProduct) => {
-          if (!p.timeSessions || p.timeSessions.length === 0) {
-            return {
-              ...p,
-              timeSessions: [{
-                id: `ts_${Date.now()}_${String(p.id).slice(-4)}`,
-                bookingStartTime: (p as unknown as Record<string, string>).bookingStartTime || '',
-                bookingEndTime: (p as unknown as Record<string, string>).bookingEndTime || '',
-                rushStartTime: (p as unknown as Record<string, string>).rushStartTime || '',
-                rushEndTime: (p as unknown as Record<string, string>).rushEndTime || '',
-              }],
-            };
+      const fsConfig = componentConfigs.flash_sale as Record<string, unknown> | undefined;
+      if (fsConfig) {
+        // 兼容旧数据：products[] → sessions[]
+        if (Array.isArray(fsConfig.products) && !Array.isArray(fsConfig.sessions)) {
+          // 旧结构：每个 product 有 timeSessions，需要拆分为 sessions
+          const sessionsMap = new Map<string, { session: { id: string; bookingStartTime: string; bookingEndTime: string; rushStartTime: string; rushEndTime: string }; products: FlashSaleProduct[] }>();
+          for (const p of fsConfig.products as (FlashSaleProduct & { timeSessions?: { id: string; bookingStartTime: string; bookingEndTime: string; rushStartTime: string; rushEndTime: string }[] })[]) {
+            const ts = p.timeSessions && p.timeSessions.length > 0 ? p.timeSessions[0] : { id: `ts_${Date.now()}_${String(p.id).slice(-4)}`, bookingStartTime: '', bookingEndTime: '', rushStartTime: '', rushEndTime: '' };
+            const sessionKey = `${ts.bookingStartTime}-${ts.rushStartTime}`;
+            if (!sessionsMap.has(sessionKey)) {
+              sessionsMap.set(sessionKey, { session: ts, products: [] });
+            }
+            const { timeSessions, ...productWithoutSessions } = p;
+            sessionsMap.get(sessionKey)!.products.push(productWithoutSessions as FlashSaleProduct);
           }
-          return p;
-        });
+          fsConfig.sessions = Array.from(sessionsMap.values()).map(({ session, products }) => ({
+            ...session,
+            products,
+          }));
+          delete fsConfig.products;
+        } else if (!fsConfig.sessions) {
+          fsConfig.sessions = [];
+        }
       }
       // 确保 global_config 存在
       if (!componentConfigs.global_config) {

@@ -181,32 +181,37 @@ export interface ComponentAudienceRule {
 }
 
 /** 会员限时福利-福利商品 */
-/** 抢购场次（预约+抢购时间对） */
-export interface TimeSession {
-  id: string;
-  bookingStartTime: string;
-  bookingEndTime: string;
-  rushStartTime: string;
-  rushEndTime: string;
-}
-
 export interface FlashSaleProduct {
   id: string;
   productId: string;
-  /** 商品名称：商品ID有值时自动带出，支持修改 */
+  /** 福利名称：福利ID有值时自动带出，支持修改 */
   productName: string;
   /** 排序数值 */
   sortOrder: number;
   stock: string;
-  /** 商品图（根据选择的商品自动填充，支持修改） */
+  /** 福利图（根据选择的福利自动填充，支持修改） */
   productImage: string;
-  /** 获得弹窗商品图 */
+  /** 获得弹窗福利图 */
   obtainPopupProductImage: string;
   jumpLink: string;
-  /** 预约通知push文案 */
+  /** 福利预约push副标题 */
   bookingPushText: string;
-  timeSessions: TimeSession[];
   audienceRules: ComponentAudienceRule[];
+}
+
+/** 会员限时福利-场次 */
+export interface FlashSaleSession {
+  id: string;
+  /** 预约开始时间 */
+  bookingStartTime: string;
+  /** 预约结束时间 */
+  bookingEndTime: string;
+  /** 抢购开始时间 */
+  rushStartTime: string;
+  /** 抢购结束时间 */
+  rushEndTime: string;
+  /** 场次内的福利列表 */
+  products: FlashSaleProduct[];
 }
 
 /** 会员限时福利配置 */
@@ -218,7 +223,8 @@ export interface FlashSaleConfig {
   obtainPopupHaloEffect: string;
   /** 获得弹窗标题背景动效 */
   obtainPopupTitleEffect: string;
-  products: FlashSaleProduct[];
+  /** 场次列表 */
+  sessions: FlashSaleSession[];
 }
 
 /** 会员专属生活券包/会员专属礼列表项（商品ID为空时=纯图片项，有值时=商品项） */
