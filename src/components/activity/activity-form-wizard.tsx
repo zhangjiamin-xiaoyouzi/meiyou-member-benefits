@@ -659,6 +659,8 @@ function SortableNavItem({
   hasSubItems,
   subItems,
   activeSubKey,
+  isCopied,
+  onCopy,
   onClickNav,
   onClickSubNav,
 }: {
@@ -668,6 +670,8 @@ function SortableNavItem({
   hasSubItems: boolean;
   subItems: { id: string; label: string }[];
   activeSubKey: string | null;
+  isCopied?: boolean;
+  onCopy?: (key: string) => void;
   onClickNav: (key: string) => void;
   onClickSubNav: (compKey: string, subKey: string) => void;
 }) {
@@ -692,7 +696,13 @@ function SortableNavItem({
           </button>
         )}
         <span className="truncate flex-1">{comp.name}</span>
+        {isCopied && <span className="text-[10px] bg-blue-50 text-blue-500 px-1 py-0 rounded shrink-0">已复制</span>}
         {comp.required && <span className="text-[10px] bg-[var(--color-meiyou)]/10 text-[var(--color-meiyou)] px-1 py-0 rounded">必选</span>}
+        {onCopy && !comp.required && (
+          <button type="button" className="shrink-0 p-0.5 rounded hover:bg-gray-100 text-gray-400 hover:text-[var(--color-meiyou)]" onClick={(e) => { e.stopPropagation(); onCopy(comp.key); }}>
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
       {/* 子项 */}
       {hasSubItems && subItems.length > 0 && (
@@ -1392,6 +1402,8 @@ function StepComponentConfig({
                         activeSubKey=""
                         onClickNav={handleNavClick}
                         onClickSubNav={handleSubItemClick}
+                        onCopy={isCopyable(comp.key) ? () => handleStartCopy(comp.key) : undefined}
+                        isCopied={isCopiedComp(comp.key)}
                       />
                     );
                   })}
