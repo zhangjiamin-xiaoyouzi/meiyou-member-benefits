@@ -195,6 +195,8 @@ export interface FlashSaleProduct {
   productId: string;
   /** 商品名称：商品ID有值时自动带出，支持修改 */
   productName: string;
+  /** 排序数值 */
+  sortOrder: number;
   stock: string;
   /** 商品图（根据选择的商品自动填充，支持修改） */
   productImage: string;

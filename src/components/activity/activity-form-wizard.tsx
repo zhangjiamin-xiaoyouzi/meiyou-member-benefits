@@ -2212,6 +2212,7 @@ function FlashSaleConfigCard({
       id: `fsp_${Date.now()}`,
       productId: '',
       productName: '',
+      sortOrder: config.products.length + 1,
       stock: '',
       productImage: '',
       obtainPopupProductImage: '',
@@ -2391,9 +2392,14 @@ function FlashSaleConfigCard({
                     </div>
                   </div>
                   {/* 排序 */}
-                  <div className="flex items-center gap-2">
+                  <div>
                     <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{idx + 1}</span>
+                    <Input
+                      className="mt-1 h-8 text-sm"
+                      type="number"
+                      value={product.sortOrder ?? (idx + 1)}
+                      onChange={(e) => updateProduct(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
+                    />
                   </div>
 
                   {/* 福利图片 */}
