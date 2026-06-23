@@ -650,6 +650,109 @@ function StepBasicInfo({
   );
 }
 
+// ==================== 目录导航可拖拽排序组件 ====================
+
+function SortableNavItem({
+  id,
+  comp,
+  isActive,
+  hasSubItems,
+  subItems,
+  activeSubKey,
+  onClickNav,
+  onClickSubNav,
+}: {
+  id: string;
+  comp: TemplateComponent;
+  isActive: boolean;
+  hasSubItems: boolean;
+  subItems: { id: string; label: string }[];
+  activeSubKey: string | null;
+  onClickNav: (key: string) => void;
+  onClickSubNav: (compKey: string, subKey: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: comp.required });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div className="group relative flex items-center gap-1.5 py-1.5 px-2 rounded-md cursor-pointer text-[13px] transition-colors"
+        style={{ background: isActive && !hasSubItems ? 'rgba(255,77,136,0.08)' : 'transparent', color: isActive && !hasSubItems ? 'var(--color-meiyou)' : 'rgba(0,0,0,0.7)' }}
+        onClick={() => onClickNav(comp.key)}
+      >
+        {/* 拖拽手柄 */}
+        {!comp.required && (
+          <button type="button" className="cursor-grab active:cursor-grabbing p-0 rounded hover:text-gray-500 text-gray-300 hover:text-gray-500" {...attributes} {...listeners}>
+            <GripVertical className="h-3.5 w-3.5" />
+          </button>
+        )}
+        <span className="truncate flex-1">{comp.name}</span>
+        {comp.required && <span className="text-[10px] bg-[var(--color-meiyou)]/10 text-[var(--color-meiyou)] px-1 py-0 rounded">必选</span>}
+      </div>
+      {/* 子项 */}
+      {hasSubItems && subItems.length > 0 && (
+        <div className="ml-5 border-l border-gray-200 pl-1">
+          {subItems.map((sub) => (
+            <SortableSubNavItem
+              key={sub.id}
+              id={`sub-${comp.key}-${sub.id}`}
+              subKey={sub.id}
+              compKey={comp.key}
+              label={sub.label}
+              isActive={activeSubKey === sub.id}
+              onClickSubNav={onClickSubNav}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SortableSubNavItem({
+  id,
+  subKey,
+  compKey,
+  label,
+  isActive,
+  onClickSubNav,
+}: {
+  id: string;
+  subKey: string;
+  compKey: string;
+  label: string;
+  isActive: boolean;
+  onClickSubNav: (compKey: string, subKey: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div
+        className="group/sub flex items-center gap-1 py-1 px-2 rounded cursor-pointer text-[12px] transition-colors"
+        style={{ background: isActive ? 'rgba(255,77,136,0.08)' : 'transparent', color: isActive ? 'var(--color-meiyou)' : 'rgba(0,0,0,0.6)' }}
+        onClick={() => onClickSubNav(compKey, subKey)}
+      >
+        <button type="button" className="cursor-grab active:cursor-grabbing p-0 rounded text-gray-300 hover:text-gray-500" {...attributes} {...listeners}>
+          <GripVertical className="h-3 w-3" />
+        </button>
+        <span className="truncate">{label}</span>
+      </div>
+    </div>
+  );
+}
+
 // ==================== 可拖拽排序组件项 ====================
 
 function SortableComponentItem({
@@ -778,13 +881,6 @@ function StepComponentConfig({
   const [addMenuPosition, setAddMenuPosition] = useState({ x: 0, y: 0, left: 0 });
   const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(new Set());
   const [activeKey, setActiveKey] = useState<string | null>(null);
-  const [navDragKey, setNavDragKey] = useState<string | null>(null);
-  const [navOverKey, setNavOverKey] = useState<string | null>(null);
-  const [navDropPos, setNavDropPos] = useState<'before' | 'after'>('after');
-  const [subDragId, setSubDragId] = useState<string | null>(null);
-  const [subOverId, setSubOverId] = useState<string | null>(null);
-  const [subDropPos, setSubDropPos] = useState<'before' | 'after'>('after');
-  const [subDragCompKey, setSubDragCompKey] = useState<string | null>(null);
 
   const updateConfig = (key: string, value: unknown) => {
     onChange({
@@ -943,49 +1039,6 @@ function StepComponentConfig({
 
     const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
     onComponentsChange(mergeReorderedEnabled(newEnabled));
-  };
-
-  // 导航栏拖拽排序回调 - 放在目标之后
-  const handleNavReorder = (dragKey: string, overKey: string) => {
-    const oldIndex = enabledComponents.findIndex((c) => c.key === dragKey);
-    const newIndex = enabledComponents.findIndex((c) => c.key === overKey);
-    if (oldIndex === -1 || newIndex === -1) return;
-    // 必选组件不允许拖拽排序
-    if (enabledComponents[oldIndex].required) return;
-    const newEnabled = arrayMove(enabledComponents, oldIndex, newIndex);
-    onComponentsChange(mergeReorderedEnabled(newEnabled));
-  };
-
-  // 导航栏拖拽排序回调 - 放在目标之前
-  const handleNavReorderBefore = (dragKey: string, overKey: string) => {
-    const oldIndex = enabledComponents.findIndex((c) => c.key === dragKey);
-    let newIndex = enabledComponents.findIndex((c) => c.key === overKey);
-    if (oldIndex === -1 || newIndex === -1) return;
-    if (enabledComponents[oldIndex].required) return;
-    // arrayMove 插入到 before 位置：先移除 oldIndex，再在 newIndex-1 处插入
-    const arr = [...enabledComponents];
-    const [item] = arr.splice(oldIndex, 1);
-    if (oldIndex < newIndex) newIndex--;
-    arr.splice(newIndex, 0, item);
-    onComponentsChange(mergeReorderedEnabled(arr));
-  };
-
-  // 拖拽子项（福利）排序
-  const handleSubItemReorder = (compKey: string, dragId: string, overId: string, position: 'before' | 'after' = 'after') => {
-    if (dragId === overId) return;
-    const config = configs[compKey as keyof ComponentConfigs];
-    if (!config) return;
-    const products = (config as { products?: { id: string }[] }).products;
-    if (!products || !Array.isArray(products)) return;
-    const oldIndex = products.findIndex((p: { id: string }) => p.id === dragId);
-    let newIndex = products.findIndex((p: { id: string }) => p.id === overId);
-    if (oldIndex === -1 || newIndex === -1) return;
-    const arr = [...products];
-    const [item] = arr.splice(oldIndex, 1);
-    if (oldIndex < newIndex) newIndex--;
-    if (position === 'after') newIndex++;
-    arr.splice(newIndex, 0, item);
-    onChange({ ...data, componentConfigs: { ...configs, [compKey]: { ...config, products: arr } } });
   };
 
   // 渲染单个组件的配置内容
@@ -1278,137 +1331,73 @@ function StepComponentConfig({
                 </button>
               </div>
             </div>
-            <nav className="space-y-0.5">
-              {enabledComponents.map((comp) => {
-                const subItems = getComponentSubItems(comp.key);
-                const isActive = activeKey === comp.key;
-                return (
-                  <div key={comp.key}>
-                    <div
-                      className={`relative flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs transition-all truncate group ${
-                        navDragKey === comp.key ? 'opacity-40 scale-[0.98]' : ''
-                      } ${
-                        navOverKey === comp.key
-                          ? navDropPos === 'before'
-                            ? 'border-t-2 border-[var(--color-meiyou)] pt-[5px]'
-                            : 'border-b-2 border-[var(--color-meiyou)] pb-[5px]'
-                          : ''
-                      } ${
-                        isActive && navDragKey === null
-                          ? 'bg-[rgba(255,77,136,0.08)] text-[var(--color-meiyou)] font-medium'
-                          : 'text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)]'
-                      }`}
-                      onClick={() => { if (!navDragKey) handleNavClick(comp.key); }}
-                      draggable={!comp.required}
-                      onDragStart={(e) => {
-                        if (comp.required) { e.preventDefault(); return; }
-                        e.dataTransfer.setData('text/plain', comp.key);
-                        e.dataTransfer.effectAllowed = 'move';
-                        setNavDragKey(comp.key);
-                      }}
-                      onDragEnd={() => { setNavDragKey(null); setNavOverKey(null); setNavDropPos('after'); }}
-                      onDragOver={(e) => {
-                        if (!navDragKey || navDragKey === comp.key) return;
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const midY = rect.top + rect.height / 2;
-                        setNavOverKey(comp.key);
-                        setNavDropPos(e.clientY < midY ? 'before' : 'after');
-                      }}
-                      onDragLeave={() => { if (navOverKey === comp.key) setNavOverKey(null); }}
-                      onDrop={(e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const dragKey = e.dataTransfer.getData('text/plain');
-                        if (dragKey && dragKey !== comp.key) {
-                          if (navDropPos === 'before') {
-                            handleNavReorderBefore(dragKey, comp.key);
-                          } else {
-                            handleNavReorder(dragKey, comp.key);
-                          }
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => {
+                const { active, over } = event;
+                if (over && active.id !== over.id) {
+                  const activeKey = String(active.id);
+                  const overKey = String(over.id);
+                  // 判断是否是子项拖拽（id 格式: sub-{compKey}-{subKey}）
+                  if (activeKey.startsWith('sub-') && overKey.startsWith('sub-')) {
+                    const parseSubId = (id: string) => {
+                      const parts = id.replace('sub-', '').split('-');
+                      return { compKey: parts[0], subKey: parts.slice(1).join('-') };
+                    };
+                    const from = parseSubId(activeKey);
+                    const to = parseSubId(overKey);
+                    if (from.compKey === to.compKey) {
+                      // 子项拖拽排序
+                      const cfg = { ...configs };
+                      const compCfg = cfg[from.compKey] as Record<string, unknown>;
+                      if (compCfg && Array.isArray(compCfg.products)) {
+                        const prods = [...(compCfg.products as { id: string }[])];
+                        const fromIdx = prods.findIndex((p) => p.id === from.subKey);
+                        const toIdx = prods.findIndex((p) => p.id === to.subKey);
+                        if (fromIdx !== -1 && toIdx !== -1) {
+                          const [moved] = prods.splice(fromIdx, 1);
+                          prods.splice(toIdx, 0, moved);
+                          cfg[from.compKey] = { ...compCfg, products: prods };
+                          onChange({ ...data, componentConfigs: cfg });
                         }
-                        setNavDragKey(null); setNavOverKey(null); setNavDropPos('after');
-                      }}
-                    >
-                      {comp.required ? (
-                        <Lock className="h-3 w-3 text-gray-300 shrink-0" />
-                      ) : (
-                        <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-80 text-gray-400 shrink-0 cursor-grab active:cursor-grabbing" />
-                      )}
-                      <span className="flex-1 truncate">{comp.name}</span>
-                      {/* 复制按钮 */}
-                      {isCopyable(comp.key) && (
-                        <button
-                          type="button"
-                          className="text-gray-300 hover:text-[var(--color-meiyou)] transition-colors shrink-0"
-                          onClick={(e) => { e.stopPropagation(); handleStartCopy(comp.key); }}
-                          title="复制组件"
-                        >
-                          <Copy className="h-3 w-3" />
-                        </button>
-                      )}
-                    </div>
-                    {/* 子项列表 */}
-                    {subItems.length > 0 && (
-                      <div className="ml-4 border-l border-[var(--color-meiyou-divider)] pl-1.5 space-y-0.5 mt-0.5 mb-1">
-                        {subItems.map((sub) => (
-                          <div
-                            key={sub.id}
-                            className={`relative ${
-                              subDragId === sub.id ? 'opacity-40' : ''
-                            } ${
-                              subOverId === sub.id
-                                ? subDropPos === 'before'
-                                  ? 'border-t-2 border-[var(--color-meiyou)] pt-[1px]'
-                                  : 'border-b-2 border-[var(--color-meiyou)] pb-[1px]'
-                                : ''
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              draggable
-                              onDragStart={(e) => {
-                                e.dataTransfer.setData('text/sub-reorder', sub.id);
-                                e.dataTransfer.setData('text/sub-comp', comp.key);
-                                e.dataTransfer.effectAllowed = 'move';
-                                setSubDragId(sub.id);
-                                setSubDragCompKey(comp.key);
-                              }}
-                              onDragEnd={() => { setSubDragId(null); setSubOverId(null); setSubDropPos('after'); setSubDragCompKey(null); }}
-                              onDragOver={(e) => {
-                                if (!subDragId || subDragId === sub.id || subDragCompKey !== comp.key) return;
-                                e.preventDefault();
-                                e.stopPropagation();
-                                e.dataTransfer.dropEffect = 'move';
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                const midY = rect.top + rect.height / 2;
-                                setSubOverId(sub.id);
-                                setSubDropPos(e.clientY < midY ? 'before' : 'after');
-                              }}
-                              onDragLeave={() => { if (subOverId === sub.id) setSubOverId(null); }}
-                              onDrop={(e) => {
-                                e.preventDefault(); e.stopPropagation();
-                                const dragId = e.dataTransfer.getData('text/sub-reorder');
-                                const dragComp = e.dataTransfer.getData('text/sub-comp');
-                                if (dragId && dragId !== sub.id && dragComp === comp.key) {
-                                  handleSubItemReorder(comp.key, dragId, sub.id, subDropPos);
-                                }
-                                setSubDragId(null); setSubOverId(null); setSubDropPos('after'); setSubDragCompKey(null);
-                              }}
-                              className="w-full text-left px-2 py-1 rounded text-[11px] text-gray-400 hover:text-[var(--color-meiyou-text-primary)] hover:bg-[var(--color-meiyou-bg-secondary)] transition-colors truncate flex items-center gap-1 cursor-grab active:cursor-grabbing"
-                              onClick={() => { if (!subDragId) handleSubItemClick(comp.key, sub.id); }}
-                            >
-                              <GripVertical className="w-3 h-3 shrink-0 text-gray-300" />
-                              <span className="truncate">{sub.label}</span>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </nav>
+                      }
+                    }
+                  } else {
+                    // 组件项拖拽排序
+                    const newComps = [...components];
+                    const fromIdx = newComps.findIndex((c: { key: string }) => c.key === activeKey);
+                    const toIdx = newComps.findIndex((c: { key: string }) => c.key === overKey);
+                    if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                      const [moved] = newComps.splice(fromIdx, 1);
+                      newComps.splice(toIdx, 0, moved);
+                      onComponentsChange(newComps);
+                    }
+                  }
+                }
+              }}
+            >
+              <SortableContext items={[...enabledComponents.map((c) => c.key), ...enabledComponents.flatMap((comp) => { const subs = getComponentSubItems(comp.key); return subs.map(s => `sub-${comp.key}-${s.id}`); })]} strategy={verticalListSortingStrategy}>
+                <nav className="space-y-0.5">
+                  {enabledComponents.map((comp) => {
+                    const subItems = getComponentSubItems(comp.key);
+                    const isActive = activeKey === comp.key;
+                    return (
+                      <SortableNavItem
+                        key={comp.key}
+                        id={comp.key}
+                        comp={comp}
+                        isActive={isActive}
+                        hasSubItems={subItems.length > 0}
+                        subItems={subItems.map(s => ({ id: s.id, label: s.label }))}
+                        activeSubKey=""
+                        onClickNav={handleNavClick}
+                        onClickSubNav={handleSubItemClick}
+                      />
+                    );
+                  })}
+                </nav>
+              </SortableContext>
+            </DndContext>
             {availableComponents.length > 0 && (
               <div className="mt-2 px-1 relative">
                 <button
