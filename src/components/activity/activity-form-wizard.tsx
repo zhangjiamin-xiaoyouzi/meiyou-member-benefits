@@ -663,6 +663,7 @@ function SortableNavItem({
   onCopy,
   onClickNav,
   onClickSubNav,
+  onSubItemReorder,
 }: {
   id: string;
   comp: TemplateComponent;
@@ -674,8 +675,11 @@ function SortableNavItem({
   onCopy?: (key: string) => void;
   onClickNav: (key: string) => void;
   onClickSubNav: (compKey: string, subKey: string) => void;
+  onSubItemReorder?: (compKey: string, fromSubId: string, toSubId: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled: comp.required });
+
+  const subSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -704,19 +708,48 @@ function SortableNavItem({
           </button>
         )}
       </div>
-      {/* 子项 */}
-      {hasSubItems && subItems.length > 0 && (
+      {/* 子项 - 独立 DndContext 处理子项拖拽 */}
+      {hasSubItems && subItems.length > 0 && onSubItemReorder && (
+        <DndContext
+          sensors={subSensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={(event) => {
+            const { active, over } = event;
+            if (over && active.id !== over.id) {
+              onSubItemReorder(comp.key, String(active.id), String(over.id));
+            }
+          }}
+        >
+          <SortableContext items={subItems.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+            <div className="ml-5 border-l border-gray-200 pl-1">
+              {subItems.map((sub) => (
+                <SortableSubNavItem
+                  key={sub.id}
+                  id={sub.id}
+                  subKey={sub.id}
+                  compKey={comp.key}
+                  label={sub.label}
+                  isActive={activeSubKey === sub.id}
+                  onClickSubNav={onClickSubNav}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+      {/* 无拖拽回调时，仅渲染静态子项列表 */}
+      {hasSubItems && subItems.length > 0 && !onSubItemReorder && (
         <div className="ml-5 border-l border-gray-200 pl-1">
           {subItems.map((sub) => (
-            <SortableSubNavItem
+            <div
               key={sub.id}
-              id={`sub-${comp.key}-${sub.id}`}
-              subKey={sub.id}
-              compKey={comp.key}
-              label={sub.label}
-              isActive={activeSubKey === sub.id}
-              onClickSubNav={onClickSubNav}
-            />
+              className="group/sub flex items-center gap-1 py-1 px-2 rounded cursor-pointer text-[12px] transition-colors"
+              style={{ background: activeSubKey === sub.id ? 'rgba(255,77,136,0.08)' : 'transparent', color: activeSubKey === sub.id ? 'var(--color-meiyou)' : 'rgba(0,0,0,0.6)' }}
+              onClick={() => onClickSubNav(comp.key, sub.id)}
+            >
+              <span className="truncate">{sub.label}</span>
+            </div>
           ))}
         </div>
       )}
@@ -1343,50 +1376,25 @@ function StepComponentConfig({
             </div>
             <DndContext
               collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
               onDragEnd={(event) => {
                 const { active, over } = event;
                 if (over && active.id !== over.id) {
                   const activeKey = String(active.id);
                   const overKey = String(over.id);
-                  // 判断是否是子项拖拽（id 格式: sub-{compKey}-{subKey}）
-                  if (activeKey.startsWith('sub-') && overKey.startsWith('sub-')) {
-                    const parseSubId = (id: string) => {
-                      const parts = id.replace('sub-', '').split('-');
-                      return { compKey: parts[0], subKey: parts.slice(1).join('-') };
-                    };
-                    const from = parseSubId(activeKey);
-                    const to = parseSubId(overKey);
-                    if (from.compKey === to.compKey) {
-                      // 子项拖拽排序
-                      const cfg = { ...configs };
-                      const compCfg = cfg[from.compKey] as Record<string, unknown>;
-                      if (compCfg && Array.isArray(compCfg.products)) {
-                        const prods = [...(compCfg.products as { id: string }[])];
-                        const fromIdx = prods.findIndex((p) => p.id === from.subKey);
-                        const toIdx = prods.findIndex((p) => p.id === to.subKey);
-                        if (fromIdx !== -1 && toIdx !== -1) {
-                          const [moved] = prods.splice(fromIdx, 1);
-                          prods.splice(toIdx, 0, moved);
-                          cfg[from.compKey] = { ...compCfg, products: prods };
-                          onChange({ ...data, componentConfigs: cfg });
-                        }
-                      }
-                    }
-                  } else {
-                    // 组件项拖拽排序
-                    const newComps = [...components];
-                    const fromIdx = newComps.findIndex((c: { key: string }) => c.key === activeKey);
-                    const toIdx = newComps.findIndex((c: { key: string }) => c.key === overKey);
-                    if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
-                      const [moved] = newComps.splice(fromIdx, 1);
-                      newComps.splice(toIdx, 0, moved);
-                      onComponentsChange(newComps);
-                    }
+                  // 组件项拖拽排序（子项由各自 SortableNavItem 内的独立 DndContext 处理）
+                  const newComps = [...components];
+                  const fromIdx = newComps.findIndex((c: { key: string }) => c.key === activeKey);
+                  const toIdx = newComps.findIndex((c: { key: string }) => c.key === overKey);
+                  if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                    const [moved] = newComps.splice(fromIdx, 1);
+                    newComps.splice(toIdx, 0, moved);
+                    onComponentsChange(newComps);
                   }
                 }
               }}
             >
-              <SortableContext items={[...enabledComponents.map((c) => c.key), ...enabledComponents.flatMap((comp) => { const subs = getComponentSubItems(comp.key); return subs.map(s => `sub-${comp.key}-${s.id}`); })]} strategy={verticalListSortingStrategy}>
+              <SortableContext items={enabledComponents.map((c) => c.key)} strategy={verticalListSortingStrategy}>
                 <nav className="space-y-0.5">
                   {enabledComponents.map((comp) => {
                     const subItems = getComponentSubItems(comp.key);
@@ -1402,6 +1410,21 @@ function StepComponentConfig({
                         activeSubKey=""
                         onClickNav={handleNavClick}
                         onClickSubNav={handleSubItemClick}
+                        onSubItemReorder={(compKey, fromSubId, toSubId) => {
+                          const cfg = { ...configs };
+                          const compCfg = cfg[compKey] as Record<string, unknown>;
+                          if (compCfg && Array.isArray(compCfg.products)) {
+                            const prods = [...(compCfg.products as { id: string }[])];
+                            const fromIdx = prods.findIndex((p) => p.id === fromSubId);
+                            const toIdx = prods.findIndex((p) => p.id === toSubId);
+                            if (fromIdx !== -1 && toIdx !== -1) {
+                              const [moved] = prods.splice(fromIdx, 1);
+                              prods.splice(toIdx, 0, moved);
+                              cfg[compKey] = { ...compCfg, products: prods };
+                              onChange({ ...data, componentConfigs: cfg });
+                            }
+                          }
+                        }}
                         onCopy={isCopyable(comp.key) ? () => handleStartCopy(comp.key) : undefined}
                         isCopied={isCopiedComp(comp.key)}
                       />
