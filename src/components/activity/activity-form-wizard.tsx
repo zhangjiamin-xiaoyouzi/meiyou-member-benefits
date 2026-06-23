@@ -2298,7 +2298,6 @@ function FlashSaleConfigCard({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 min-w-0">
                       <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${idx + 1}`}</span>
-                      <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">· 排序{idx + 1}</span>
                     </div>
                     <div className="flex items-center gap-0.5">
                       <Button
@@ -2390,6 +2389,11 @@ function FlashSaleConfigCard({
                         onChange={(e) => updateProduct(product.id, { stock: e.target.value })}
                       />
                     </div>
+                  </div>
+                  {/* 排序 */}
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
+                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{idx + 1}</span>
                   </div>
 
                   {/* 福利图片 */}
