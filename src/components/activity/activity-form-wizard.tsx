@@ -109,7 +109,7 @@ const categoryColorMap: Record<string, string> = {
 };
 const defaultCategoryColor = 'bg-meiyou-bg text-[var(--color-meiyou-text-secondary)] border-[var(--color-meiyou-border)]';
 
-const defaultCategories = ['促活', '转化', '拉新'];
+const defaultCategories = ['会员日'];
 
 const stepConfig = [
   { num: 1, label: '配置基础信息与活动组件', icon: Puzzle },
@@ -491,32 +491,14 @@ function StepBasicInfo({
 }) {
   const selectedTemplate = templates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
-  // 活动分类已改为 促活/转化/拉新，模板分类仍保留原值
-
-  const [allCategories, setAllCategories] = useState<string[]>(defaultCategories);
-  const [categoryInput, setCategoryInput] = useState(data.category);
-  const [categoryOpen, setCategoryOpen] = useState(false);
-
-  // 同步外部 category 变更（编辑模式初始化）
-  useEffect(() => {
-    if (data.category !== categoryInput && !categoryOpen) {
-      setCategoryInput(data.category);
-    }
-  }, [data.category]);
-
-  // 加载已有活动的分类到列表中
-  useEffect(() => {
-    if (data.category && !allCategories.includes(data.category) && !defaultCategories.includes(data.category)) {
-      setAllCategories((prev) => [...prev, data.category]);
-    }
-  }, [data.category]);
+  // 活动分类固定为会员日
 
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find((t) => t.id === templateId);
     onChange({
       ...data,
       templateId,
-      category: template?.category || '',
+      category: '会员日',
       components: template ? template.components.map((c) => ({ ...c })) : [],
     });
   };
@@ -542,52 +524,11 @@ function StepBasicInfo({
           onChange={(e) => onChange({ ...data, name: e.target.value })}
         />
       </div>
-      {/* 活动分类 独占一行 */}
+      {/* 活动分类 - 固定为会员日 */}
       <div>
           <ReqLabel className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动分类</ReqLabel>
-          <div className="mt-1.5 relative">
-            <Input
-              value={categoryInput}
-              onChange={(e) => {
-                const val = e.target.value;
-                setCategoryInput(val);
-                onChange({ ...data, category: val });
-                setCategoryOpen(true);
-              }}
-              onFocus={() => setCategoryOpen(true)}
-              onBlur={() => {
-                // 延迟关闭以允许点击下拉选项
-                setTimeout(() => setCategoryOpen(false), 200);
-              }}
-              placeholder="输入或选择分类"
-              className="w-full h-9 rounded-lg bg-white border-[var(--color-meiyou-border)] text-sm pr-8"
-            />
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-meiyou-text-placeholder)] pointer-events-none" />
-            {categoryOpen && allCategories.filter((cat) =>
-              !categoryInput || cat.includes(categoryInput)
-            ).length > 0 && (
-              <div className="absolute z-50 mt-1 w-full bg-white rounded-lg border border-[var(--color-meiyou-border)] shadow-md py-1 max-h-48 overflow-y-auto">
-                {allCategories
-                  .filter((cat) => !categoryInput || cat.includes(categoryInput))
-                  .map((cat) => (
-                    <div
-                      key={cat}
-                      className={`px-3 py-1.5 text-sm cursor-pointer hover:bg-meiyou-bg/60 flex items-center ${
-                        data.category === cat ? 'text-meiyou font-medium bg-meiyou-bg/30' : 'text-[var(--color-meiyou-text-primary)]'
-                      }`}
-                      onMouseDown={(e) => {
-                        e.preventDefault(); // 阻止 blur 触发
-                        setCategoryInput(cat);
-                        onChange({ ...data, category: cat });
-                        setCategoryOpen(false);
-                      }}
-                    >
-                      <Check className={`mr-2 h-3.5 w-3.5 ${data.category === cat ? 'opacity-100' : 'opacity-0'}`} />
-                      {cat}
-                    </div>
-                  ))}
-              </div>
-            )}
+          <div className="mt-1.5 h-9 px-3 flex items-center rounded-lg bg-[var(--color-meiyou-bg)] border border-[var(--color-meiyou-border)] text-sm text-[var(--color-meiyou-text-primary)]">
+            会员日
           </div>
         </div>
 
@@ -2943,7 +2884,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
     const defaultTemplate = templates.find((t) => t.id === 'tpl_002');
     return {
       templateId: 'tpl_002',
-      category: '',
+      category: '会员日',
       name: '',
       components: [],
       activityStartTime: '',
