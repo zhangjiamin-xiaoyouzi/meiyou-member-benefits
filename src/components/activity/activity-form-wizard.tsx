@@ -2286,7 +2286,10 @@ function FlashSaleConfigCard({
               <Card key={product.id} id={`flash_sale-product-${product.id}`} className="border-[var(--color-meiyou-border)] bg-meiyou-bg/50 scroll-mt-4">
                 <CardHeader className="py-3 px-4 pb-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">{product.productName || `福利 ${idx + 1}`}</span>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${idx + 1}`}</span>
+                      <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">· 排序{idx + 1}</span>
+                    </div>
                     <div className="flex items-center gap-0.5">
                       <Button
                         size="sm"
