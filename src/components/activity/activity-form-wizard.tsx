@@ -561,7 +561,7 @@ function StepBasicInfo({
               return (order[a.category] ?? 3) - (order[b.category] ?? 3);
             })
             .map((template) => {
-              const isDisabled = template.category !== '会员日';
+              const isDisabled = template.category !== '会员日' || !!isTimeLocked;
               return (
                 <Card
                   key={template.id}
@@ -1553,7 +1553,7 @@ function StepComponentConfig({
                     id={comp.key}
                     sectionId={`comp-section-${comp.key}`}
                     comp={comp}
-                    onRemove={!comp.required && !isComponentLocked ? () => handleRemoveComponent(comp.key) : undefined}
+                    onRemove={!comp.required && (!isComponentLocked || isCopiedComp(comp.key)) ? () => handleRemoveComponent(comp.key) : undefined}
                     isCopied={isCopiedComp(comp.key)}
                     onNameChange={(name) => handleCompNameChange(comp.key, name)}
                     collapsed={collapsedKeys.has(comp.key)}
