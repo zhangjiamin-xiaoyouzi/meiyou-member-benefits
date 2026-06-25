@@ -717,7 +717,7 @@ function SortableNavItem({
           </button>
         )}
         <span className="truncate flex-1">{comp.name}</span>
-        {isCopied && <span className="text-[10px] bg-blue-50 text-blue-500 px-1 py-0 rounded shrink-0">已复制</span>}
+
         {comp.required && <span className="text-[10px] bg-[var(--color-meiyou)]/10 text-[var(--color-meiyou)] px-1 py-0 rounded">必选</span>}
         {isFixedLast && <span className="text-[10px] bg-gray-100 text-gray-500 px-1 py-0 rounded">固定</span>}
         {onCopy && !comp.required && (
