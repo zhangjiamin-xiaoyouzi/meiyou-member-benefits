@@ -73,11 +73,13 @@ export default function ActivitiesPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [idFilter, setIdFilter] = useState('');
+  const [activityKeyFilter, setActivityKeyFilter] = useState('');
   // 实际生效的筛选条件（点击查询后生效）
   const [appliedStatus, setAppliedStatus] = useState<string>('all');
   const [appliedCategory, setAppliedCategory] = useState<string>('all');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
+  const [appliedActivityKey, setAppliedActivityKey] = useState('');
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
   const [previewActivity, setPreviewActivity] = useState<Activity | null>(null);
   const [promoteActivity, setPromoteActivity] = useState<Activity | null>(null);
@@ -210,6 +212,7 @@ export default function ActivitiesPage() {
     setAppliedSearch(searchQuery);
     const ids = idFilter.split(/[,，\s]+/).map((s) => s.trim()).filter(Boolean);
     setAppliedIds(ids);
+    setAppliedActivityKey(activityKeyFilter.trim());
   };
 
   const handleReset = () => {
@@ -217,10 +220,12 @@ export default function ActivitiesPage() {
     setCategoryFilter('all');
     setSearchQuery('');
     setIdFilter('');
+    setActivityKeyFilter('');
     setAppliedStatus('all');
     setAppliedCategory('all');
     setAppliedSearch('');
     setAppliedIds([]);
+    setAppliedActivityKey('');
   };
 
   const filteredActivities = localActivities
@@ -231,7 +236,10 @@ export default function ActivitiesPage() {
         !appliedSearch ||
         activity.name.toLowerCase().includes(appliedSearch.toLowerCase());
       const matchesIds = appliedIds.length === 0 || appliedIds.includes(activity.id);
-      return matchesStatus && matchesCategory && matchesSearch && matchesIds;
+      const matchesActivityKey =
+        !appliedActivityKey ||
+        (activity.activityKey && activity.activityKey.toLowerCase().includes(appliedActivityKey.toLowerCase()));
+      return matchesStatus && matchesCategory && matchesSearch && matchesIds && matchesActivityKey;
     });
 
   return (
@@ -275,6 +283,16 @@ export default function ActivitiesPage() {
                   onKeyDown={(e) => { if (e.key === 'Enter') handleQuery(); }}
                 />
               </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">活动Key</label>
+              <Input
+                placeholder="请输入活动Key"
+                className="w-[200px] border-[var(--color-meiyou-border)] focus:border-meiyou focus:ring-meiyou/20 rounded-lg"
+                value={activityKeyFilter}
+                onChange={(e) => setActivityKeyFilter(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleQuery(); }}
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">活动状态</label>
