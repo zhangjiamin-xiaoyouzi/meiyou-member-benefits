@@ -323,6 +323,7 @@ export default function ActivitiesPage() {
             <TableHeader>
               <TableRow className="bg-meiyou-bg/60 hover:bg-meiyou-bg/60">
                 <TableHead className="w-[220px]">活动ID/名称</TableHead>
+                <TableHead className="w-[140px]">活动Key</TableHead>
                 <TableHead className="w-[100px]">活动分类</TableHead>
                 <TableHead className="w-[120px]">使用模板</TableHead>
                 <TableHead className="w-[200px]">活动时间</TableHead>
@@ -345,6 +346,9 @@ export default function ActivitiesPage() {
                         <p className="text-xs text-[var(--color-meiyou-text-placeholder)] mb-0.5">{activity.id}</p>
                         <p className="font-medium text-[var(--color-meiyou-text-primary)] text-sm">{activity.name}</p>
                       </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-[var(--color-meiyou-text-secondary)] font-mono">
+                      {activity.activityKey || '-'}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`text-xs rounded-xs bg-meiyou/5 text-meiyou border-meiyou/15`}>
@@ -448,7 +452,7 @@ export default function ActivitiesPage() {
               })}
               {filteredActivities.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-[var(--color-meiyou-text-placeholder)]">
+                  <TableCell colSpan={8} className="text-center py-8 text-[var(--color-meiyou-text-placeholder)]">
                     暂无匹配的活动
                   </TableCell>
                 </TableRow>

@@ -302,6 +302,7 @@ export interface ComponentConfigs {
 
 export interface Activity {
   id: string;
+  activityKey?: string;
   name: string;
   category: string;
   templateId: string;

@@ -89,6 +89,7 @@ interface Step1Data {
   templateId: string;
   category: string;
   name: string;
+  activityKey?: string;
   activityStartTime: string;
   activityEndTime: string;
   sellStartTime: string;
@@ -528,6 +529,15 @@ function StepBasicInfo({
           onChange={(e) => onChange({ ...data, name: e.target.value })}
         />
       </div>
+      {/* 活动Key - 编辑时展示，新建时创建后自动生成 */}
+      {isEdit && data.activityKey && (
+        <div>
+          <label className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动Key</label>
+          <div className="mt-1.5 h-9 px-3 flex items-center rounded-lg bg-[var(--color-meiyou-bg)] border border-[var(--color-meiyou-border)] text-sm text-[var(--color-meiyou-text-secondary)] font-mono">
+            {data.activityKey}
+          </div>
+        </div>
+      )}
       {/* 活动分类 - 固定为会员日 */}
       <div>
           <ReqLabel className="text-sm font-medium text-[var(--color-meiyou-text-primary)]">活动分类</ReqLabel>
@@ -3107,6 +3117,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
         templateId: (raw.template_id || raw.templateId || '') as string,
         category: (raw.category || '') as string,
         name: initialData.name,
+        activityKey: (raw.activity_key || raw.activityKey || '') as string,
         activityStartTime: toDatetimeLocalValue(timeConfig.activityStartTime),
         activityEndTime: toDatetimeLocalValue(timeConfig.activityEndTime),
         sellStartTime: toDatetimeLocalValue(timeConfig.sellStartTime),
