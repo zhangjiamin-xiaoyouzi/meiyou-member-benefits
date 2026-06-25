@@ -11,6 +11,7 @@ interface TimeRangeFieldProps {
   onStartChange: (value: string) => void;
   onEndChange: (value: string) => void;
   placeholder?: { start?: string; end?: string };
+  disabled?: boolean;
 }
 
 export function TimeRangeField({
@@ -20,11 +21,16 @@ export function TimeRangeField({
   endValue,
   onStartChange,
   onEndChange,
+  disabled,
 }: TimeRangeFieldProps) {
+  const inputClassName = disabled
+    ? 'flex-1 min-w-0 h-9 rounded-md border border-gray-200 bg-gray-50 px-2.5 text-sm font-mono text-gray-400 cursor-not-allowed'
+    : 'flex-1 min-w-0 h-9 rounded-md border border-gray-200 bg-white px-2.5 text-sm font-mono text-gray-800 placeholder:text-gray-400 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-meiyou transition-colors';
+
   return (
     <div className="space-y-1.5">
       {label && (
-        <Label className="text-sm text-gray-700">
+        <Label className={`text-sm ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
@@ -33,14 +39,16 @@ export function TimeRangeField({
           type="datetime-local"
           value={startValue}
           onChange={(e) => onStartChange(e.target.value)}
-          className="flex-1 min-w-0 h-9 rounded-md border border-gray-200 bg-white px-2.5 text-sm font-mono text-gray-800 placeholder:text-gray-400 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-meiyou transition-colors"
+          className={inputClassName}
+          disabled={disabled}
         />
         <ArrowRight className="h-3.5 w-3.5 text-gray-300 shrink-0" />
         <input
           type="datetime-local"
           value={endValue}
           onChange={(e) => onEndChange(e.target.value)}
-          className="flex-1 min-w-0 h-9 rounded-md border border-gray-200 bg-white px-2.5 text-sm font-mono text-gray-800 placeholder:text-gray-400 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-meiyou transition-colors"
+          className={inputClassName}
+          disabled={disabled}
         />
       </div>
     </div>
@@ -53,6 +61,7 @@ interface SingleTimeFieldProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function SingleTimeField({
@@ -60,11 +69,16 @@ export function SingleTimeField({
   required,
   value,
   onChange,
+  disabled,
 }: SingleTimeFieldProps) {
+  const inputClassName = disabled
+    ? 'w-full h-9 rounded-md border border-gray-200 bg-gray-50 px-3 text-sm font-mono text-gray-400 cursor-not-allowed'
+    : 'w-full h-9 rounded-md border border-gray-200 bg-white px-3 text-sm font-mono text-gray-800 placeholder:text-gray-400 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-meiyou transition-colors';
+
   return (
     <div className="space-y-1.5">
       {label && (
-        <Label className="text-sm text-gray-700">
+        <Label className={`text-sm ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
@@ -72,7 +86,8 @@ export function SingleTimeField({
         type="datetime-local"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-9 rounded-md border border-gray-200 bg-white px-3 text-sm font-mono text-gray-800 placeholder:text-gray-400 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-meiyou transition-colors"
+        className={inputClassName}
+        disabled={disabled}
       />
     </div>
   );

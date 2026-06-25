@@ -487,12 +487,14 @@ function StepBasicInfo({
   isEdit,
   hideComponentsSection,
   templates,
+  isTimeLocked,
 }: {
   data: Step1Data;
   onChange: (data: Step1Data) => void;
   isEdit: boolean;
   hideComponentsSection?: boolean;
   templates: Template[];
+  isTimeLocked?: boolean;
 }) {
   const selectedTemplate = templates.find((t) => t.id === data.templateId);
   const isMemberDay = selectedTemplate?.category === '会员日';
@@ -608,11 +610,12 @@ function StepBasicInfo({
               endValue={data.activityEndTime}
               onStartChange={(val) => onChange({ ...data, activityStartTime: val })}
               onEndChange={(val) => onChange({ ...data, activityEndTime: val })}
+              disabled={isTimeLocked}
             />
           </div>
           {/* 活动预约时间（非必填） */}
           <div>
-            <Label className="text-sm font-medium text-foreground/80">{isMemberDay ? '活动预约时间' : '售卖时间'}</Label>
+            <Label className={`text-sm font-medium ${isTimeLocked ? 'text-gray-400' : 'text-foreground/80'}`}>{isMemberDay ? '活动预约时间' : '售卖时间'}</Label>
             <TimeRangeField
               startValue={data.sellStartTime}
               endValue={data.sellEndTime}
@@ -624,6 +627,7 @@ function StepBasicInfo({
                 if (val && data.activityEndTime && val > data.activityEndTime) return;
                 onChange({ ...data, sellEndTime: val });
               }}
+              disabled={isTimeLocked}
             />
           </div>
           {/* 活动福利领取时间（必填）独占一行 */}
@@ -643,6 +647,7 @@ function StepBasicInfo({
                   if (val && data.bufferEndTime && val > data.bufferEndTime) return;
                   onChange({ ...data, lotteryEndTime: val });
                 }}
+                disabled={isTimeLocked}
               />
             </div>
           {!isMemberDay && (
@@ -895,12 +900,16 @@ function StepComponentConfig({
   components,
   onComponentsChange,
   hasReservationTime = false,
+  isTimeLocked = false,
+  isComponentLocked = false,
 }: {
   data: Step2Data;
   onChange: (data: Step2Data) => void;
   components: TemplateComponent[];
   onComponentsChange: (components: TemplateComponent[]) => void;
   hasReservationTime?: boolean;
+  isTimeLocked?: boolean;
+  isComponentLocked?: boolean;
 }) {
   const configs = data.componentConfigs;
   const [addMenuOpen, setAddMenuOpen] = useState(false);
@@ -1177,6 +1186,7 @@ function StepComponentConfig({
           <FlashSaleConfigCard
             config={configs.flash_sale || { moduleBgImage: '', obtainPopupBgImage: '', obtainPopupHaloEffect: '', obtainPopupTitleEffect: '', sessions: [] }}
             onChange={(val) => updateConfig('flash_sale', val)}
+            isTimeLocked={isTimeLocked}
           />
         );
       case 'exclusive_gift':
@@ -1543,7 +1553,7 @@ function StepComponentConfig({
                     id={comp.key}
                     sectionId={`comp-section-${comp.key}`}
                     comp={comp}
-                    onRemove={!comp.required ? () => handleRemoveComponent(comp.key) : undefined}
+                    onRemove={!comp.required && !isComponentLocked ? () => handleRemoveComponent(comp.key) : undefined}
                     isCopied={isCopiedComp(comp.key)}
                     onNameChange={(name) => handleCompNameChange(comp.key, name)}
                     collapsed={collapsedKeys.has(comp.key)}
@@ -2218,9 +2228,11 @@ function GlobalConfigCard({
 function FlashSaleConfigCard({
   config,
   onChange,
+  isTimeLocked = false,
 }: {
   config: FlashSaleConfig;
   onChange: (config: FlashSaleConfig) => void;
+  isTimeLocked?: boolean;
 }) {
   const sessions = config.sessions || [];
 
@@ -2429,12 +2441,13 @@ function FlashSaleConfigCard({
                   {/* 场次时间配置 */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label className="text-sm font-medium text-foreground/80">预约时间</Label>
+                      <Label className={`text-sm font-medium ${isTimeLocked ? 'text-gray-400' : 'text-foreground/80'}`}>预约时间</Label>
                       <TimeRangeField
                         startValue={session.bookingStartTime}
                         endValue={session.bookingEndTime}
                         onStartChange={(val) => updateSession(session.id, { bookingStartTime: val })}
                         onEndChange={(val) => updateSession(session.id, { bookingEndTime: val })}
+                        disabled={isTimeLocked}
                       />
                     </div>
                     <div>
@@ -2444,6 +2457,7 @@ function FlashSaleConfigCard({
                         endValue={session.rushEndTime}
                         onStartChange={(val) => updateSession(session.id, { rushStartTime: val })}
                         onEndChange={(val) => updateSession(session.id, { rushEndTime: val })}
+                        disabled={isTimeLocked}
                       />
                     </div>
                   </div>
@@ -3082,6 +3096,7 @@ interface ActivityFormWizardProps {
 export default function ActivityFormWizard({ editId, initialData }: ActivityFormWizardProps) {
   const router = useRouter();
   const isEdit = !!editId;
+  const isActiveStatus = initialData?.status === 'active';
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -3424,7 +3439,7 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           {/* 基础信息 */}
           <div>
             <h3 className="text-base font-semibold text-[var(--color-meiyou-text-primary)] mb-4 pb-2 border-b border-[var(--color-meiyou-divider)]">基础信息</h3>
-            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} hideComponentsSection templates={templates} />
+            <StepBasicInfo data={step1Data} onChange={setStep1Data} isEdit={isEdit} hideComponentsSection templates={templates} isTimeLocked={isActiveStatus} />
           </div>
 
           {/* 活动组件 */}
@@ -3436,6 +3451,8 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
               components={step1Data.components}
               onComponentsChange={(comps) => setStep1Data((prev) => ({ ...prev, components: comps }))}
               hasReservationTime={!!(step1Data.sellStartTime || step1Data.sellEndTime)}
+              isTimeLocked={isActiveStatus}
+              isComponentLocked={isActiveStatus}
             />
           </div>
         </CardContent>
