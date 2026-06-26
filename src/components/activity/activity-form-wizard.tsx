@@ -2228,6 +2228,17 @@ function FlashSaleConfigCard({
 }) {
   const sessions = config.sessions || [];
 
+  // ============ 福利折叠状态 ============
+  const [collapsedProductIds, setCollapsedProductIds] = useState<Set<string>>(new Set());
+  const toggleProductCollapse = (productId: string) => {
+    setCollapsedProductIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(productId)) next.delete(productId);
+      else next.add(productId);
+      return next;
+    });
+  };
+
   // ============ 场次操作 ============
   const addSession = () => {
     const newSession: FlashSaleSession = {
@@ -2498,72 +2509,25 @@ function FlashSaleConfigCard({
                           <CardHeader className="py-2 px-3 pb-1">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1 min-w-0">
+                                {/* 排序操作 - 最左侧 */}
+                                <div className="flex items-center gap-0.5 shrink-0">
+                                  <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === 0} title="置顶" onClick={() => { const u = [...session.products]; const [it] = u.splice(pIdx, 1); u.unshift(it); updateSession(session.id, { products: u }); }}><ArrowUpToLine className="h-3 w-3" /></Button>
+                                  <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === 0} title="上移" onClick={() => moveProductInSession(session.id, pIdx, pIdx - 1)}><ChevronUp className="h-3 w-3" /></Button>
+                                  <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === session.products.length - 1} title="下移" onClick={() => moveProductInSession(session.id, pIdx, pIdx + 1)}><ChevronDown className="h-3 w-3" /></Button>
+                                  <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === session.products.length - 1} title="置底" onClick={() => { const u = [...session.products]; const [it] = u.splice(pIdx, 1); u.push(it); updateSession(session.id, { products: u }); }}><ArrowDownToLine className="h-3 w-3" /></Button>
+                                  <span className="text-xs font-mono text-[var(--color-meiyou-text-placeholder)] w-4 text-center">{product.sortOrder ?? (pIdx + 1)}</span>
+                                </div>
+                                <button type="button" className="shrink-0" onClick={() => toggleProductCollapse(product.id)}>
+                                  {collapsedProductIds.has(product.id) ? <ChevronRight className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" /> : <ChevronDown className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" />}
+                                </button>
                                 <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${pIdx + 1}`}</span>
                               </div>
-                              <div className="flex items-center gap-0.5">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                                  disabled={pIdx === 0}
-                                  title="置顶"
-                                  onClick={() => {
-                                    const updated = [...session.products];
-                                    const [item] = updated.splice(pIdx, 1);
-                                    updated.unshift(item);
-                                    updateSession(session.id, { products: updated });
-                                  }}
-                                >
-                                  <ArrowUpToLine className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                                  disabled={pIdx === 0}
-                                  title="上移"
-                                  onClick={() => moveProductInSession(session.id, pIdx, pIdx - 1)}
-                                >
-                                  <ChevronUp className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                                  disabled={pIdx === session.products.length - 1}
-                                  title="下移"
-                                  onClick={() => moveProductInSession(session.id, pIdx, pIdx + 1)}
-                                >
-                                  <ChevronDown className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30"
-                                  disabled={pIdx === session.products.length - 1}
-                                  title="置底"
-                                  onClick={() => {
-                                    const updated = [...session.products];
-                                    const [item] = updated.splice(pIdx, 1);
-                                    updated.push(item);
-                                    updateSession(session.id, { products: updated });
-                                  }}
-                                >
-                                  <ArrowDownToLine className="h-3 w-3" />
-                                </Button>
-                                <div className="w-px h-3 bg-[var(--color-meiyou-divider)] mx-0.5" />
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-5 w-5 p-0"
-                                  onClick={() => removeProductFromSession(session.id, product.id)}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
+                              <div className="flex items-center gap-0.5 shrink-0">
+                                <Button size="sm" variant="ghost" className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-5 w-5 p-0" onClick={() => removeProductFromSession(session.id, product.id)}><Trash2 className="h-3 w-3" /></Button>
                               </div>
                             </div>
                           </CardHeader>
-                          <CardContent className="px-3 pb-3 space-y-3">
+                          {!collapsedProductIds.has(product.id) && <CardContent className="px-3 pb-3 space-y-3">
                             {/* 福利基础信息 */}
                             <div className="grid grid-cols-2 gap-3">
                               <div>
@@ -2590,19 +2554,6 @@ function FlashSaleConfigCard({
                                   onChange={(e) => updateProductInSession(session.id, product.id, { stock: e.target.value })}
                                 />
                               </div>
-                            </div>
-                            {/* 排序 */}
-                            <div>
-                              <ReqLabel>排序</ReqLabel>
-                              <Input
-                                className={`mt-1 h-8 text-sm${session.products.some((p, i) => i !== pIdx && (p.sortOrder ?? (i + 1)) === (product.sortOrder ?? (pIdx + 1))) ? ' border-[var(--color-meiyou-error)] focus:ring-[var(--color-meiyou-error)]' : ''}`}
-                                type="number"
-                                value={product.sortOrder ?? (pIdx + 1)}
-                                onChange={(e) => updateProductInSession(session.id, product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                              />
-                              {session.products.some((p, i) => i !== pIdx && (p.sortOrder ?? (i + 1)) === (product.sortOrder ?? (pIdx + 1))) && (
-                                <p className="text-[11px] text-[var(--color-meiyou-error)] mt-1">排序值不能重复</p>
-                              )}
                             </div>
 
                             {/* 福利图片 */}
@@ -2649,7 +2600,7 @@ function FlashSaleConfigCard({
                               rules={product.audienceRules}
                               onRulesChange={(rules) => updateProductInSession(session.id, product.id, { audienceRules: rules })}
                             />
-                          </CardContent>
+                          </CardContent>}
                         </Card>
                       ))}
                     </div>
