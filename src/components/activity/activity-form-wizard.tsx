@@ -2828,14 +2828,21 @@ function BenefitConfigCard({
     });
   };
 
-  const moveItem = (itemId: string, direction: 'up' | 'down') => {
+  const moveItem = (itemId: string, direction: 'up' | 'down' | 'top' | 'bottom') => {
     const idx = config.products.findIndex((p) => p.id === itemId);
     if (idx < 0) return;
     const newProducts = [...config.products];
+    const [item] = newProducts.splice(idx, 1);
     if (direction === 'up' && idx > 0) {
-      [newProducts[idx - 1], newProducts[idx]] = [newProducts[idx], newProducts[idx - 1]];
-    } else if (direction === 'down' && idx < newProducts.length - 1) {
-      [newProducts[idx], newProducts[idx + 1]] = [newProducts[idx + 1], newProducts[idx]];
+      newProducts.splice(idx - 1, 0, item);
+    } else if (direction === 'down' && idx < config.products.length - 1) {
+      newProducts.splice(idx + 1, 0, item);
+    } else if (direction === 'top') {
+      newProducts.unshift(item);
+    } else if (direction === 'bottom') {
+      newProducts.push(item);
+    } else {
+      return;
     }
     onChange({ ...config, products: newProducts.map((p, i) => ({ ...p, sortOrder: i + 1 })) });
   };
@@ -2884,26 +2891,13 @@ function BenefitConfigCard({
               >
                 {/* 标题行：缩略图 + 摘要信息 + 折叠按钮（始终可见） */}
                 <div className="flex items-center gap-3 p-3">
-                  {/* 排序控制 */}
-                  <div className="flex flex-col gap-0.5">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === 0}
-                      onClick={() => moveItem(product.id, 'up')}
-                    >
-                      <ChevronLeft className="h-3 w-3 rotate-90" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === config.products.length - 1}
-                      onClick={() => moveItem(product.id, 'down')}
-                    >
-                      <ChevronLeft className="h-3 w-3 -rotate-90" />
-                    </Button>
+                  {/* 排序值 + 排序控制 */}
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-xs font-mono text-[var(--color-meiyou-text-placeholder)] w-4 text-center shrink-0">{idx + 1}</span>
+                    <Button size="sm" variant="ghost" className="h-5 w-5 p-0" disabled={idx === 0} onClick={() => moveItem(product.id, 'top')}><ArrowUpToLine className="h-3 w-3" /></Button>
+                    <Button size="sm" variant="ghost" className="h-5 w-5 p-0" disabled={idx === 0} onClick={() => moveItem(product.id, 'up')}><ChevronLeft className="h-3 w-3 rotate-90" /></Button>
+                    <Button size="sm" variant="ghost" className="h-5 w-5 p-0" disabled={idx === config.products.length - 1} onClick={() => moveItem(product.id, 'down')}><ChevronLeft className="h-3 w-3 -rotate-90" /></Button>
+                    <Button size="sm" variant="ghost" className="h-5 w-5 p-0" disabled={idx === config.products.length - 1} onClick={() => moveItem(product.id, 'bottom')}><ArrowDownToLine className="h-3 w-3" /></Button>
                   </div>
 
                   {/* 缩略图 */}
@@ -2957,8 +2951,8 @@ function BenefitConfigCard({
                 {!isCollapsed && (
                   <div className="px-3 pb-3 pt-1 border-t border-[var(--color-meiyou-border)]">
                     <div className="space-y-3 pt-3">
-                      {/* 展示方式 + 排序 + 福利ID */}
-                      <div className="grid grid-cols-3 gap-3">
+                      {/* 展示方式 + 福利ID */}
+                      <div className="grid grid-cols-2 gap-3">
                         {/* 展示方式 - 可视化布局选择器 */}
                         <div>
                           <ReqLabel>展示方式</ReqLabel>
@@ -3005,16 +2999,6 @@ function BenefitConfigCard({
                               </button>
                             ))}
                           </div>
-                        </div>
-                        {/* 排序 */}
-                        <div>
-                          <ReqLabel>排序</ReqLabel>
-                          <Input
-                            className="mt-1 h-8 text-sm"
-                            type="number"
-                            value={product.sortOrder}
-                            onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                          />
                         </div>
                         {/* 福利ID */}
                         <div>
