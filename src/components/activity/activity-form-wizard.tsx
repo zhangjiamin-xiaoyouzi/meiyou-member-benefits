@@ -1788,11 +1788,6 @@ function WelfareSelect({
                     }}
                   >
                     <span className="flex-1 truncate">{item.id}-{item.name}</span>
-                    {item.stock !== undefined && (
-                      <span className={`text-xs font-mono shrink-0 ${item.stock === 0 ? 'text-[#ff4d4d]' : 'text-[rgba(0,0,0,0.35)]'}`}>
-                        库存{item.stock.toLocaleString()}
-                      </span>
-                    )}
                     {value === item.id && <Check className="h-3.5 w-3.5 shrink-0 text-[var(--color-meiyou-primary)]" />}
                   </div>
                 ))
@@ -1800,11 +1795,6 @@ function WelfareSelect({
             </div>
           </div>
         </>
-      )}
-      {selectedItem && selectedItem.stock !== undefined && (
-        <p className={`mt-1 text-xs font-mono ${selectedItem.stock === 0 ? 'text-[#ff4d4d]' : 'text-[rgba(0,0,0,0.45)]'}`}>
-          可配库存: {selectedItem.stock.toLocaleString()} 件{selectedItem.stock === 0 ? '（该福利不可用）' : ''}
-        </p>
       )}
     </div>
   );
@@ -2740,15 +2730,6 @@ function FreePurchaseConfigCard({
                   value={cat.path}
                   onChange={(e) => updateCategory(index, 'path', e.target.value)}
                 />
-                <label className="flex items-center gap-1 shrink-0 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={cat.isDefault}
-                    onChange={(e) => updateCategory(index, 'isDefault', e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-gray-300 accent-[#ff4d88]"
-                  />
-                  <span className="text-xs text-[rgba(0,0,0,0.6)] whitespace-nowrap">默认展示</span>
-                </label>
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
@@ -2781,6 +2762,21 @@ function FreePurchaseConfigCard({
             ))}
           </div>
         )}
+        <div>
+          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">前端最多展示条数</Label>
+          <Input
+            type="number"
+            min={1}
+            className="h-8 text-sm mt-1 w-32"
+            placeholder="不限"
+            value={config.maxDisplayCount ?? ''}
+            onChange={(e) => {
+              const v = e.target.value;
+              onChange({ ...config, maxDisplayCount: v === '' ? undefined : Number(v) });
+            }}
+          />
+          <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-1">配置每个类目路径下前端展示的商品数量上限，不填则不限</p>
+        </div>
       </div>
   );
 }

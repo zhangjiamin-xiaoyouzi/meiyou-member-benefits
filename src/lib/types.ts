@@ -262,6 +262,8 @@ export interface FreePurchaseConfig {
   /** 步骤图 */
   stepImage: string;
   categories: CategoryPathItem[];
+  /** 前端最多展示条数 */
+  maxDisplayCount?: number;
   /** @deprecated 使用 categories 替代 */
   categoryIds?: string[];
 }
