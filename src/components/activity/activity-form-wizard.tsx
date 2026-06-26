@@ -2509,20 +2509,21 @@ function FlashSaleConfigCard({
                           <CardHeader className="py-2 px-3 pb-1">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1 min-w-0">
-                                {/* 排序操作 - 最左侧 */}
+                                {/* 排序数值 - 最左侧 */}
+                                <span className="text-xs font-mono text-[var(--color-meiyou-text-placeholder)] w-4 text-center shrink-0">{product.sortOrder ?? (pIdx + 1)}</span>
+                                {/* 排序操作 */}
                                 <div className="flex items-center gap-0.5 shrink-0">
                                   <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === 0} title="置顶" onClick={() => { const u = [...session.products]; const [it] = u.splice(pIdx, 1); u.unshift(it); updateSession(session.id, { products: u }); }}><ArrowUpToLine className="h-3 w-3" /></Button>
                                   <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === 0} title="上移" onClick={() => moveProductInSession(session.id, pIdx, pIdx - 1)}><ChevronUp className="h-3 w-3" /></Button>
                                   <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === session.products.length - 1} title="下移" onClick={() => moveProductInSession(session.id, pIdx, pIdx + 1)}><ChevronDown className="h-3 w-3" /></Button>
                                   <Button size="sm" variant="ghost" className="h-5 w-5 p-0 text-[var(--color-meiyou-text-placeholder)] hover:text-meiyou disabled:opacity-30" disabled={pIdx === session.products.length - 1} title="置底" onClick={() => { const u = [...session.products]; const [it] = u.splice(pIdx, 1); u.push(it); updateSession(session.id, { products: u }); }}><ArrowDownToLine className="h-3 w-3" /></Button>
-                                  <span className="text-xs font-mono text-[var(--color-meiyou-text-placeholder)] w-4 text-center">{product.sortOrder ?? (pIdx + 1)}</span>
                                 </div>
-                                <button type="button" className="shrink-0" onClick={() => toggleProductCollapse(product.id)}>
-                                  {collapsedProductIds.has(product.id) ? <ChevronRight className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" /> : <ChevronDown className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" />}
-                                </button>
                                 <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${pIdx + 1}`}</span>
                               </div>
                               <div className="flex items-center gap-0.5 shrink-0">
+                                <button type="button" className="shrink-0" onClick={() => toggleProductCollapse(product.id)}>
+                                  {collapsedProductIds.has(product.id) ? <ChevronRight className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" /> : <ChevronDown className="h-3.5 w-3.5 text-[var(--color-meiyou-text-placeholder)]" />}
+                                </button>
                                 <Button size="sm" variant="ghost" className="text-[var(--color-meiyou-text-placeholder)] hover:text-red-500 h-5 w-5 p-0" onClick={() => removeProductFromSession(session.id, product.id)}><Trash2 className="h-3 w-3" /></Button>
                               </div>
                             </div>
