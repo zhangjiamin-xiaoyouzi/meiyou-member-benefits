@@ -1688,10 +1688,12 @@ interface WelfareItem {
 
 function WelfareSelect({
   value,
+  name,
   onChange,
   onSelect,
 }: {
   value: string;
+  name?: string;
   onChange: (val: string) => void;
   onSelect?: (item: WelfareItem) => void;
 }) {
@@ -1730,7 +1732,7 @@ function WelfareSelect({
         {selectedItem ? (
           <span className="flex-1 truncate">{selectedItem.id}-{selectedItem.name}</span>
         ) : value ? (
-          <span className="flex-1 truncate">{value}</span>
+          <span className="flex-1 truncate">{value}{name ? `-${name}` : ''}</span>
         ) : (
           <span className="flex-1 text-[var(--color-meiyou-text-placeholder)]">选择福利</span>
         )}
@@ -2568,6 +2570,7 @@ function FlashSaleConfigCard({
                                 <ReqLabel>福利ID</ReqLabel>
                                 <WelfareSelect
                                   value={product.productId}
+                                  name={product.productName}
                                   onChange={(val) => updateProductInSession(session.id, product.id, { productId: val, productName: val ? product.productName : '' })}
                                   onSelect={(item) => {
                                     if (item.image) {
@@ -3005,6 +3008,7 @@ function BenefitConfigCard({
                           <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">福利ID</Label>
                           <WelfareSelect
                             value={product.productId}
+                            name={product.productName}
                             onChange={(val) => updateItem(product.id, { productId: val, productName: val ? product.productName : '' })}
                             onSelect={(item) => {
                               if (item.image && !product.benefitImage) {
