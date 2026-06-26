@@ -2763,19 +2763,17 @@ function FreePurchaseConfigCard({
           </div>
         )}
         <div>
-          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">前端最多展示条数</Label>
+          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">前端最多展示条数 <span className="text-[var(--color-meiyou-error)]">*</span></Label>
           <Input
             type="number"
             min={1}
             className="h-8 text-sm mt-1 w-32"
-            placeholder="不限"
-            value={config.maxDisplayCount ?? ''}
+            value={config.maxDisplayCount ?? 3}
             onChange={(e) => {
               const v = e.target.value;
-              onChange({ ...config, maxDisplayCount: v === '' ? undefined : Number(v) });
+              onChange({ ...config, maxDisplayCount: v === '' ? 3 : Number(v) });
             }}
           />
-          <p className="text-[11px] text-[var(--color-meiyou-text-placeholder)] mt-1">配置每个类目路径下前端展示的商品数量上限，不填则不限</p>
         </div>
       </div>
   );
