@@ -1803,7 +1803,7 @@ function WelfareSelect({
 // ==================== 吸底按钮配置字段 ====================
 
 function ReqLabel({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <Label className={className ?? "text-xs text-[var(--color-meiyou-text-secondary)]"}><span className="text-red-500 mr-0.5">*</span>{children}</Label>;
+  return <Label className={className ?? "text-xs text-[var(--color-meiyou-text-secondary)] flex items-center gap-0"}><span className="text-red-500 mr-0.5">*</span>{children}</Label>;
 }
 
 function GlobalConfigCard({
