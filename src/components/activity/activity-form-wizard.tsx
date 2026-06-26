@@ -3401,13 +3401,15 @@ export default function ActivityFormWizard({ editId, initialData }: ActivityForm
           <Button variant="outline" className="border-[var(--color-meiyou-divider)] h-9 px-6" onClick={() => window.close()}>
             取消
           </Button>
-          <Button
-            variant="outline"
-            className="border-[var(--color-meiyou-divider)] h-9 px-6"
-            onClick={handleSaveDraft}
-          >
-            保存草稿
-          </Button>
+          {(!editId || initialData?.status === 'draft') && (
+            <Button
+              variant="outline"
+              className="border-[var(--color-meiyou-divider)] h-9 px-6"
+              onClick={handleSaveDraft}
+            >
+              保存草稿
+            </Button>
+          )}
           <Button
             className="bg-meiyou hover:bg-meiyou-hover text-white h-9 px-8 rounded-lg"
             onClick={handlePublish}
