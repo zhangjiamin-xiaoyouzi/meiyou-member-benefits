@@ -2590,7 +2590,7 @@ function FlashSaleConfigCard({
                             </div>
                             {/* 排序 */}
                             <div>
-                              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序 <span className="text-[var(--color-meiyou-error)]">*</span></Label>
+                              <ReqLabel>排序</ReqLabel>
                               <Input
                                 className={`mt-1 h-8 text-sm${session.products.some((p, i) => i !== pIdx && (p.sortOrder ?? (i + 1)) === (product.sortOrder ?? (pIdx + 1))) ? ' border-[var(--color-meiyou-error)] focus:ring-[var(--color-meiyou-error)]' : ''}`}
                                 type="number"
@@ -2766,7 +2766,7 @@ function FreePurchaseConfigCard({
           </div>
         )}
         <div>
-          <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">前端最多展示条数 <span className="text-[var(--color-meiyou-error)]">*</span></Label>
+          <ReqLabel>前端最多展示条数</ReqLabel>
           <Input
             type="number"
             min={1}
