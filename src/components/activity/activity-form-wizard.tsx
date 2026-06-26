@@ -2766,7 +2766,7 @@ function FreePurchaseConfigCard({
           </div>
         )}
         <div>
-          <ReqLabel>前端最多展示条数</ReqLabel>
+          <ReqLabel>前端展示商品数量</ReqLabel>
           <Input
             type="number"
             min={1}
