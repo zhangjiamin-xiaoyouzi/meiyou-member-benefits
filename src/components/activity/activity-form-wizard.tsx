@@ -2590,13 +2590,16 @@ function FlashSaleConfigCard({
                             </div>
                             {/* 排序 */}
                             <div>
-                              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
+                              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序 <span className="text-[var(--color-meiyou-error)]">*</span></Label>
                               <Input
-                                className="mt-1 h-8 text-sm"
+                                className={`mt-1 h-8 text-sm${session.products.some((p, i) => i !== pIdx && (p.sortOrder ?? (i + 1)) === (product.sortOrder ?? (pIdx + 1))) ? ' border-[var(--color-meiyou-error)] focus:ring-[var(--color-meiyou-error)]' : ''}`}
                                 type="number"
                                 value={product.sortOrder ?? (pIdx + 1)}
                                 onChange={(e) => updateProductInSession(session.id, product.id, { sortOrder: parseInt(e.target.value) || 0 })}
                               />
+                              {session.products.some((p, i) => i !== pIdx && (p.sortOrder ?? (i + 1)) === (product.sortOrder ?? (pIdx + 1))) && (
+                                <p className="text-[11px] text-[var(--color-meiyou-error)] mt-1">排序值不能重复</p>
+                              )}
                             </div>
 
                             {/* 福利图片 */}
