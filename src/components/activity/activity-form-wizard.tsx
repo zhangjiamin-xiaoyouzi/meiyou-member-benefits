@@ -2496,6 +2496,7 @@ function FlashSaleConfigCard({
                           <CardHeader className="py-2 px-3 pb-1">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1 min-w-0">
+                                <span className="text-xs text-[var(--color-meiyou-text-placeholder)] shrink-0">{pIdx + 1}</span>
                                 <span className="text-sm font-medium text-[var(--color-meiyou-text-primary)] truncate">{product.productName || `福利 ${pIdx + 1}`}</span>
                               </div>
                               <div className="flex items-center gap-0.5">
@@ -2587,16 +2588,6 @@ function FlashSaleConfigCard({
                                   onChange={(e) => updateProductInSession(session.id, product.id, { stock: e.target.value })}
                                 />
                               </div>
-                            </div>
-                            {/* 排序 */}
-                            <div>
-                              <Label className="text-xs text-[var(--color-meiyou-text-secondary)]">排序</Label>
-                              <Input
-                                className="mt-1 h-8 text-sm"
-                                type="number"
-                                value={product.sortOrder ?? (pIdx + 1)}
-                                onChange={(e) => updateProductInSession(session.id, product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                              />
                             </div>
 
                             {/* 福利图片 */}
@@ -2881,26 +2872,29 @@ function BenefitConfigCard({
               >
                 {/* 标题行：缩略图 + 摘要信息 + 折叠按钮（始终可见） */}
                 <div className="flex items-center gap-3 p-3">
-                  {/* 排序控制 */}
-                  <div className="flex flex-col gap-0.5">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === 0}
-                      onClick={() => moveItem(product.id, 'up')}
-                    >
-                      <ChevronLeft className="h-3 w-3 rotate-90" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 p-0"
-                      disabled={idx === config.products.length - 1}
-                      onClick={() => moveItem(product.id, 'down')}
-                    >
-                      <ChevronLeft className="h-3 w-3 -rotate-90" />
-                    </Button>
+                  {/* 排序值展示 + 上下移动 */}
+                  <div className="flex flex-col items-center gap-0.5 shrink-0">
+                    <span className="text-xs font-medium text-[var(--color-meiyou-text-secondary)]">{idx + 1}</span>
+                    <div className="flex gap-0.5">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-4 w-4 p-0"
+                        disabled={idx === 0}
+                        onClick={() => moveItem(product.id, 'up')}
+                      >
+                        <ChevronLeft className="h-3 w-3 rotate-90" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-4 w-4 p-0"
+                        disabled={idx === config.products.length - 1}
+                        onClick={() => moveItem(product.id, 'down')}
+                      >
+                        <ChevronLeft className="h-3 w-3 -rotate-90" />
+                      </Button>
+                    </div>
                   </div>
 
                   {/* 缩略图 */}
@@ -2954,8 +2948,8 @@ function BenefitConfigCard({
                 {!isCollapsed && (
                   <div className="px-3 pb-3 pt-1 border-t border-[var(--color-meiyou-border)]">
                     <div className="space-y-3 pt-3">
-                      {/* 展示方式 + 排序 + 福利ID */}
-                      <div className="grid grid-cols-3 gap-3">
+                      {/* 展示方式 + 福利ID */}
+                      <div className="grid grid-cols-2 gap-3">
                         {/* 展示方式 - 可视化布局选择器 */}
                         <div>
                           <ReqLabel>展示方式</ReqLabel>
@@ -3002,16 +2996,6 @@ function BenefitConfigCard({
                               </button>
                             ))}
                           </div>
-                        </div>
-                        {/* 排序 */}
-                        <div>
-                          <ReqLabel>排序</ReqLabel>
-                          <Input
-                            className="mt-1 h-8 text-sm"
-                            type="number"
-                            value={product.sortOrder}
-                            onChange={(e) => updateItem(product.id, { sortOrder: parseInt(e.target.value) || 0 })}
-                          />
                         </div>
                         {/* 福利ID */}
                         <div>
