@@ -2465,23 +2465,6 @@ function FlashSaleConfigCard({
                     </div>
                   </div>
 
-                  {/* 福利预约push副标题 - 仅配置了预约时间时展示 */}
-                  {(session.bookingStartTime || session.bookingEndTime) && (
-                    <div>
-                      <ReqLabel>福利预约push副标题</ReqLabel>
-                      <Input
-                        className="mt-1 h-8 text-sm"
-                        placeholder="请输入福利预约push副标题"
-                        value={session.products.length > 0 ? (session.products[0].bookingPushText || '') : ''}
-                        onChange={(e) => {
-                          // push副标题同步到该场次所有福利
-                          const updatedProducts = session.products.map((p) => ({ ...p, bookingPushText: e.target.value }));
-                          updateSession(session.id, { products: updatedProducts });
-                        }}
-                      />
-                    </div>
-                  )}
-
                   <Separator />
 
                   {/* 场次内福利列表 */}
@@ -2594,6 +2577,19 @@ function FlashSaleConfigCard({
                                 onChange={(e) => updateProductInSession(session.id, product.id, { jumpLink: e.target.value })}
                               />
                             </div>
+
+                            {/* 福利预约push副标题 */}
+                            {(session.bookingStartTime || session.bookingEndTime) && (
+                              <div>
+                                <Label className="text-sm">福利预约push副标题</Label>
+                                <Input
+                                  className="mt-1 h-8 text-sm"
+                                  placeholder="请输入福利预约push副标题"
+                                  value={product.bookingPushText || ''}
+                                  onChange={(e) => updateProductInSession(session.id, product.id, { bookingPushText: e.target.value })}
+                                />
+                              </div>
+                            )}
 
                             {/* 用户条件 */}
                             <Separator />
