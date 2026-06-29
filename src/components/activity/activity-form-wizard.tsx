@@ -2581,7 +2581,7 @@ function FlashSaleConfigCard({
                             {/* 福利预约push副标题 */}
                             {(session.bookingStartTime || session.bookingEndTime) && (
                               <div>
-                                <Label className="text-sm">福利预约push副标题</Label>
+                                <ReqLabel className="text-sm">福利预约push副标题</ReqLabel>
                                 <Input
                                   className="mt-1 h-8 text-sm"
                                   placeholder="请输入福利预约push副标题"
