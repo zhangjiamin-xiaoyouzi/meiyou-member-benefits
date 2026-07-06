@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>授权弹窗 — 四家竞品可视化对比</title>
+<style>
+  :root {
+    --wx: #07C160;
+    --alipay: #1677FF;
+    --wuba: #FF6B00;
+    --dianping: #FFC300;
+    --meiyou: #FF4D88;
+    --card-bg: #FFF;
+    --text-1: #1D2129;
+    --text-2: #86909C;
+    --border: #E5E6EB;
+    --shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    background: #F0F0F5;
+    padding: 40px 20px;
+  }
+  h1 { text-align:center; font-size:24px; color:var(--text-1); margin-bottom:8px; }
+  .subtitle { text-align:center; color:var(--text-2); font-size:14px; margin-bottom:40px; }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    max-width: 1500px;
+    margin: 0 auto 48px;
+  }
+  @media (max-width: 1200px) {
+    .comparison-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .comp-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .comp-header {
+    padding: 14px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .comp-header.wx { background: var(--wx); }
+  .comp-header.alipay { background: var(--alipay); }
+  .comp-header.wuba { background: var(--wuba); }
+  .comp-header.dianping { background: var(--dianping); }
+  .comp-header .badge {
+    font-size: 11px;
+    background: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 400;
+  }
+  .comp-body { padding: 16px; }
+
+  /* Phone screen inside card */
+  .mini-phone {
+    width: 220px;
+    margin: 0 auto 12px;
+    background: #F5F5F5;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1.5px solid #DDD;
+  }
+  .mini-phone-notch {
+    height: 18px;
+    background: #CCC;
+    border-radius: 0 0 10px 10px;
+    width: 80px;
+    margin: 0 auto 4px;
+  }
+  .mini-phone-screen {
+    background: #FFF;
+    padding: 16px 12px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Popup styles */
+  .mini-popup {
+    width: 180px;
+    background: #FFF;
+    border-radius: 12px;
+    padding: 16px 12px 12px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  }
+  .mini-popup-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .mini-popup-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .mini-popup-desc {
+    font-size: 10px;
+    color: var(--text-2);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .mini-popup-info {
+    background: #F7F8FA;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 9px;
+    color: var(--text-2);
+    text-align: left;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .mini-check-row {
+    font-size: 9px;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+    justify-content: center;
+  }
+  .mini-check {
+    width: 14px; height: 14px;
+    border: 1px solid #CCC;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .mini-btns {
+    display: flex;
+    gap: 6px;
+  }
+  .mini-btn {
+    flex:1; height:26px; border-radius:13px;
+    font-size:10px; font-weight:500; border:none; cursor:default;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mini-btn.sec { background:#F2F3F5; color:#86909C; }
+  .mini-btn.pri { color:#FFF; }
+
+  /* Feature list */
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 4px;
+  }
+  .feature-list li {
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.8;
+    padding-left: 14px;
+    position: relative;
+  }
+  .feature-list li::before {
+    content: "";
+    position: absolute; left:0; top:7px;
+    width:5px; height:5px; border-radius:50%;
+  }
+  .wx-list li::before { background: var(--wx); }
+  .alipay-list li::before { background: var(--alipay); }
+  .wuba-list li::before { background: var(--wuba); }
+  .dianping-list li::before { background: var(--dianping); }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag.best { background:#E8FFF0; color:#00B578; }
+  .tag.good { background:#FFF7E6; color:#FF8F1F; }
+
+  /* Summary section */
+  .summary-section {
+    max-width: 1500px;
+    margin: 0 auto;
+    background: #FFF;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .summary-section h2 { font-size:18px; color:var(--text-1); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .summary-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #F7F8FA;
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .summary-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #F0F0F0;
+    color: var(--text-1);
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table .meiyou-row {
+    background: #FFF0F5;
+    font-weight: 600;
+  }
+
+  .how-to-find {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #FFFBE6;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #8C6E00;
+    line-height: 1.8;
+  }
+  .how-to-find strong { color: #5C4600; }
+</style>
+</head>
+<body>
+
+<h1>授权弹窗 — 四家竞品可视化对比</h1>
+<p class="subtitle">微信 · 支付宝 · 58同城 · 大众点评 ｜ 横滑对比 + 美柚设计定位</p>
+
+<div class="comparison-grid">
+
+  <!-- ====== 微信 ====== -->
+  <div class="comp-card">
+    <div class="comp-header wx">
+      微信小程序 
+    </div>
+    <div class="comp-body">
+      <div class="mini-phone">
+        <div class="mini-phone-notch"></div>
+        <div class="mini-phone-screen">
+          <div class="mini-popup" style="border:1.5px solid #07C160;">
+            <div class="mini-popup-icon" style="background:#E8FFF0;">📱</div>
+            <div class="mini-popup-title">京东购物 申请获取<br>你的手机号码</div>
+            <div class="mini-popup-desc">用于登录、订单通知等服务</div>
+            <div class="mini-btns">
+              <div class="mini-btn sec">不允许</div>
+              <div class="mini-btn pri" style="background:#07C160;">允许</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="feature-list wx-list">
+        <li>微信原生弹窗，不可自定义UI</li>
+        <li>信任度最高（微信背书）</li>
+        <li>无勾选框，不需要二次确认</li>
+        <li><span class="tag best">优点</span>合规风险最低</li>
+        <li><span class="tag good">不足</span>无法说明"接收方是谁"</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====== 支付宝 ====== -->
+  <div class="comp-card">
+    <div class="comp-header alipay">
+      支付宝小程序 
+    </div>
+    <div class="comp-body">
+      <div class="mini-phone">
+        <div class="mini-phone-notch"></div>
+        <div class="mini-phone-screen">
+          <div class="mini-popup" style="border:1.5px solid #1677FF;">
+            <div class="mini-popup-icon" style="background:#E6F0FF;">📱</div>
+            <div class="mini-popup-title">哈啰 申请获取你的<br>手机号码</div>
+            <div class="mini-popup-desc">用于登录、接收订单通知</div>
+            <div style="font-size:9px;color:#86909C;margin-bottom:8px;">
+              ○ 仅本次允许<br>○ 始终允许
+            </div>
+            <div class="mini-btns">
+              <div class="mini-btn sec">拒绝</div>
+              <div class="mini-btn pri" style="background:#1677FF;">同意</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="feature-list alipay-list">
+        <li>支付宝原生，不可自定义UI</li>
+        <li>支持"仅本次/始终允许"</li>
+        <li>授权管理页可查看撤回</li>
+        <li><span class="tag best">优点</span>授权时长可选</li>
+        <li><span class="tag good">不足</span>同样无法说明接收方</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====== 58同城 ====== -->
+  <div class="comp-card">
+    <div class="comp-header wuba">
+      58同城 
+    </div>
+    <div class="comp-body">
+      <div class="mini-phone">
+        <div class="mini-phone-notch"></div>
+        <div class="mini-phone-screen">
+          <div class="mini-popup" style="border:1.5px solid #FF6B00;">
+            <div class="mini-popup-icon" style="background:#FFF0E6;">🏠</div>
+            <div class="mini-popup-title">授权 王某某经纪人<br>获取您的手机号</div>
+            <div class="mini-popup-desc">该经纪人将电话联系您，为您提供房源咨询服务</div>
+            <div class="mini-btns">
+              <div class="mini-btn sec">取消</div>
+              <div class="mini-btn pri" style="background:#FF6B00;">确认授权</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="feature-list wuba-list">
+        <li>一对一授权（具体到某经纪人）</li>
+        <li>授权后经纪人回拨</li>
+        <li>SLA：通常30分钟内联系</li>
+        <li><span class="tag best">优点</span>授权对象明确</li>
+        <li><span class="tag good">不足</span>无勾选框合规风险</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====== 大众点评 ====== -->
+  <div class="comp-card">
+    <div class="comp-header dianping" style="color:#333;">
+      大众点评 
+    </div>
+    <div class="comp-body">
+      <div class="mini-phone">
+        <div class="mini-phone-notch"></div>
+        <div class="mini-phone-screen" style="gap:6px;">
+          <div style="font-size:11px;font-weight:600;color:#1D2129;">免费咨询</div>
+          <div style="width:100%;">
+            <div style="font-size:9px;color:#86909C;margin-bottom:2px;">手机号</div>
+            <div style="background:#F5F5F5;border-radius:4px;padding:6px 8px;font-size:10px;color:#1D2129;">138 **** 6789</div>
+          </div>
+          <div style="width:100%;">
+            <div style="font-size:9px;color:#86909C;margin-bottom:2px;">需求描述</div>
+            <div style="background:#F5F5F5;border-radius:4px;padding:6px 8px;font-size:10px;color:#C9CDD4;">选填：如预算、时间等</div>
+          </div>
+          <div style="font-size:9px;color:#86909C;display:flex;align-items:center;gap:3px;align-self:flex-start;">
+            <div class="mini-check" style="background:#FFC300;border-color:#FFC300;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:9px;">✓</div>
+            同意《用户授权协议》
+          </div>
+          <div class="mini-btn pri" style="width:100%;background:#FFC300;color:#333;">提交咨询</div>
+        </div>
+      </div>
+      <ul class="feature-list dianping-list">
+        <li>表单式授权（非纯弹窗）</li>
+        <li>支持补充需求描述</li>
+        <li>一对多分发（多家商家竞价）</li>
+        <li><span class="tag best">优点</span>信息收集完整</li>
+        <li><span class="tag good">不足</span>步骤多，流失率高</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ====== Summary ====== -->
+<div class="summary-section">
+  <h2>📊 四家 vs 美柚 · 对比总结</h2>
+  <table class="summary-table">
+    <tr>
+      <th></th>
+      <th>微信</th>
+      <th>支付宝</th>
+      <th>58同城</th>
+      <th>大众点评</th>
+      <th style="color:#FF4D88;">美柚（设计）</th>
+    </tr>
+    <tr>
+      <td>授权形式</td>
+      <td>原生弹窗</td>
+      <td>原生弹窗</td>
+      <td>自建弹窗</td>
+      <td>表单页</td>
+      <td style="color:#FF4D88;">自建弹窗</td>
+    </tr>
+    <tr>
+      <td>是否明确接收方</td>
+      <td>❌ 只说是小程序</td>
+      <td>❌ 只说是小程序</td>
+      <td>✅ 具体经纪人</td>
+      <td>⚠️ 多家商家</td>
+      <td style="color:#FF4D88;">✅ 具体服务商</td>
+    </tr>
+    <tr>
+      <td>协议勾选</td>
+      <td>无</td>
+      <td>无</td>
+      <td>无</td>
+      <td>✅ 有</td>
+      <td style="color:#FF4D88;">✅ 有</td>
+    </tr>
+    <tr>
+      <td>合规等级</td>
+      <td>⭐⭐⭐（平台兜底）</td>
+      <td>⭐⭐⭐（平台兜底）</td>
+      <td>⭐⭐（缺勾选）</td>
+      <td>⭐⭐⭐（有勾选）</td>
+      <td style="color:#FF4D88;">⭐⭐⭐（独立勾选+明确告知）</td>
+    </tr>
+    <tr>
+      <td>能否撤回</td>
+      <td>✅ 系统级</td>
+      <td>✅ 授权管理页</td>
+      <td>⚠️ 不明确</td>
+      <td>⚠️ 不明确</td>
+      <td style="color:#FF4D88;">✅ 授权管理页</td>
+    </tr>
+    <tr>
+      <td>自定义空间</td>
+      <td>❌ 不可自定义</td>
+      <td>❌ 不可自定义</td>
+      <td>✅ 完全自定义</td>
+      <td>✅ 完全自定义</td>
+      <td style="color:#FF4D88;">✅ 完全自定义</td>
+    </tr>
+  </table>
+
+  <div class="how-to-find">
+    <strong>🔍 怎么亲自看到这些示例：</strong><br>
+    <strong>微信：</strong>打开任意微信小程序（如京东）→ 退出登录 → 重新登录 → 选"微信手机号授权"<br>
+    <strong>支付宝：</strong>打开支付宝内小程序（如哈啰）→ 触发需手机号的场景 → 查看授权面板<br>
+    <strong>58同城：</strong>下载58App → 搜二手房 → 点房源 → 点底部"电话咨询"<br>
+    <strong>大众点评：</strong>下载点评App → 搜"口腔"→ 进商家页 → 点"免费咨询"
+  </div>
+</div>
+
+</body>
+</html>
