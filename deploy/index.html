@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>会员福利授权 - 美柚风格</title>
+<style>
+:root{
+--pink:#FF4D88;--pink2:#FF7AA8;--pink3:#E63B79;--pink-bg:#FFF0F5;
+--pink-grad:linear-gradient(135deg,#FF4D88,#FF7AA8);
+--pink-soft:linear-gradient(135deg,#FFF0F5,#FFE0EB);
+--gold:#F5A623;--gold-bg:#FFF7E6;--green:#00B578;--green-bg:#F0FFF6;
+--warn:#FF8F1F;--red:#F53F3F;
+--bg:#F7F7F8;--card:#FFF;--t1:#1D2129;--t2:#86909C;--t3:#C9CDD4;
+--b1:#F0F0F0;--b2:#F5F5F5;
+--rs:8px;--rm:12px;--rl:16px;--rx:20px;--rf:9999px;
+--xs:0 1px 3px rgba(0,0,0,.04);--sm:0 2px 8px rgba(0,0,0,.06);
+--md:0 4px 16px rgba(0,0,0,.08);--lg:0 8px 32px rgba(0,0,0,.12);
+--ovl:0 16px 48px rgba(0,0,0,.18);
+--fc:11px;--fxs:12px;--fsm:13px;--fmd:14px;--flg:16px;--fxl:18px;--fxxl:22px;--ft:24px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#EBEBF0;display:flex;justify-content:center;align-items:flex-start;padding:48px 24px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.gallery{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;max-width:1500px}
+.sw{display:flex;flex-direction:column;align-items:center;gap:14px}
+.sl{font-size:var(--fxs);color:var(--t2);font-weight:600;letter-spacing:1px;background:rgba(0,0,0,.04);padding:4px 12px;border-radius:var(--rf)}
+.phone{width:375px;background:var(--bg);border-radius:40px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.15),0 0 0 3px #1a1a1a,0 0 0 5px #333;position:relative}
+.pna{height:50px;background:#1a1a1a;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;z-index:10}
+.di{width:100px;height:28px;background:#000;border-radius:20px}
+.ps{background:var(--bg);min-height:660px;position:relative;overflow:hidden}
+.sb{height:40px;background:#FFF;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:11px;font-weight:600;color:var(--t1)}
+.sbr{display:flex;align-items:center;gap:6px;font-size:11px}
+.nb{height:44px;display:flex;align-items:center;padding:0 12px;background:#FFF;position:sticky;top:0;z-index:10}
+.nbk{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t1);cursor:pointer;border-radius:50%}
+.nbk:active{background:var(--b2)}
+.nt{flex:1;text-align:center;font-size:var(--flg);font-weight:600;color:var(--t1)}
+.ns{width:32px}
+.ovl{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:100}
+.pu{width:320px;background:#FFF;border-radius:var(--rx);padding:32px 24px 20px;box-shadow:var(--ovl);text-align:center;animation:pi .35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+.pu::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink-grad)}
+@keyframes pi{from{transform:scale(.88) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.piw{width:64px;height:64px;background:var(--pink-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;position:relative}
+.piw::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px dashed #FFD6E4;animation:sp 20s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pie{font-size:30px}
+.put{font-size:var(--fxl);font-weight:700;color:var(--t1);margin-bottom:12px;line-height:1.5}
+.put .pk{color:var(--pink)}
+.pud{font-size:var(--fsm);color:var(--t2);line-height:1.8;margin-bottom:16px;text-align:left}
+.pud .hl{color:var(--t1);font-weight:500}
+.pud .ph{color:var(--pink);font-weight:600;font-size:var(--fmd);font-family:"SF Mono",Menlo,monospace}
+.pic{background:#FAFBFC;border-radius:var(--rm);padding:12px 14px;text-align:left;margin-bottom:16px;border:1px solid var(--b1)}
+.pic .pit{font-size:var(--fxs);color:var(--t3);font-weight:500;margin-bottom:8px;letter-spacing:.5px}
+.pic .pir{font-size:var(--fxs);color:var(--t2);line-height:2.2;display:flex;align-items:center;gap:8px}
+.idot{width:4px;height:4px;background:var(--pink);border-radius:50%;flex-shrink:0}
+.agr{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;font-size:var(--fxs);color:var(--t2);cursor:pointer;user-select:none}
+.agr a{color:var(--pink);text-decoration:none;font-weight:500}
+.cb{width:20px;height:20px;border:2px solid #D0D0D5;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.cb.ck{background:var(--pink);border-color:var(--pink)}
+.cb.ck::after{content:"\2713";color:#FFF;font-size:12px;font-weight:700}
+.btr{display:flex;gap:12px}
+.btn{flex:1;height:46px;border-radius:var(--rf);font-size:var(--fmd);font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;letter-spacing:.3px}
+.btn-o{background:#FFF;color:var(--t2);border:1.5px solid #E5E6EB}
+.btn-o:active{background:#F7F8FA}
+.btn-p{background:var(--pink-grad);color:#FFF;box-shadow:0 4px 12px rgba(255,77,136,.35)}
+.btn-p:active{transform:scale(.97)}
+.btn-p.dis{background:#F2B0C8;box-shadow:none;cursor:not-allowed;pointer-events:none}
+.btn-f{width:100%;flex:none}
+.spage{background:linear-gradient(180deg,#FFF,#FFFBFD);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:520px;padding:40px 24px;text-align:center}
+.siw{width:80px;height:80px;background:linear-gradient(135deg,#00B578,#00D68F);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 8px 24px rgba(0,181,120,.3);position:relative}
+.siw::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(0,181,120,.15);animation:pu 2s ease-in-out infinite}
+@keyframes pu{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.5}}
+.sck{color:#FFF;font-size:40px;font-weight:700}
+.st{font-size:var(--fxxl);font-weight:700;color:var(--t1);margin-bottom:16px}
+.sd{font-size:var(--fmd);color:var(--t2);line-height:1.8;margin-bottom:8px}
+.sd strong{color:var(--pink)}
+.sh{font-size:var(--fxs);color:var(--t3);line-height:1.8;margin-bottom:32px}
+.sh a{color:var(--pink);text-decoration:none;font-weight:500}
+.sc{background:#FFF;border-radius:var(--rl);padding:16px 20px;width:100%;max-width:300px;box-shadow:var(--sm);text-align:left;margin-bottom:24px}
+.scl{font-size:var(--fc);color:var(--t3);letter-spacing:.5px;margin-bottom:6px}
+.scv{font-size:var(--flg);font-weight:600;color:var(--t1)}
+.pg{display:flex;flex-direction:column;min-height:660px;background:var(--bg)}
+.bh{background:linear-gradient(180deg,#FFF5F8,#FFF);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.bh::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:#FFE0EB;border-radius:50%;opacity:.5}
+.bh::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:#FFF0F5;border-radius:50%;opacity:.4}
+.btag{display:inline-flex;align-items:center;gap:4px;background:var(--pink-grad);color:#FFF;font-size:var(--fc);font-weight:600;padding:4px 12px;border-radius:var(--rf);margin-bottom:14px;position:relative;z-index:1}
+.bhi{font-size:48px;margin-bottom:10px;position:relative;z-index:1}
+.bhn{font-size:var(--ft);font-weight:800;color:var(--t1);margin-bottom:4px;position:relative;z-index:1}
+.bhs{font-size:var(--fsm);color:var(--t2);position:relative;z-index:1}
+.bhe{font-size:var(--fxs);color:var(--t3);margin-top:4px;position:relative;z-index:1}
+.scd{background:#FFF;margin:10px 16px;border-radius:var(--rl);padding:16px;box-shadow:var(--xs)}
+.sdt{font-size:var(--fsm);font-weight:700;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sdot{width:4px;height:16px;background:var(--pink-grad);border-radius:2px}
+.stl{list-style:none;padding:0}
+.stl li{font-size:var(--fsm);color:var(--t2);line-height:2.2;padding-left:20px;position:relative}
+.stl li::before{content:'';position:absolute;left:0;top:10px;width:6px;height:6px;border:2px solid var(--pink2);border-radius:50%}
+.asc{background:var(--green-bg);border:1px solid #B7E8D0;border-radius:var(--rm);padding:16px}
+.ash{display:flex;align-items:center;justify-content:space-between}
+.asl{display:flex;align-items:center;gap:8px}
+.asi{width:28px;height:28px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:14px}
+.ast{font-size:var(--fsm);font-weight:600;color:var(--green)}
+.asr{font-size:var(--fxs);color:var(--t3);cursor:pointer;text-decoration:none}
+.asd{font-size:var(--fxs);color:var(--t2);margin-top:8px;line-height:2;padding-left:36px}
+.apc{background:linear-gradient(135deg,#FFFBFC,#FFF5F8);border:1px dashed #FFB3C9;border-radius:var(--rm);margin:10px 16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.apl{display:flex;align-items:flex-start;gap:10px;flex:1}
+.api{width:32px;height:32px;background:var(--pink-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.apt{font-size:var(--fsm);color:var(--t1);line-height:1.6}
+.apt .em{color:var(--pink);font-weight:600}
+.apa{color:var(--pink);font-size:var(--flg);flex-shrink:0}
+.cc{background:#FFF;margin:10px 16px;border-radius:var(--rl);overflow:hidden;box-shadow:var(--xs);display:flex}
+.ccl{background:var(--pink-grad);color:#FFF;padding:18px 20px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:90px;gap:4px;position:relative}
+.ccl::after{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:var(--bg);border-radius:50%}
+.ccl .cl{font-size:10px;opacity:.8;letter-spacing:1px}
+.ccl .cv{font-size:var(--fxl);font-weight:800}
+.ccr{flex:1;padding:16px 20px 16px 24px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.ccd{font-size:var(--fsm);font-weight:600;color:var(--t1);font-family:"SF Mono",Menlo,Consolas,monospace;letter-spacing:.5px}
+.cca{font-size:var(--fsm);color:var(--pink);font-weight:600;cursor:pointer}
+.cc.rdm{opacity:.55}
+.cc.rdm .ccl{background:#C9CDD4}
+.cc.rdm .ccd{text-decoration:line-through;color:var(--t3)}
+.sbdg{display:inline-flex;align-items:center;gap:5px;font-size:var(--fsm);font-weight:600;padding:4px 14px;border-radius:var(--rf)}
+.sbdg.ok{background:var(--green-bg);color:var(--green)}
+.sbdg .bdot{width:6px;height:6px;border-radius:50%}
+.sbdg.ok .bdot{background:var(--green)}
+.rdd{font-size:var(--fsm);color:var(--t2);line-height:2.2;margin-top:8px}
+.rdd .tg{display:inline-block;background:var(--b2);font-size:var(--fc);padding:2px 8px;border-radius:4px;margin-left:4px}
+.mst{font-size:var(--fxs);color:var(--t3);padding:20px 16px 6px;font-weight:600;letter-spacing:1px}
+.mi{background:#FFF;margin:6px 16px;border-radius:var(--rl);padding:16px;box-shadow:var(--xs)}
+.mih{display:flex;align-items:center;justify-content:space-between}
+.min{font-size:var(--fmd);font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px}
+.mii{width:36px;height:36px;background:var(--b2);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px}
+.mbdg{font-size:var(--fc);font-weight:600;padding:3px 10px;border-radius:var(--rf)}
+.mbdg.ok{background:var(--green-bg);color:var(--green)}
+.mbdg.ex{background:#F7F8FA;color:var(--t3)}
+.mid{font-size:var(--fxs);color:var(--t2);margin-top:10px;line-height:2;padding-left:44px}
+.mia{font-size:var(--fxs);color:var(--t3);cursor:pointer;margin-top:8px;text-align:right}
+.psm{width:288px;background:#FFF;border-radius:var(--rx);padding:28px 20px 18px;box-shadow:var(--ovl);text-align:center;position:relative;overflow:hidden}
+.psm::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+.psmw{width:48px;height:48px;background:#FFF0F0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px}
+.psmt{font-size:var(--flg);font-weight:700;color:var(--t1);margin-bottom:8px}
+.psmd{font-size:var(--fsm);color:var(--t2);line-height:1.7;margin-bottom:20px}
+.toast{position:absolute;top:56px;left:50%;transform:translateX(-50%);background:rgba(29,33,41,.88);backdrop-filter:blur(8px);color:#FFF;font-size:var(--fsm);padding:10px 22px;border-radius:var(--rf);white-space:nowrap;z-index:200;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);animation:ti .3s ease}
+@keyframes ti{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+<div class="gallery">
+<!-- S1: Auth Popup -->
+<div class="sw"><div class="sl">1 授权弹窗</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="ovl"><div class="pu" id="pa">
+<div class="piw"><span class="pie">📞</span></div>
+<div class="put">授权服务商联系<br><span class="pk">快速核销福利</span></div>
+<div class="pud">为帮您预约<span class="hl">固德口腔·超声波洗牙</span>，需要将您的手机号 <span class="ph">138****6789</span> 提供给固德口腔，其客服将在<span class="hl">24小时内</span>联系您完成核销。</div>
+<div class="pic"><div class="pit">📋 固德口腔将获取以下信息</div>
+<div class="pir"><span class="idot"></span>您的手机号（加密传输）</div>
+<div class="pir"><span class="idot"></span>福利类型：超声波洗牙</div>
+<div class="pir"><span class="idot"></span>授权有效期：15天</div></div>
+<div class="agr" id="agr1" onclick="tg(this,'btn1')"><div class="cb" id="cb1"></div>我已阅读并同意<span><a href="#" onclick="event.stopPropagation()" style="color:var(--pink);text-decoration:none;font-weight:500">《个人信息授权书》</a></span></div>
+<div class="btr"><button class="btn btn-o">暂不授权</button><button class="btn btn-p dis" id="btn1">同意授权</button></div>
+</div></div>
+</div></div></div>
+
+<!-- S2: Success -->
+<div class="sw"><div class="sl">2 授权成功</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="spage">
+<div class="siw"><span class="sck">✓</span></div>
+<div class="st">授权成功</div>
+<div class="sd">固德口腔客服将在<strong>24小时内</strong>联系您，请保持手机畅通。</div>
+<div class="sc"><div class="scl">授权服务商</div><div class="scv">固德口腔</div><div class="scl" style="margin-top:8px;">授权有效期至</div><div class="scv">2026-06-10</div></div>
+<div class="sh">您可在「<a href="#">我的福利</a>」中查看授权状态，<br>也可以随时撤回授权。</div>
+<button class="btn btn-p" style="width:240px;">查看福利详情</button>
+</div>
+</div></div></div>
+
+<!-- S3: Detail Unauthorized -->
+<div class="sw"><div class="sl">3 福利详情 - 未授权</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="pg">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="nb"><div class="nbk">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
+<div class="bh"><div class="btag">🦷 会员专属福利</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div><div class="bhe">有效期至 2026-07-26</div></div>
+<div class="scd"><div class="sdt"><span class="sdot"></span>使用方式</div><ul class="stl"><li>前往固德口腔小程序预约</li><li>到店出示福利券码</li></ul></div>
+<div class="apc"><div class="apl"><div class="api">💡</div><div class="apt">觉得预约麻烦？<span class="em">授权固德口腔主动联系您</span>，帮您预约，省心又省力。</div></div><div class="apa">›</div></div>
+<div class="cc"><div class="ccl"><span class="cl">福利券码</span><span class="cv">🎫</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div><div class="cca">去小程序核销 ›</div></div></div>
+</div>
+</div></div></div>
+
+<!-- S4: Detail Authorized -->
+<div class="sw"><div class="sl">4 福利详情 - 已授权</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="pg">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="nb"><div class="nbk">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
+<div class="bh"><div class="btag">🦷 会员专属福利</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div><div class="bhe">有效期至 2026-07-26</div></div>
+<div class="scd"><div class="sdt"><span class="sdot"></span>授权状态</div>
+<div class="asc"><div class="ash"><div class="asl"><div class="asi">✓</div><span class="ast">已授权，服务商将主动联系您</span></div><a class="asr">撤回授权 ›</a></div>
+<div class="asd">授权时间：2026-05-26 14:30<br>授权有效期至：2026-06-10</div></div></div>
+<div class="cc"><div class="ccl"><span class="cl">福利券码</span><span class="cv">🎫</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div><div class="cca">去小程序核销 ›</div></div></div>
+</div>
+</div></div></div>
+
+<!-- S5: Detail Redeemed -->
+<div class="sw"><div class="sl">5 福利详情 - 已核销</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="pg">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="nb"><div class="nbk">&#8249;</div><div class="nt">福利详情</div><div class="ns"></div></div>
+<div class="bh" style="background:linear-gradient(180deg,#F5FFF9,#FFF);"><div class="btag" style="background:#00B578;">🦷 已核销</div><div class="bhi">🦷</div><div class="bhn">超声波洗牙</div><div class="bhs">服务商：固德口腔</div></div>
+<div class="scd"><div class="sdt"><span class="sdot"></span>核销信息</div>
+<div class="sbdg ok"><span class="bdot"></span>已核销</div>
+<div class="rdd">核销时间：2026-06-03 10:00<br>核销方式：服务商联系后到店核销<span class="tg">服务商代预约</span></div></div>
+<div class="cc rdm"><div class="ccl"><span class="cl">已使用</span><span class="cv">✓</span></div><div class="ccr"><div class="ccd">XSJ-2026-0526-001</div></div></div>
+</div>
+</div></div></div>
+
+<!-- S6: Auth Management -->
+<div class="sw"><div class="sl">6 授权管理</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="pg">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="nb"><div class="nbk">&#8249;</div><div class="nt">授权管理</div><div class="ns"></div></div>
+<div class="mst">当前授权中（2）</div>
+<div class="mi"><div class="mih"><div class="min"><div class="mii">🦷</div>固德口腔</div><span class="mbdg ok">授权中</span></div><div class="mid">授权福利：超声波洗牙<br>授权时间：2026-05-26<br>有效期至：2026-06-10</div><div class="mia">撤回授权 ›</div></div>
+<div class="mi"><div class="mih"><div class="min"><div class="mii">🏥</div>爱康体检中心</div><span class="mbdg ok">授权中</span></div><div class="mid">授权福利：女性健康体检<br>授权时间：2026-05-20<br>有效期至：2026-06-04</div><div class="mia">撤回授权 ›</div></div>
+<div class="mst">已过期 / 已撤回</div>
+<div class="mi" style="opacity:.5;"><div class="mih"><div class="min"><div class="mii">👓</div>明亮眼镜</div><span class="mbdg ex">已过期</span></div><div class="mid">过期时间：2026-04-15</div></div>
+</div>
+</div></div></div>
+
+<!-- S7: Revoke Confirm -->
+<div class="sw"><div class="sl">7 撤回确认</div><div class="phone"><div class="pna"><div class="di"></div></div><div class="ps">
+<div class="pg">
+<div class="sb"><span>9:41</span><div class="sbr"><span>WiFi</span><span>B</span></div></div>
+<div class="nb"><div class="nbk">&#8249;</div><div class="nt">授权管理</div><div class="ns"></div></div>
+<div class="mst">当前授权中（2）</div>
+<div class="mi"><div class="mih"><div class="min"><div class="mii">🦷</div>固德口腔</div><span class="mbdg ok">授权中</span></div><div class="mid">授权福利：超声波洗牙</div></div>
+<div class="ovl"><div class="psm"><div class="psmw">⚠️</div><div class="psmt">确认撤回授权？</div><div class="psmd">撤回后固德口腔将无法继续联系您，您需自行前往小程序预约核销。</div><div class="btr"><button class="btn btn-o">取消</button><button class="btn btn-p" style="background:#F53F3F;box-shadow:0 4px 12px rgba(245,63,63,.3);">确认撤回</button></div></div></div>
+</div>
+</div></div></div>
+
+</div>
+<script>
+function tg(e,b){let c=e.querySelector(".cb"),d=document.getElementById(b);c.classList.toggle("ck");c.classList.contains("ck")?d.classList.remove("dis"):d.classList.add("dis")}
+</script>
+</body>
+</html>
